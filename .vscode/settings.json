@@ -1,0 +1,21 @@
+{
+    "files.associations": {
+        "vector": "cpp",
+        "string": "cpp",
+        "__availability": "cpp",
+        "__config": "cpp",
+        "__locale": "cpp",
+        "__split_buffer": "cpp",
+        "__string": "cpp",
+        "array": "cpp",
+        "locale": "cpp",
+        "stdexcept": "cpp",
+        "string_view": "cpp",
+        "type_traits": "cpp",
+        "unordered_map": "cpp",
+        "variant": "cpp",
+        "algorithm": "cpp",
+        "iterator": "cpp",
+        "typeinfo": "cpp"
+    }
+}
