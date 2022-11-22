@@ -113,15 +113,38 @@ bool operator==(const Vector& v1, const Vector& v2);
  * @returns true if the matrix arguments m1 and m2 are equal, false if otherwise.
  */
 bool operator==(const Matrix& m1, const Matrix& m2);
-
-//TODO: Vector + Vector
-//TODO: Matrix + Matrix
-//TODO: Constant * Vector
-//TODO: Vector * Constant
-//TODO: Constant * Matrix
-//TODO: Matrix * Constant
-//TODO: Vector - Vector
-//TODO: Matrix - Matrix
+/* The sum of two vectors is a vector of the same size with corresponding components added.
+ * @returns A vector that is the sum of two argument vectors.
+ */
+Vector operator+(const Vector& v1, const Vector& v2);
+/* The sum of two matrices is a matrix of the same size with corresponding entries added.
+ * @returns A matrix that is the sum of two argument matrices.
+ */
+Matrix operator+(const Matrix& m1, const Matrix& m2);
+/* The difference of two vectors is a vector of the same size with corresponding components subtracted.
+ * @returns A vector that is the difference of two argument vectors.
+ */
+Vector operator-(const Vector& v1, const Vector& v2);
+/* The difference of two matrices is a matrix of the same size with corresponding entries subtracted.
+ * @returns A matrix that is the difference of two argument matrices.
+ */
+Matrix operator-(const Matrix& m1, const Matrix& m2);
+/* The product of a scalar and a vector is a vector of the same size with all its components multiplied by the scalar.
+ * @returns A vector that is the product of a scalar and a vector.
+ */
+Vector operator*(double scalar, const Vector& v1);
+/* Scalar-vector multiplication is commutative.
+ * @returns A vector that is the product of a vector and a scalar.
+ */
+Vector operator*(const Vector& v1, double scalar);
+/* The product of a scalar and a matrix is a matrix of the same size with all its entries multiplied by the scalar.
+ * @returns A matrix that is the product of a scalar and a matrix.
+ */
+Matrix operator*(double scalar, const Matrix& m1);
+/* Scalar-matrix multiplication is commutative.
+ * @returns A matrix that is the product of a scalar and a matrix.
+ */
+Matrix operator*(const Matrix& m1, double scalar);
 
 /* A matrix is a square if it has the same number of rows and columns.
  * @param m The matrix argument.

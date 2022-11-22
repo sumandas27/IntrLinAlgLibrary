@@ -99,6 +99,38 @@ bool operator==(const Matrix& m1, const Matrix& m2) {
     return true;
 }
 
+Vector operator+(const Vector& v1, const Vector& v2) {
+
+}
+
+Matrix operator+(const Matrix& m1, const Matrix& m2) {
+
+}
+
+Vector operator-(const Vector& v1, const Vector& v2) {
+
+}
+
+Matrix operator-(const Matrix& m1, const Matrix& m2) {
+
+}
+
+Vector operator*(double scalar, const Vector& v1) {
+
+}
+
+Vector operator*(const Vector& v1, double scalar) {
+
+}
+
+Matrix operator*(double scalar, const Matrix& m1) {
+
+}
+
+Matrix operator*(const Matrix& m1, double scalar) {
+    
+}
+
 bool is_square(const Matrix& m) {
     return m.get_rows() == m.get_cols();
 }
