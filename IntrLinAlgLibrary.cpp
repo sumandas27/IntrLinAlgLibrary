@@ -72,16 +72,10 @@ void Matrix::set(unsigned int row, unsigned int col, double value) {
 //CHAPTER 1 - MATRICES, VECTORS, AND SYSTEMS OF LINEAR EQUATIONS
 
 bool operator==(const Vector& v1, const Vector& v2) {
-    if (v1.get_dim() != v2.get_dim())
-        return false;
-
-    return (v1.get_vector() == v2.get_vector());
+    return v1.get_vector() == v2.get_vector();
 }
 
 bool operator==(const Matrix& m1, const Matrix& m2) {
-    if (m1.get_rows() != m2.get_rows() || m1.get_cols() != m2.get_cols())
-        return false;
-
     for (unsigned int row = 1; row <= m1.get_rows(); row++)
         if (m1.get_matrix().at(row - 1) != m2.get_matrix().at(row - 1))
             return false;
