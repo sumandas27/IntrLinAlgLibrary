@@ -34,7 +34,7 @@ void Vector::set(unsigned int index, double value) {
 Matrix::Matrix(unsigned int _rows, unsigned int _cols, std::vector< std::vector<double> >& _entries) : rows(_rows), cols(_cols) {
     assert (_entries.size() == _rows);
     for (const std::vector<double>& col : _entries)
-        assert(col.size() == _cols);
+        assert (col.size() == _cols);
 
     entries.reserve(rows);
     entries.resize(rows);
