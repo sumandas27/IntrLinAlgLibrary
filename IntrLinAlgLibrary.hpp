@@ -26,15 +26,15 @@ public:
      */
     Vector() = delete;
 
-    /* Returns the dimension of the vector.
+    /* Gets the dimension of the vector.
      */
-    unsigned int get_dim();
+    unsigned int get_dim() const;
     
     /* Vectors in linear algebra are traditionally one-indexed. 
      * @param index The index of the desired scalar.
      * @returns The scalar at the index argument.
      */
-    double get(unsigned int index);
+    double get(unsigned int index) const;
     /* Sets the components at the index argument to the desired scalar.
      * @param index The (1-based) component of the vector to be set.
      * @param value The scalar to set the desired component to. 
@@ -65,18 +65,18 @@ public:
      */
     Matrix() = delete;
 
-    /* Returns the number of rows in the matrix.
+    /* Gets the number of rows in the matrix.
      */
-    unsigned int get_rows();
-    /* Returns the number of columns in the matrix.
+    unsigned int get_rows() const;
+    /* Gets the number of columns in the matrix.
      */
-    unsigned int get_cols();
+    unsigned int get_cols() const;
 
     /* Matrices (like vectors) in linear algebra are traditionally one-indexed.
      * @param row The row of the desired scalar.
      * @param col The column of the desired scalar.
      */
-    double get(unsigned int row, unsigned int col);
+    double get(unsigned int row, unsigned int col) const;
     /* Sets the matrix entry at the row and column argument to the desired scalar.
      * @param row The row of the matrix entry to be set.
      * @param col The column of the matrix entry to be set.
@@ -84,3 +84,30 @@ public:
      */
     void set(unsigned int row, unsigned int col, double value);
 };
+
+//----------------------------------------------------------------------//
+//CHAPTER 1 - MATRICES, VECTORS, AND SYSTEMS OF LINEAR EQUATIONS
+
+/* Two vectors are equal if all corresponding components are equal.
+ * @returns true if the vector arguments v1 and v2 are equal, false if otherwise.
+ */
+bool operator==(const Vector& v1, const Vector& v2);
+/* Two matrices are equal if all corresponding entries are equal.
+ * @returns true if the matrix arguments m1 and m2 are equal, false if otherwise.
+ */
+bool operator==(const Matrix& m1, const Matrix& m2);
+
+//TODO: Vector + Vector
+//TODO: Matrix + Matrix
+//TODO: Constant * Vector
+//TODO: Vector * Constant
+//TODO: Constant * Matrix
+//TODO: Matrix * Constant
+//TODO: Vector - Vector
+//TODO: Matrix - Matrix
+
+/* A matrix is a square if it has the same number of rows and columns.
+ * @param m The matrix argument.
+ * @returns true if the matrix argument is a square, false if otherwise.
+ */
+bool is_square(const Matrix& m);
