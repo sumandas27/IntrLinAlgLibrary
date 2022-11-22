@@ -1,7 +1,5 @@
 #include "IntrLinAlgLibrary.hpp"
 
-//TODO: Test matrix == operator overload
-
 int main(int argc, char** argv) {
     // test vector
     std::vector<double> testVector1{ 1.0, 2.0, 3.0, 4.0 };
