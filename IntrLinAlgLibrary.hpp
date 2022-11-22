@@ -3,7 +3,8 @@
 #include <cassert>
 #include <string>
 
-//--- Containers ---//
+//--- Standard Template Library ---//
+#include <algorithm>
 #include <vector>
 
 /* A vector is an array of real numbers.
@@ -132,19 +133,21 @@ Matrix operator-(const Matrix& m1, const Matrix& m2);
 /* The product of a scalar and a vector is a vector of the same size with all its components multiplied by the scalar.
  * @returns A vector that is the product of a scalar and a vector.
  */
-Vector operator*(double scalar, const Vector& v1);
+Vector operator*(double scalar, const Vector& v);
 /* Scalar-vector multiplication is commutative.
  * @returns A vector that is the product of a vector and a scalar.
  */
-Vector operator*(const Vector& v1, double scalar);
+Vector operator*(const Vector& v, double scalar);
 /* The product of a scalar and a matrix is a matrix of the same size with all its entries multiplied by the scalar.
  * @returns A matrix that is the product of a scalar and a matrix.
  */
-Matrix operator*(double scalar, const Matrix& m1);
+Matrix operator*(double scalar, const Matrix& m);
 /* Scalar-matrix multiplication is commutative.
  * @returns A matrix that is the product of a scalar and a matrix.
  */
-Matrix operator*(const Matrix& m1, double scalar);
+Matrix operator*(const Matrix& m, double scalar);
+
+//TODO: Implement these operator overloads.
 
 /* A matrix is a square if it has the same number of rows and columns.
  * @param m The matrix argument.
