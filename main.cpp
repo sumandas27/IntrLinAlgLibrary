@@ -15,6 +15,7 @@ int main(int argc, char** argv) {
     };
     
     Matrix m = Matrix(3, 5, testMatrix);
+    m.set(3, 4, 2.0);
     std::cout << m.get(3, 4) << "\n";
     return 0;
 }

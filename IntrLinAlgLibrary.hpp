@@ -5,9 +5,9 @@
 //--- Containers ---//
 #include <vector>
 
-//TODO NEXT: implement setters
-
-// A vector is an array of real numbers.
+/* A vector is an array of real numbers.
+ * Vectors will be represented as column vectors as row vectors are rarely used in Linear Algebra.
+ */
 class Vector {
 
 private:
@@ -35,6 +35,11 @@ public:
      * @returns The scalar at the index argument.
      */
     double get(unsigned int index);
+    /* Sets the components at the index argument to the desired scalar.
+     * @param index The (1-based) component of the vector to be set.
+     * @param value The scalar to set the desired component to. 
+     */
+    void set(unsigned int index, double value);
 };
 
 // A matrix is an array of arrays of real numbers.
@@ -72,4 +77,10 @@ public:
      * @param col The column of the desired scalar.
      */
     double get(unsigned int row, unsigned int col);
+    /* Sets the matrix entry at the row and column argument to the desired scalar.
+     * @param row The row of the matrix entry to be set.
+     * @param col The column of the matrix entry to be set.
+     * @param value The scalar to set the desired matrix entry to.
+     */
+    void set(unsigned int row, unsigned int col, double value);
 };

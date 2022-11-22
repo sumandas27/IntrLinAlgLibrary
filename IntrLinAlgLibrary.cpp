@@ -17,6 +17,11 @@ double Vector::get(unsigned int index) {
     return components.at(index - 1);
 }
 
+void Vector::set(unsigned int index, double value) {
+    assert (index >= 1 && index <= dim);
+    components.at(index - 1) = value;
+}
+
 //----------------------------------------------------------------------//
 //MATRIX METHODS:
 
@@ -29,8 +34,22 @@ Matrix::Matrix(unsigned int _rows, unsigned int _cols, std::vector< std::vector<
     }
 }
 
+unsigned int Matrix::get_rows() {
+    return rows;
+}
+
+unsigned int Matrix::get_cols() {
+    return cols;
+}
+
 double Matrix::get(unsigned int row, unsigned int col) {
     assert (row >= 1 && row <= rows);
     assert (col >= 1 && col <= cols);
     return entries.at(row - 1).at(col - 1);
+}
+
+void Matrix::set(unsigned int row, unsigned int col, double value) {
+    assert (row >= 1 && row <= rows);
+    assert (col >= 1 && col <= cols);
+    entries.at(row - 1).at(col - 1) = value;
 }
