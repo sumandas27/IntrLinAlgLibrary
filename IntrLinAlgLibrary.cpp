@@ -14,6 +14,10 @@ unsigned int Vector::get_dim() const {
     return dim;
 }
 
+std::vector<double> Vector::get_vector() const {
+    return components;
+}
+
 double Vector::get(unsigned int index) const {
     assert (index >= 1 && index <= dim);
     return components.at(index - 1);
@@ -48,6 +52,10 @@ unsigned int Matrix::get_cols() const {
     return cols;
 }
 
+std::vector< std::vector<double> > Matrix::get_matrix() const {
+    return entries;
+}
+
 double Matrix::get(unsigned int row, unsigned int col) const {
     assert (row >= 1 && row <= rows);
     assert (col >= 1 && col <= cols);
@@ -67,11 +75,7 @@ bool operator==(const Vector& v1, const Vector& v2) {
     if (v1.get_dim() != v2.get_dim())
         return false;
 
-    for (unsigned int index = 1; index <= v1.get_dim(); index++)
-        if (v1.get(index) != v2.get(index))
-            return false;
-
-    return true;
+    return (v1.get_vector() == v2.get_vector());
 }
 
 bool operator==(const Matrix& m1, const Matrix& m2) {
@@ -79,8 +83,7 @@ bool operator==(const Matrix& m1, const Matrix& m2) {
         return false;
 
     for (unsigned int row = 1; row <= m1.get_rows(); row++)
-    for (unsigned int col = 1; col <= m1.get_cols(); col++)
-        if (m1.get(row, col) != m2.get(row, col))
+        if (m1.get_matrix().at(row - 1) != m2.get_matrix().at(row - 1))
             return false;
 
     return true;

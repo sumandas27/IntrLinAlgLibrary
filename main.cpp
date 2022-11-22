@@ -21,13 +21,14 @@ int main(int argc, char** argv) {
 
     std::vector< std::vector<double> > testMatrix2
     {
-        { 1.0, 2.0, 3.0, 5.0  },
-        { 4.0, 5.0, 6.0, 10.0 },
-        { 7.0, 8.0, 9.0, 15.0 }
+        { 1.0, 2.0, 3.0, 5.0,  20.0 },
+        { 4.0, 5.0, 6.0, 10.0, 25.0 },
+        { 7.0, 8.0, 9.0, 15.0, 0.0  }
     };
     
     Matrix m1 = Matrix(3, 5, testMatrix1);
-    Matrix m2 = Matrix(3, 4, testMatrix2);
+    Matrix m2 = Matrix(3, 5, testMatrix2);
+    //m2.set(2, 2, 3.0);
     std::cout << (m1 == m2) << "\n";
     return 0;
 }

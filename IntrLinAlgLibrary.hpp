@@ -5,6 +5,8 @@
 //--- Containers ---//
 #include <vector>
 
+//TODO: Add print method to Vector and Matrix classes.
+
 /* A vector is an array of real numbers.
  * Vectors will be represented as column vectors as row vectors are rarely used in Linear Algebra.
  */
@@ -29,6 +31,9 @@ public:
     /* Gets the dimension of the vector.
      */
     unsigned int get_dim() const;
+    /* Gets the structure containing the components of the vector.
+     */
+    std::vector<double> get_vector() const;
     
     /* Vectors in linear algebra are traditionally one-indexed. 
      * @param index The index of the desired scalar.
@@ -71,6 +76,9 @@ public:
     /* Gets the number of columns in the matrix.
      */
     unsigned int get_cols() const;
+    /* Gets the structure (vector of vectors) containing the entries of the matrix.
+     */
+    std::vector< std::vector<double> > get_matrix() const;
 
     /* Matrices (like vectors) in linear algebra are traditionally one-indexed.
      * @param row The row of the desired scalar.
