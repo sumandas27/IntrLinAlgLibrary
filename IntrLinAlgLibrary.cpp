@@ -8,6 +8,10 @@ Vector::Vector(unsigned int _dim, std::vector<double>& _components) : dim(_dim) 
     components.insert(components.end(), _components.begin(), _components.end());
 }
 
+unsigned int Vector::get_dim() {
+    return dim;
+}
+
 double Vector::get(unsigned int index) {
     assert (index >= 1 && index <= dim);
     return components.at(index - 1);
