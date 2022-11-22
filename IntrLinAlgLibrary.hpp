@@ -1,11 +1,10 @@
 #pragma once
 #include <iostream>
 #include <cassert>
+#include <string>
 
 //--- Containers ---//
 #include <vector>
-
-//TODO: Add print method to Vector and Matrix classes.
 
 /* A vector is an array of real numbers.
  * Vectors will be represented as column vectors as row vectors are rarely used in Linear Algebra.
@@ -45,6 +44,11 @@ public:
      * @param value The scalar to set the desired component to. 
      */
     void set(unsigned int index, double value);
+
+    /* Prints the vector to the terminal.
+     * Only the first 7 characters of every component are printed.
+     */
+    void print();
 };
 
 // A matrix is an array of arrays of real numbers.
@@ -91,6 +95,11 @@ public:
      * @param value The scalar to set the desired matrix entry to.
      */
     void set(unsigned int row, unsigned int col, double value);
+
+    /* Prints the matrix to the terminal.
+     * Only the first 7 characters of every entry are printed.
+     */
+    void print();
 };
 
 //----------------------------------------------------------------------//

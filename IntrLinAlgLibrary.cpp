@@ -28,6 +28,12 @@ void Vector::set(unsigned int index, double value) {
     components.at(index - 1) = value;
 }
 
+void Vector::print() {
+    for (double& component : components)
+        std::cout << "{  " << std::to_string(component).substr(0, 7) << "  }\n";
+    std::cout << "\n";
+}
+
 //----------------------------------------------------------------------//
 //MATRIX METHODS:
 
@@ -66,6 +72,16 @@ void Matrix::set(unsigned int row, unsigned int col, double value) {
     assert (row >= 1 && row <= rows);
     assert (col >= 1 && col <= cols);
     entries.at(row - 1).at(col - 1) = value;
+}
+
+void Matrix::print() {
+    for (std::vector<double>& row : entries) {
+        std::cout << "{  ";
+        for (double& entry : row)
+            std::cout << std::to_string(entry).substr(0, 7) << "  ";
+        std::cout << "}\n";
+    }
+    std::cout << "\n";
 }
 
 //----------------------------------------------------------------------//

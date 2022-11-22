@@ -7,7 +7,7 @@ int main(int argc, char** argv) {
     Vector v1 = Vector(4, testVector1);
     Vector v2 = Vector(5, testVector2);
     //v1.set(1, 2.0);
-    std::cout << (v1 == v2) << "\n";
+    v1.print();
 
     // test matrix
     std::vector< std::vector<double> > testMatrix1
@@ -26,8 +26,8 @@ int main(int argc, char** argv) {
     
     Matrix m1 = Matrix(3, 5, testMatrix1);
     Matrix m2 = Matrix(3, 5, testMatrix2);
-    //m2.set(2, 2, 3.0);
-    std::cout << (m1 == m2) << "\n";
+    m2.set(2, 2, 3.0);
+    m2.print();
 
     return 0;
 }
