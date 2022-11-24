@@ -32,10 +32,7 @@ int main(int argc, char** argv) {
     //m1.set(3, 4, 100.0);
     std::cout << (m1 == m2);*/
 
-    Vector test = zero_vector(5);
-    test.set(2, 1.5364);
-    test.print();
-    zero_matrix(8, 6).print();
+    identity_matrix(10).print();
 
     return 0;
 }

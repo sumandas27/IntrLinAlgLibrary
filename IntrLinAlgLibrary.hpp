@@ -8,10 +8,6 @@
 #include <functional>
 #include <vector>
 
-//TODO: Zero matrix
-//TODO: Zero vector
-//TODO: Standard Vector
-//TODO: Identity Matrix
 //TODO: Transpose of a Matrix
 //TODO: Rotation Matrix
 //TODO: Matrix-Vector Product
@@ -60,8 +56,6 @@ public:
      */
     void print();
 };
-
-//TODO: change Matrix entries to a vector rather than a vector of vectors.
 
 // A matrix is an array of arrays of real numbers.
 class Matrix {
@@ -169,6 +163,19 @@ Vector zero_vector(unsigned int dim);
  * @returns A zero matrix of the argument size.
  */
 Matrix zero_matrix(unsigned int rows, unsigned int cols);
+
+/* A standard vector is a zero vector with one component being a one instead of a zero.
+ * @param dim The dimension of the standard vector.
+ * @param one_component The location of the "one" component.
+ * @returns A standard vector of the argument dimension with the 1 in the argument location.
+ */
+Vector standard_vector(unsigned int dim, unsigned int one_component);
+
+/* An identity matrix is a square zero matrix with diagonal entries being a one instead of a zero.
+ * @param size The number of rows and columns of the identity matrix.
+ * @returns An identity matrix of the argument size.
+ */
+Matrix identity_matrix(unsigned int size);
 
 /* A matrix is a square if it has the same number of rows and columns.
  * @param m The matrix argument.

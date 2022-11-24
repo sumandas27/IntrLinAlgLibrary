@@ -4,6 +4,7 @@
 //VECTOR METHODS:
 
 Vector::Vector(unsigned int _dim, std::vector<double>& _components) : dim(_dim) {
+    assert (_dim != 0);
     assert (_components.size() == _dim);
     components.insert(components.end(), _components.begin(), _components.end());
 }
@@ -36,6 +37,8 @@ void Vector::print() {
 //MATRIX METHODS:
 
 Matrix::Matrix(unsigned int _rows, unsigned int _cols, std::vector<double>& _entries) : rows(_rows), cols(_cols) {
+    assert (_rows != 0);
+    assert (_cols != 0);
     assert (_entries.size() == _rows * _cols);
     entries.insert(entries.end(), _entries.begin(), _entries.end());
 }
@@ -145,6 +148,20 @@ Vector zero_vector(unsigned int dim) {
 Matrix zero_matrix(unsigned int rows, unsigned int cols) {
     std::vector<double> zeroMatrix(rows * cols, 0.0);
     return Matrix(rows, cols, zeroMatrix);
+}
+
+Vector standard_vector(unsigned int dim, unsigned int one_component) {
+    assert (one_component >= 1 && one_component <= dim);
+    std::vector<double> standardVector(dim, 0.0);
+    standardVector.at(one_component - 1) = 1.0;
+    return Vector(dim, standardVector);
+}
+
+Matrix identity_matrix(unsigned int size) {
+    std::vector<double> identityMatrix(size * size, 0.0);
+    for (int i = 0; i < size; i++)
+        identityMatrix.at(i * size + i) = 1.0;
+    return Matrix(size, size, identityMatrix);
 }
 
 bool is_square(const Matrix& m) {
