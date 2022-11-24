@@ -5,6 +5,7 @@
 
 //--- Standard Template Library ---//
 #include <algorithm>
+#include <functional>
 #include <vector>
 
 /* A vector is an array of real numbers.
@@ -33,7 +34,7 @@ public:
     unsigned int get_dim() const;
     /* Gets the structure containing the components of the vector.
      */
-    std::vector<double> get_vector() const;
+    std::vector<double> get_components() const;
     
     /* Vectors in linear algebra are traditionally one-indexed. 
      * @param index The index of the desired scalar.
@@ -52,6 +53,8 @@ public:
     void print();
 };
 
+//TODO: change Matrix entries to a vector rather than a vector of vectors.
+
 // A matrix is an array of arrays of real numbers.
 class Matrix {
 
@@ -62,7 +65,7 @@ private:
     const unsigned int cols;
 
     // The structure containing the entries of the matrix.
-    std::vector< std::vector<double> > entries;
+    std::vector<double> entries;
 
 public:
     /* Constructs a matrix.
@@ -70,7 +73,7 @@ public:
      * @param _cols The input number of columns in the matrix.
      * @param _entries The input structure containing the entries of the vector.
      */
-    Matrix(unsigned int _rows, unsigned int _cols, std::vector< std::vector<double> >& _entries);
+    Matrix(unsigned int _rows, unsigned int _cols, std::vector<double>& _entries);
     /* A matrix object shouldn't be created with the default constructor.
      */
     Matrix() = delete;
@@ -83,7 +86,7 @@ public:
     unsigned int get_cols() const;
     /* Gets the structure (vector of vectors) containing the entries of the matrix.
      */
-    std::vector< std::vector<double> > get_matrix() const;
+    std::vector<double> get_entries() const;
 
     /* Matrices (like vectors) in linear algebra are traditionally one-indexed.
      * @param row The row of the desired scalar.
@@ -146,8 +149,6 @@ Matrix operator*(double scalar, const Matrix& m);
  * @returns A matrix that is the product of a scalar and a matrix.
  */
 Matrix operator*(const Matrix& m, double scalar);
-
-//TODO: Implement these operator overloads.
 
 /* A matrix is a square if it has the same number of rows and columns.
  * @param m The matrix argument.

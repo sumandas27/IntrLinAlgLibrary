@@ -1,7 +1,7 @@
 #include "IntrLinAlgLibrary.hpp"
 
 int main(int argc, char** argv) {
-    /*// test vector
+    // test vector
     std::vector<double> testVector1{ 1.0, 2.0, 3.0 , 4.0 };
     std::vector<double> testVector2{ 1.0, 3.0, 10.0, 8.0 };
     Vector v1 = Vector(4, testVector1);
@@ -11,35 +11,26 @@ int main(int argc, char** argv) {
     Vector sum = p1 + p2;
     sum.print();
     p1.print();
-    p2.print();*/
+    p2.print();
 
-    std::vector< std::vector<double> > testMatrix1
+    /*std::vector<double> testMatrix1
     {
-        { 1.0, 2.0, 3.0, 5.0,  20.0 },
-        { 4.0, 5.0, 6.0, 10.0, 25.0 },
-        { 7.0, 8.0, 9.0, 15.0, 0.0  }
+        1.0, 2.0, 3.0, 5.0,  20.0,
+        4.0, 5.0, 6.0, 10.0, 25.0,
+        7.0, 8.0, 9.0, 15.0, 0.0
     };
 
-    std::vector< std::vector<double> > testMatrix2
+    std::vector<double> testMatrix2
     {
-        { 1.0, 2.0, 3.0, 5.0,  20.0 },
-        { 4.0, 5.0, 6.0, 10.0, 25.0 },
-        { 7.0, 8.0, 9.0, 15.0, 11.0 }
+        1.0, 2.0, 3.0, 5.0,  20.0,
+        4.0, 5.0, 6.0, 10.0, 25.0,
+        7.0, 8.0, 9.0, 15.0, 0.0
     };
-
-    /*std::vector< std::vector<double> > sum(3, std::vector<double>(5));
-    std::transform(testMatrix1.at(0).begin(), testMatrix1.at(0).end(), testMatrix2.at(0).begin(), sum.at(0).begin(), std::plus<double>());
-    Matrix test = Matrix(3, 5, sum);
-    test.print();*/
 
     Matrix m1 = Matrix(3, 5, testMatrix1);
     Matrix m2 = Matrix(3, 5, testMatrix2);
-    std::vector< std::vector<double> > sum(3, std::vector<double>(5));
-    std::vector<double> r1 = m1.get_matrix().at(0);
-    std::vector<double> r2 = m2.get_matrix().at(0);
-    std::transform(r1.begin(), r1.end(), r2.begin(), sum.at(0).begin(), std::plus<double>());
-    Matrix test = Matrix(3, 5, sum);
-    test.print();
+    //m1.set(3, 4, 100.0);
+    std::cout << (m1 == m2);*/
 
     return 0;
 }
