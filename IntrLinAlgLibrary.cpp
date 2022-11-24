@@ -78,6 +78,13 @@ void Matrix::print() {
 }
 
 //----------------------------------------------------------------------//
+//NON-LINEAR ALGEBRA FUNCTIONS:
+
+constexpr double deg_to_rad(double degrees) {
+    return degrees * M_PI / 180;
+}
+
+//----------------------------------------------------------------------//
 //CHAPTER 1 - MATRICES, VECTORS, AND SYSTEMS OF LINEAR EQUATIONS
 
 bool operator==(const Vector& v1, const Vector& v2) {
@@ -172,6 +179,16 @@ Matrix transpose(const Matrix& m) {
     for (int j = 0; j < cols; j++)
         transpose.at(i * cols + j) = m.get_entries().at(j * rows + i);
     return Matrix(rows, cols, transpose);
+}
+
+Matrix rotation_matrix(double degrees) {
+    std::vector<double> rotationMatrix{
+         cos(deg_to_rad(degrees)),
+        -sin(deg_to_rad(degrees)),
+         sin(deg_to_rad(degrees)),
+         cos(deg_to_rad(degrees))
+    };
+    return Matrix(2, 2, rotationMatrix);
 }
 
 bool is_square(const Matrix& m) {

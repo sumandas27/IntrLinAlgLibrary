@@ -28,9 +28,9 @@ int main(int argc, char** argv) {
     };
 
     Matrix m1 = Matrix(3, 5, testMatrix1);
-    Matrix m2 = Matrix(3, 5, testMatrix2);
+    Matrix rotation = rotation_matrix(30.0);
     //m1.set(3, 4, 100.0);
-    m1.print();
+    rotation.print();
 
     return 0;
 }

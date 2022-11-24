@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <cassert>
+#include <cmath>
 #include <string>
 
 //--- Standard Template Library ---//
@@ -108,6 +109,11 @@ public:
 };
 
 //----------------------------------------------------------------------//
+//NON-LINEAR ALGEBRA FUNCTIONS:
+
+constexpr double deg_to_rad(double degrees);
+
+//----------------------------------------------------------------------//
 //CHAPTER 1 - MATRICES, VECTORS, AND SYSTEMS OF LINEAR EQUATIONS
 
 /* Two vectors are equal if all corresponding components are equal.
@@ -175,6 +181,13 @@ Vector standard_vector(unsigned int dim, unsigned int one_component);
  * @returns An identity matrix of the argument size.
  */
 Matrix identity_matrix(unsigned int size);
+
+/* A rotation matrix is a 2x2 matrix that rotates an R^2 vector by some amount of degrees counter-clockwise.
+ * Given rotation matrix A and some R^2 vector x, Ax = x' where x' is the rotated R^2 vector.
+ * @param degrees The angle (in degrees) of the rotation matrix.
+ * @returns The 2x2 rotation matrix of the argument angle in degrees.
+ */
+Matrix rotation_matrix(double degrees);
 
 /* The transpose of an nxm matrix is an mxn matrix where (i,j)-entries are transformed to (j,i)-entries.
  * @param m The matrix whose transpose is to be returned.
