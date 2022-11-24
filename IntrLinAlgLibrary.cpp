@@ -28,7 +28,7 @@ void Vector::set(unsigned int index, double value) {
 
 void Vector::print() {
     for (double& component : components)
-        std::cout << "{  " << std::to_string(component).substr(0, 7) << "  }\n";
+        std::cout << "{  " << std::to_string(component).substr(0, 8) << "  }\n";
     std::cout << "\n";
 }
 
@@ -68,7 +68,7 @@ void Matrix::print() {
     for (int i = 0; i < rows; i++) {
         std::cout << "{  ";
         for (int j = 0; j < cols; j++)
-            std::cout << std::to_string(entries.at(i * cols + j)).substr(0, 7) << "  ";
+            std::cout << std::to_string(entries.at(i * cols + j)).substr(0, 8) << "  ";
         std::cout << "}\n";
     }
     std::cout << "\n";
@@ -135,6 +135,16 @@ Matrix operator*(double scalar, const Matrix& m) {
 
 Matrix operator*(const Matrix& m, double scalar) {
     return scalar * m;
+}
+
+Vector zero_vector(unsigned int dim) {
+    std::vector<double> zeroVector(dim, 0.0);
+    return Vector(dim, zeroVector);
+}
+
+Matrix zero_matrix(unsigned int rows, unsigned int cols) {
+    std::vector<double> zeroMatrix(rows * cols, 0.0);
+    return Matrix(rows, cols, zeroMatrix);
 }
 
 bool is_square(const Matrix& m) {

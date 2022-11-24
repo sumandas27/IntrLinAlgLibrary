@@ -56,7 +56,7 @@ public:
     void set(unsigned int index, double value);
 
     /* Prints the vector to the terminal.
-     * Only the first 7 characters of every component are printed.
+     * Only the first 8 characters of every component are printed.
      */
     void print();
 };
@@ -109,7 +109,7 @@ public:
     void set(unsigned int row, unsigned int col, double value);
 
     /* Prints the matrix to the terminal.
-     * Only the first 7 characters of every entry are printed.
+     * Only the first 8 characters of every entry are printed.
      */
     void print();
 };
@@ -157,6 +157,18 @@ Matrix operator*(double scalar, const Matrix& m);
  * @returns A matrix that is the product of a scalar and a matrix.
  */
 Matrix operator*(const Matrix& m, double scalar);
+
+/* A zero vector is a vector where all components are zero.
+ * @param dim The dimension of the zero matrix.
+ * @returns A zero vector of the argument size.
+ */
+Vector zero_vector(unsigned int dim);
+/* A zero matrix is a matrix where all entries are zero.
+ * @param rows The number of rows in the zero matrix.
+ * @param cols The number of columns in the zero matrix.
+ * @returns A zero matrix of the argument size.
+ */
+Matrix zero_matrix(unsigned int rows, unsigned int cols);
 
 /* A matrix is a square if it has the same number of rows and columns.
  * @param m The matrix argument.
