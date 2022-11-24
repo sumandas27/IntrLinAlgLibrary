@@ -88,7 +88,7 @@ public:
     unsigned int get_cols() const;
     /* Gets the structure (vector of vectors) containing the entries of the matrix.
      */
-    std::vector<double> get_entries() const;
+    const std::vector<double>& get_entries() const;
 
     /* Matrices (like vectors) in linear algebra are traditionally one-indexed.
      * @param row The row of the desired scalar.

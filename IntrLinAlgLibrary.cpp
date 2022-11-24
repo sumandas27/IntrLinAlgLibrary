@@ -53,7 +53,7 @@ unsigned int Matrix::get_cols() const {
     return cols;
 }
 
-std::vector<double> Matrix::get_entries() const {
+const std::vector<double>& Matrix::get_entries() const {
     return entries;
 }
 
@@ -100,19 +100,14 @@ bool operator==(const Vector& v1, const Vector& v2) {
     if (v1.get_dim() != v2.get_dim())
         return false;
 
-    //TODO: what the fuck. why do i need to create 2 new vectors :(((
-    std::vector<double> components1 = v1.get_components();
-    std::vector<double> components2 = v2.get_components();
-    return std::equal(components1.begin(), components1.end(), components2.begin(), is_equal);
+    return std::equal(v1.get_components().begin(), v1.get_components().end(), v2.get_components().begin(), is_equal);
 }
 
 bool operator==(const Matrix& m1, const Matrix& m2) {
     if (m1.get_rows() != m2.get_rows() || m1.get_cols() != m2.get_cols())
         return false;
-
-    std::vector<double> entries1 = m1.get_entries();
-    std::vector<double> entries2 = m2.get_entries();
-    return std::equal(entries1.begin(), entries1.end(), entries2.begin(), is_equal);
+        
+    return std::equal(m1.get_entries().begin(), m1.get_entries().end(), m2.get_entries().begin(), is_equal);
 }
 
 Vector operator+(const Vector& v1, const Vector& v2) {
@@ -208,13 +203,13 @@ Matrix identity_matrix(unsigned int size) {
 }
 
 Matrix transpose(const Matrix& m) {
-    unsigned int rows = m.get_cols();
-    unsigned int cols = m.get_rows();
-    std::vector<double> transpose(rows * cols);
-    for (int i = 0; i < rows; i++)
-    for (int j = 0; j < cols; j++)
-        transpose.at(i * cols + j) = m.get_entries().at(j * rows + i);
-    return Matrix(rows, cols, transpose);
+    unsigned int tRows = m.get_cols();
+    unsigned int tCols = m.get_rows();
+    std::vector<double> transpose(tRows * tCols);
+    for (int i = 0; i < tRows; i++)
+    for (int j = 0; j < tCols; j++)
+        transpose.at(i * tCols + j) = m.get_entries().at(j * tRows + i);
+    return Matrix(tRows, tCols, transpose);
 }
 
 Matrix rotation_matrix(double degrees) {
