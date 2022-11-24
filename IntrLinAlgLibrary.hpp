@@ -8,6 +8,14 @@
 #include <functional>
 #include <vector>
 
+//TODO: Zero matrix
+//TODO: Zero vector
+//TODO: Standard Vector
+//TODO: Identity Matrix
+//TODO: Transpose of a Matrix
+//TODO: Rotation Matrix
+//TODO: Matrix-Vector Product
+
 /* A vector is an array of real numbers.
  * Vectors will be represented as column vectors as row vectors are rarely used in Linear Algebra.
  */
