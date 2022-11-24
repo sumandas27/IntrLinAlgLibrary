@@ -8,7 +8,6 @@
 #include <functional>
 #include <vector>
 
-//TODO: Transpose of a Matrix
 //TODO: Rotation Matrix
 //TODO: Matrix-Vector Product
 

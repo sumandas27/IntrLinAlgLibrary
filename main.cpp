@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
     p1.print();
     p2.print();*/
 
-    /*std::vector<double> testMatrix1
+    std::vector<double> testMatrix1
     {
         1.0, 2.0, 3.0, 5.0,  20.0,
         4.0, 5.0, 6.0, 10.0, 25.0,
@@ -30,9 +30,7 @@ int main(int argc, char** argv) {
     Matrix m1 = Matrix(3, 5, testMatrix1);
     Matrix m2 = Matrix(3, 5, testMatrix2);
     //m1.set(3, 4, 100.0);
-    std::cout << (m1 == m2);*/
-
-    transpose(identity_matrix(10)).print();
+    m1.print();
 
     return 0;
 }
