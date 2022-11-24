@@ -164,6 +164,16 @@ Matrix identity_matrix(unsigned int size) {
     return Matrix(size, size, identityMatrix);
 }
 
+Matrix transpose(const Matrix& m) {
+    unsigned int rows = m.get_cols();
+    unsigned int cols = m.get_rows();
+    std::vector<double> transpose(rows * cols);
+    for (int i = 0; i < rows; i++)
+    for (int j = 0; j < cols; j++)
+        transpose.at(i * cols + j) = m.get_entries().at(j * rows + i);
+    return Matrix(rows, cols, transpose);
+}
+
 bool is_square(const Matrix& m) {
     return m.get_rows() == m.get_cols();
 }

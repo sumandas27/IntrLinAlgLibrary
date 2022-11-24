@@ -177,6 +177,12 @@ Vector standard_vector(unsigned int dim, unsigned int one_component);
  */
 Matrix identity_matrix(unsigned int size);
 
+/* The transpose of an nxm matrix is an mxn matrix where (i,j)-entries are transformed to (j,i)-entries.
+ * @param m The matrix whose transpose is to be returned.
+ * @returns The transpose of the argument matrix.
+ */
+Matrix transpose(const Matrix& m);
+
 /* A matrix is a square if it has the same number of rows and columns.
  * @param m The matrix argument.
  * @returns true if the matrix argument is a square, false if otherwise.

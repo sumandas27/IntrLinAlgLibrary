@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     //m1.set(3, 4, 100.0);
     std::cout << (m1 == m2);*/
 
-    identity_matrix(10).print();
+    transpose(identity_matrix(10)).print();
 
     return 0;
 }
