@@ -1,36 +1,23 @@
 #include "IntrLinAlgLibrary.hpp"
 
 int main(int argc, char** argv) {
-    /*// test vector
-    std::vector<double> testVector1{ 1.0, 2.0, 3.0 , 4.0 };
-    std::vector<double> testVector2{ 1.0, 3.0, 10.0, 8.0 };
-    Vector v1 = Vector(4, testVector1);
-    Vector v2 = Vector(4, testVector2);
-    Vector p1 = 2 * v1;
-    Vector p2 = v2 * 3;
-    Vector sum = p1 + p2;
-    sum.print();
-    p1.print();
-    p2.print();*/
-
-    std::vector<double> testMatrix1
+    
+    /*std::vector<double> matrix
     {
-        1.0, 2.0, 3.0, 5.0,  20.0,
-        4.0, 5.0, 6.0, 10.0, 25.0,
-        7.0, 8.0, 9.0, 15.0, 0.0
+        1.0, 4.0,
+        2.0, 5.0,
+        3.0, 6.0
     };
 
-    std::vector<double> testMatrix2
-    {
-        1.0, 2.0, 3.0, 5.0,  20.0,
-        4.0, 5.0, 6.0, 10.0, 25.0,
-        7.0, 8.0, 9.0, 15.0, 0.0
-    };
+    std::vector<double> vector{ 1, 0 };
 
-    Matrix m1 = Matrix(3, 5, testMatrix1);
-    Matrix rotation = rotation_matrix(30.0);
-    //m1.set(3, 4, 100.0);
-    rotation.print();
+    Matrix a = rotation_matrix(450);
+    Vector v = Vector(2, vector);
+    Vector product = a * v;*/
+    
+    Matrix a = rotation_matrix(46);
+    Matrix b = rotation_matrix(46);
+    std::cout << (a == b);
 
     return 0;
 }

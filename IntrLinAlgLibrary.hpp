@@ -111,6 +111,12 @@ public:
 //----------------------------------------------------------------------//
 //NON-LINEAR ALGEBRA FUNCTIONS:
 
+/* Checks equality between two doubles if their difference lies within a tolerance range.
+ */
+bool is_equal(double val1, double val2);
+
+/* Converts an angle from degrees to radians.
+ */
 constexpr double deg_to_rad(double degrees);
 
 //----------------------------------------------------------------------//
@@ -156,6 +162,10 @@ Matrix operator*(double scalar, const Matrix& m);
  * @returns A matrix that is the product of a scalar and a matrix.
  */
 Matrix operator*(const Matrix& m, double scalar);
+/* A matrix-vector product is the linear combination of the vector's components and the matrix's column vectors.
+ * @returns The matrix-vector product of the argument matrix and vector.
+ */
+Vector operator*(const Matrix& m, const Vector& v);
 
 /* A zero vector is a vector where all components are zero.
  * @param dim The dimension of the zero matrix.

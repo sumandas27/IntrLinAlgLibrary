@@ -6,6 +6,7 @@
 Vector::Vector(unsigned int _dim, std::vector<double>& _components) : dim(_dim) {
     assert (_dim != 0);
     assert (_components.size() == _dim);
+
     components.insert(components.end(), _components.begin(), _components.end());
 }
 
@@ -28,7 +29,7 @@ void Vector::set(unsigned int index, double value) {
 }
 
 void Vector::print() {
-    for (double& component : components)
+    for (const double& component : components)
         std::cout << "{  " << std::to_string(component).substr(0, 8) << "  }\n";
     std::cout << "\n";
 }
@@ -40,6 +41,7 @@ Matrix::Matrix(unsigned int _rows, unsigned int _cols, std::vector<double>& _ent
     assert (_rows != 0);
     assert (_cols != 0);
     assert (_entries.size() == _rows * _cols);
+
     entries.insert(entries.end(), _entries.begin(), _entries.end());
 }
 
@@ -58,12 +60,14 @@ std::vector<double> Matrix::get_entries() const {
 double Matrix::get(unsigned int row, unsigned int col) const {
     assert (row >= 1 && row <= rows);
     assert (col >= 1 && col <= cols);
+
     return entries.at((row - 1) * cols + (col - 1));
 }
 
 void Matrix::set(unsigned int row, unsigned int col, double value) {
     assert (row >= 1 && row <= rows);
     assert (col >= 1 && col <= cols);
+
     entries.at((row - 1) * cols + (col - 1)) = value;
 }
 
@@ -80,6 +84,11 @@ void Matrix::print() {
 //----------------------------------------------------------------------//
 //NON-LINEAR ALGEBRA FUNCTIONS:
 
+bool is_equal(double val1, double val2) {
+    constexpr double epsilon = 0.00001;
+    return abs(val1 - val2) < epsilon;
+}
+
 constexpr double deg_to_rad(double degrees) {
     return degrees * M_PI / 180;
 }
@@ -88,17 +97,27 @@ constexpr double deg_to_rad(double degrees) {
 //CHAPTER 1 - MATRICES, VECTORS, AND SYSTEMS OF LINEAR EQUATIONS
 
 bool operator==(const Vector& v1, const Vector& v2) {
-    return v1.get_components() == v2.get_components();
+    if (v1.get_dim() != v2.get_dim())
+        return false;
+
+    //TODO: what the fuck. why do i need to create 2 new vectors :(((
+    std::vector<double> components1 = v1.get_components();
+    std::vector<double> components2 = v2.get_components();
+    return std::equal(components1.begin(), components1.end(), components2.begin(), is_equal);
 }
 
 bool operator==(const Matrix& m1, const Matrix& m2) {
     if (m1.get_rows() != m2.get_rows() || m1.get_cols() != m2.get_cols())
         return false;
-    return m1.get_entries() == m2.get_entries();
+
+    std::vector<double> entries1 = m1.get_entries();
+    std::vector<double> entries2 = m2.get_entries();
+    return std::equal(entries1.begin(), entries1.end(), entries2.begin(), is_equal);
 }
 
 Vector operator+(const Vector& v1, const Vector& v2) {
     assert (v1.get_dim() == v2.get_dim());
+
     std::vector<double> sum(v1.get_components().size());
     std::transform(v1.get_components().begin(), v1.get_components().end(), v2.get_components().begin(), sum.begin(), std::plus<double>());
     return Vector(v1.get_dim(), sum);
@@ -107,6 +126,7 @@ Vector operator+(const Vector& v1, const Vector& v2) {
 Matrix operator+(const Matrix& m1, const Matrix& m2) {
     assert (m1.get_rows() == m2.get_rows());
     assert (m1.get_cols() == m2.get_cols());
+
     std::vector<double> sum(m1.get_entries().size());
     std::transform(m1.get_entries().begin(), m1.get_entries().end(), m2.get_entries().begin(), sum.begin(), std::plus<double>());
     return Matrix(m1.get_rows(), m1.get_cols(), sum);
@@ -114,6 +134,7 @@ Matrix operator+(const Matrix& m1, const Matrix& m2) {
 
 Vector operator-(const Vector& v1, const Vector& v2) {
     assert (v1.get_dim() == v2.get_dim());
+
     std::vector<double> diff(v1.get_components().size());
     std::transform(v1.get_components().begin(), v1.get_components().end(), v2.get_components().begin(), diff.begin(), std::minus<double>());
     return Vector(v1.get_dim(), diff);
@@ -122,8 +143,9 @@ Vector operator-(const Vector& v1, const Vector& v2) {
 Matrix operator-(const Matrix& m1, const Matrix& m2) {
     assert (m1.get_rows() == m2.get_rows());
     assert (m1.get_cols() == m2.get_cols());
+
     std::vector<double> diff(m1.get_entries().size());
-    std::transform(m1.get_entries().begin(), m1.get_entries().end(), m2.get_entries().begin(), diff.begin(), std::plus<double>());
+    std::transform(m1.get_entries().begin(), m1.get_entries().end(), m2.get_entries().begin(), diff.begin(), std::minus<double>());
     return Matrix(m1.get_rows(), m1.get_cols(), diff);
 }
 
@@ -147,6 +169,19 @@ Matrix operator*(const Matrix& m, double scalar) {
     return scalar * m;
 }
 
+Vector operator*(const Matrix& m, const Vector& v) {
+    assert (m.get_cols() == v.get_dim());
+
+    std::vector<double> product(m.get_rows());
+    for (int i = 0; i < m.get_rows(); i++) {
+        double entry = 0.0;
+        for (int j = 0; j < v.get_dim(); j++)
+            entry += v.get_components().at(j) * m.get_entries().at(i * m.get_cols() + j);
+        product.at(i) = entry;
+    }
+    return Vector(m.get_rows(), product);
+}
+
 Vector zero_vector(unsigned int dim) {
     std::vector<double> zeroVector(dim, 0.0);
     return Vector(dim, zeroVector);
@@ -159,6 +194,7 @@ Matrix zero_matrix(unsigned int rows, unsigned int cols) {
 
 Vector standard_vector(unsigned int dim, unsigned int one_component) {
     assert (one_component >= 1 && one_component <= dim);
+    
     std::vector<double> standardVector(dim, 0.0);
     standardVector.at(one_component - 1) = 1.0;
     return Vector(dim, standardVector);

@@ -65,6 +65,7 @@
         "tuple": "cpp",
         "__functional_base": "cpp",
         "functional": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "numbers": "cpp"
     }
 }
