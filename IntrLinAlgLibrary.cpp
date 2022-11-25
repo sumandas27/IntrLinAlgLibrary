@@ -14,10 +14,6 @@ unsigned int Vector::get_dim() const {
     return dim;
 }
 
-std::vector<double> Vector::get_components() const {
-    return components;
-}
-
 double Vector::get(unsigned int index) const {
     assert (index >= 1 && index <= dim);
     return components.at(index - 1);
@@ -51,10 +47,6 @@ unsigned int Matrix::get_rows() const {
 
 unsigned int Matrix::get_cols() const {
     return cols;
-}
-
-const std::vector<double>& Matrix::get_entries() const {
-    return entries;
 }
 
 double Matrix::get(unsigned int row, unsigned int col) const {
@@ -100,21 +92,21 @@ bool operator==(const Vector& v1, const Vector& v2) {
     if (v1.get_dim() != v2.get_dim())
         return false;
 
-    return std::equal(v1.get_components().begin(), v1.get_components().end(), v2.get_components().begin(), is_equal);
+    return std::equal(v1.components.begin(), v1.components.end(), v2.components.begin(), is_equal);
 }
 
 bool operator==(const Matrix& m1, const Matrix& m2) {
     if (m1.get_rows() != m2.get_rows() || m1.get_cols() != m2.get_cols())
         return false;
 
-    return std::equal(m1.get_entries().begin(), m1.get_entries().end(), m2.get_entries().begin(), is_equal);
+    return std::equal(m1.entries.begin(), m1.entries.end(), m2.entries.begin(), is_equal);
 }
 
 Vector operator+(const Vector& v1, const Vector& v2) {
     assert (v1.get_dim() == v2.get_dim());
 
-    std::vector<double> sum(v1.get_components().size());
-    std::transform(v1.get_components().begin(), v1.get_components().end(), v2.get_components().begin(), sum.begin(), std::plus<double>());
+    std::vector<double> sum(v1.components.size());
+    std::transform(v1.components.begin(), v1.components.end(), v2.components.begin(), sum.begin(), std::plus<double>());
     return Vector(v1.get_dim(), sum);
 }
 
@@ -235,5 +227,5 @@ void scalar_multiplication(Matrix& m, double scalar, unsigned int row) {
 }
 
 void row_sum(Matrix& m, double scalar, unsigned int scaledRow, unsigned int outputRow) {
-    
+
 }

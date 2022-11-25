@@ -17,10 +17,11 @@ class Vector {
 private:
     // The dimension of the vector.
     const unsigned int dim;
+
+public:
     // The structure containing the components of the vector.
     std::vector<double> components;
 
-public:
     /* Constructs a vector.
      * @param _dim The input vector dimension.
      * @param _components The input structure containing the components of the vector.
@@ -33,9 +34,6 @@ public:
     /* Gets the dimension of the vector.
      */
     unsigned int get_dim() const;
-    /* Gets the structure containing the components of the vector.
-     */
-    std::vector<double> get_components() const;
     
     /* Vectors in linear algebra are traditionally one-indexed. 
      * @param index The index of the desired scalar.
@@ -83,9 +81,6 @@ public:
     /* Gets the number of columns in the matrix.
      */
     unsigned int get_cols() const;
-    /* Gets the structure (vector of vectors) containing the entries of the matrix.
-     */
-    const std::vector<double>& get_entries() const;
 
     /* Matrices (like vectors) in linear algebra are traditionally one-indexed.
      * @param row The row of the desired scalar.
