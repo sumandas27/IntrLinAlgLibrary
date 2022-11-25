@@ -231,5 +231,9 @@ void row_swap(Matrix& m, unsigned int row1, unsigned int row2) {
 }
 
 void scalar_multiplication(Matrix& m, double scalar, unsigned int row) {
+
+}
+
+void row_sum(Matrix& m, double scalar, unsigned int scaledRow, unsigned int outputRow) {
     
 }
