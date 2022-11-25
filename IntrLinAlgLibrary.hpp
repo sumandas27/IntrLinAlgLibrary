@@ -9,9 +9,6 @@
 #include <functional>
 #include <vector>
 
-//TODO: Rotation Matrix
-//TODO: Matrix-Vector Product
-
 /* A vector is an array of real numbers.
  * Vectors will be represented as column vectors as row vectors are rarely used in Linear Algebra.
  */
@@ -185,7 +182,6 @@ Matrix zero_matrix(unsigned int rows, unsigned int cols);
  * @returns A standard vector of the argument dimension with the 1 in the argument location.
  */
 Vector standard_vector(unsigned int dim, unsigned int one_component);
-
 /* An identity matrix is a square zero matrix with diagonal entries being a one instead of a zero.
  * @param size The number of rows and columns of the identity matrix.
  * @returns An identity matrix of the argument size.
@@ -199,14 +195,37 @@ Matrix identity_matrix(unsigned int size);
  */
 Matrix rotation_matrix(double degrees);
 
+/* A matrix is a square if it has the same number of rows and columns.
+ * @param m The matrix argument.
+ * @returns true if the matrix argument is a square, false if otherwise.
+ */
+bool is_square(const Matrix& m);
+
 /* The transpose of an nxm matrix is an mxn matrix where (i,j)-entries are transformed to (j,i)-entries.
  * @param m The matrix whose transpose is to be returned.
  * @returns The transpose of the argument matrix.
  */
 Matrix transpose(const Matrix& m);
 
-/* A matrix is a square if it has the same number of rows and columns.
- * @param m The matrix argument.
- * @returns true if the matrix argument is a square, false if otherwise.
+//----------------------------------------------------------------------//
+//TODO: Do you want these here or in Matrix class???
+
+/* An elementary row operation where two rows are exchanged in a matrix: row1 <--> row2
+ * @param m The matrix to be modified.
+ * @param row1 The first row to be exchanged.
+ * @param row2 The second row to be exchanged.
  */
-bool is_square(const Matrix& m);
+void row_swap(Matrix& m, unsigned int row1, unsigned int row2);
+/* An elementary row operation where a row is multiplied by a constant in a matrix: scalar * row --> row
+ * @param m The matrix to be modified.
+ * @param scalar The scalar to multiply the row by.
+ * @param row The row to be multiplied.
+ */
+void scalar_multiplication(Matrix& m, double scalar, unsigned int row);
+/* An elementary row where a multiple of one row is added to another row in a matrix: scalar * scaledRow + outputRow --> outputRow
+ * @param m The matrix to be modified.
+ * @param scalar The scalar to multiply the scaled row by.
+ * @param scaledRow The row to be scaled by.
+ * @param outputRow The output row to add and to copy the results into.
+ */
+void row_sum(Matrix& m, double scalar, unsigned int scaledRow, unsigned int outputRow);

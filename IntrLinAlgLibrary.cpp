@@ -106,7 +106,7 @@ bool operator==(const Vector& v1, const Vector& v2) {
 bool operator==(const Matrix& m1, const Matrix& m2) {
     if (m1.get_rows() != m2.get_rows() || m1.get_cols() != m2.get_cols())
         return false;
-        
+
     return std::equal(m1.get_entries().begin(), m1.get_entries().end(), m2.get_entries().begin(), is_equal);
 }
 
@@ -212,6 +212,10 @@ Matrix transpose(const Matrix& m) {
     return Matrix(tRows, tCols, transpose);
 }
 
+bool is_square(const Matrix& m) {
+    return m.get_rows() == m.get_cols();
+}
+
 Matrix rotation_matrix(double degrees) {
     std::vector<double> rotationMatrix{
          cos(deg_to_rad(degrees)),
@@ -222,6 +226,10 @@ Matrix rotation_matrix(double degrees) {
     return Matrix(2, 2, rotationMatrix);
 }
 
-bool is_square(const Matrix& m) {
-    return m.get_rows() == m.get_cols();
+void row_swap(Matrix& m, unsigned int row1, unsigned int row2) {
+
+}
+
+void scalar_multiplication(Matrix& m, double scalar, unsigned int row) {
+    
 }
