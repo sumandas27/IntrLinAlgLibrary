@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <iomanip>
 #include <cassert>
 #include <cmath>
 #include <string>
@@ -8,6 +9,10 @@
 #include <algorithm>
 #include <functional>
 #include <vector>
+
+/* Initializes the IntLinAlg Library.
+ */
+void IntrLinAlgLibrary_init();
 
 /* A vector is an array of real numbers.
  * Vectors will be represented as column vectors as row vectors are rarely used in Linear Algebra.
@@ -46,8 +51,7 @@ public:
      */
     void set(unsigned int index, double value);
 
-    /* Prints the vector to the terminal.
-     * Only the first 8 characters of every component are printed.
+    /* Prints the vector to the terminal. Each component is rounded to the nearest thousandth.
      */
     void print();
 };
@@ -61,10 +65,10 @@ private:
     // The number of columns in the matrix.
     const unsigned int cols;
 
+public:
     // The structure containing the entries of the matrix.
     std::vector<double> entries;
 
-public:
     /* Constructs a matrix.
      * @param _rows The input number of rows in the matrix.
      * @param _cols The input number of columns in the matrix.
@@ -94,8 +98,7 @@ public:
      */
     void set(unsigned int row, unsigned int col, double value);
 
-    /* Prints the matrix to the terminal.
-     * Only the first 8 characters of every entry are printed.
+    /* Prints the matrix to the terminal. Each entry is rouded to the nearest thousandths.
      */
     void print();
 };
@@ -210,17 +213,17 @@ Matrix transpose(const Matrix& m);
  * @param row1 The first row to be exchanged.
  * @param row2 The second row to be exchanged.
  */
-void row_swap(Matrix& m, unsigned int row1, unsigned int row2);
+void ERO_row_swap(Matrix& m, unsigned int row1, unsigned int row2);
 /* An elementary row operation where a row is multiplied by a constant in a matrix: scalar * row --> row
  * @param m The matrix to be modified.
  * @param scalar The scalar to multiply the row by.
  * @param row The row to be multiplied.
  */
-void scalar_multiplication(Matrix& m, double scalar, unsigned int row);
+void ERO_scalar_multiplication(Matrix& m, double scalar, unsigned int row);
 /* An elementary row where a multiple of one row is added to another row in a matrix: scalar * scaledRow + outputRow --> outputRow
  * @param m The matrix to be modified.
  * @param scalar The scalar to multiply the scaled row by.
  * @param scaledRow The row to be scaled by.
  * @param outputRow The output row to add and to copy the results into.
  */
-void row_sum(Matrix& m, double scalar, unsigned int scaledRow, unsigned int outputRow);
+void ERO_row_sum(Matrix& m, double scalar, unsigned int rowToScale, unsigned int outputRow);

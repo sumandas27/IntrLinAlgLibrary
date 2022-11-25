@@ -1,5 +1,9 @@
 #include "IntrLinAlgLibrary.hpp"
 
+void IntrLinAlgLibrary_init() {
+    std::cout << std::setprecision(3);
+}
+
 //----------------------------------------------------------------------//
 //VECTOR METHODS:
 
@@ -26,7 +30,7 @@ void Vector::set(unsigned int index, double value) {
 
 void Vector::print() {
     for (const double& component : components)
-        std::cout << "{  " << std::to_string(component).substr(0, 8) << "  }\n";
+        std::cout << "{\t" << std::to_string(component).substr(0, 8) << "\t}\n";
     std::cout << "\n";
 }
 
@@ -65,9 +69,9 @@ void Matrix::set(unsigned int row, unsigned int col, double value) {
 
 void Matrix::print() {
     for (int i = 0; i < rows; i++) {
-        std::cout << "{  ";
+        std::cout << "{\t";
         for (int j = 0; j < cols; j++)
-            std::cout << std::to_string(entries.at(i * cols + j)).substr(0, 8) << "  ";
+            std::cout << entries.at(i * cols + j) << "\t";
         std::cout << "}\n";
     }
     std::cout << "\n";
@@ -114,16 +118,16 @@ Matrix operator+(const Matrix& m1, const Matrix& m2) {
     assert (m1.get_rows() == m2.get_rows());
     assert (m1.get_cols() == m2.get_cols());
 
-    std::vector<double> sum(m1.get_entries().size());
-    std::transform(m1.get_entries().begin(), m1.get_entries().end(), m2.get_entries().begin(), sum.begin(), std::plus<double>());
+    std::vector<double> sum(m1.entries.size());
+    std::transform(m1.entries.begin(), m1.entries.end(), m2.entries.begin(), sum.begin(), std::plus<double>());
     return Matrix(m1.get_rows(), m1.get_cols(), sum);
 }
 
 Vector operator-(const Vector& v1, const Vector& v2) {
     assert (v1.get_dim() == v2.get_dim());
 
-    std::vector<double> diff(v1.get_components().size());
-    std::transform(v1.get_components().begin(), v1.get_components().end(), v2.get_components().begin(), diff.begin(), std::minus<double>());
+    std::vector<double> diff(v1.components.size());
+    std::transform(v1.components.begin(), v1.components.end(), v2.components.begin(), diff.begin(), std::minus<double>());
     return Vector(v1.get_dim(), diff);
 }
 
@@ -131,14 +135,14 @@ Matrix operator-(const Matrix& m1, const Matrix& m2) {
     assert (m1.get_rows() == m2.get_rows());
     assert (m1.get_cols() == m2.get_cols());
 
-    std::vector<double> diff(m1.get_entries().size());
-    std::transform(m1.get_entries().begin(), m1.get_entries().end(), m2.get_entries().begin(), diff.begin(), std::minus<double>());
+    std::vector<double> diff(m1.entries.size());
+    std::transform(m1.entries.begin(), m1.entries.end(), m2.entries.begin(), diff.begin(), std::minus<double>());
     return Matrix(m1.get_rows(), m1.get_cols(), diff);
 }
 
 Vector operator*(double scalar, const Vector& v) {
-    std::vector<double> product(v.get_components().size());
-    std::transform(v.get_components().begin(), v.get_components().end(), product.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+    std::vector<double> product(v.components.size());
+    std::transform(v.components.begin(), v.components.end(), product.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
     return Vector(v.get_dim(), product);
 }
 
@@ -147,8 +151,8 @@ Vector operator*(const Vector& v, double scalar) {
 }
 
 Matrix operator*(double scalar, const Matrix& m) {
-    std::vector<double> product(m.get_entries().size());
-    std::transform(m.get_entries().begin(), m.get_entries().end(), product.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+    std::vector<double> product(m.entries.size());
+    std::transform(m.entries.begin(), m.entries.end(), product.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
     return Matrix(m.get_rows(), m.get_cols(), product);
 }
 
@@ -160,10 +164,10 @@ Vector operator*(const Matrix& m, const Vector& v) {
     assert (m.get_cols() == v.get_dim());
 
     std::vector<double> product(m.get_rows());
-    for (int i = 0; i < m.get_rows(); i++) {
+    for (unsigned int i = 0; i < m.get_rows(); i++) {
         double entry = 0.0;
-        for (int j = 0; j < v.get_dim(); j++)
-            entry += v.get_components().at(j) * m.get_entries().at(i * m.get_cols() + j);
+        for (unsigned int j = 0; j < v.get_dim(); j++)
+            entry += v.components.at(j) * m.entries.at(i * m.get_cols() + j);
         product.at(i) = entry;
     }
     return Vector(m.get_rows(), product);
@@ -189,7 +193,7 @@ Vector standard_vector(unsigned int dim, unsigned int one_component) {
 
 Matrix identity_matrix(unsigned int size) {
     std::vector<double> identityMatrix(size * size, 0.0);
-    for (int i = 0; i < size; i++)
+    for (unsigned int i = 0; i < size; i++)
         identityMatrix.at(i * size + i) = 1.0;
     return Matrix(size, size, identityMatrix);
 }
@@ -198,9 +202,9 @@ Matrix transpose(const Matrix& m) {
     unsigned int tRows = m.get_cols();
     unsigned int tCols = m.get_rows();
     std::vector<double> transpose(tRows * tCols);
-    for (int i = 0; i < tRows; i++)
-    for (int j = 0; j < tCols; j++)
-        transpose.at(i * tCols + j) = m.get_entries().at(j * tRows + i);
+    for (unsigned int i = 0; i < tRows; i++)
+    for (unsigned int j = 0; j < tCols; j++)
+        transpose.at(i * tCols + j) = m.entries.at(j * tRows + i);
     return Matrix(tRows, tCols, transpose);
 }
 
@@ -218,14 +222,34 @@ Matrix rotation_matrix(double degrees) {
     return Matrix(2, 2, rotationMatrix);
 }
 
-void row_swap(Matrix& m, unsigned int row1, unsigned int row2) {
+void ERO_row_swap(Matrix& m, unsigned int row1, unsigned int row2) {
+    assert (row1 >= 1 && row1 <= m.get_rows());
+    assert (row2 >= 1 && row2 <= m.get_rows());
+    assert (row1 != row2);
 
+    for (unsigned int col = 0; col < m.get_cols(); col++)
+        std::swap(m.entries.at((row1 - 1) * m.get_cols() + col), m.entries.at((row2 - 1) * m.get_cols() + col));
 }
 
-void scalar_multiplication(Matrix& m, double scalar, unsigned int row) {
-
+void ERO_scalar_multiplication(Matrix& m, double scalar, unsigned int row) {
+    assert (row >= 1 && row <= m.get_rows());
+    
+    unsigned int beg = (row - 1) * m.get_cols();
+    unsigned int end = (row - 1) * m.get_cols() + m.get_cols();
+    std::transform(m.entries.begin() + beg, m.entries.begin() + end, m.entries.begin() + beg, std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
 }
 
-void row_sum(Matrix& m, double scalar, unsigned int scaledRow, unsigned int outputRow) {
+void ERO_row_sum(Matrix& m, double scalar, unsigned int rowToScale, unsigned int outputRow) {
+    assert (rowToScale >= 1 && rowToScale <= m.get_rows());
+    assert (outputRow >= 1 && outputRow <= m.get_rows());
+    assert (rowToScale != outputRow);
 
+    std::vector<double> scaledRow(m.get_cols());
+    unsigned int beg = (rowToScale - 1) * m.get_cols();
+    unsigned int end = (rowToScale - 1) * m.get_cols() + m.get_cols();
+    std::transform(m.entries.begin() + beg, m.entries.begin() + end, scaledRow.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+
+    beg = (outputRow - 1) * m.get_cols();
+    end = (outputRow - 1) * m.get_cols() + m.get_cols();
+    std::transform(m.entries.begin() + beg, m.entries.begin() + end, scaledRow.begin(), m.entries.begin() + beg, std::plus<double>());
 }
