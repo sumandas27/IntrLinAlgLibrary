@@ -30,7 +30,7 @@ void Vector::set(unsigned int index, double value) {
 
 void Vector::print() {
     for (const double& component : components)
-        std::cout << "{\t" << std::to_string(component).substr(0, 8) << "\t}\n";
+        std::cout << "{\t" << (component < epsilon() ? 0 : component) << "\t}\n";
     std::cout << "\n";
 }
 
@@ -71,7 +71,7 @@ void Matrix::print() {
     for (int i = 0; i < rows; i++) {
         std::cout << "{\t";
         for (int j = 0; j < cols; j++)
-            std::cout << entries.at(i * cols + j) << "\t";
+            std::cout << (abs(entries.at(i * cols + j)) < epsilon() ? 0 : entries.at(i * cols + j)) << "\t";
         std::cout << "}\n";
     }
     std::cout << "\n";
@@ -80,9 +80,12 @@ void Matrix::print() {
 //----------------------------------------------------------------------//
 //NON-LINEAR ALGEBRA FUNCTIONS:
 
+constexpr double epsilon() {
+    return 0.00001;
+}
+
 bool is_equal(double val1, double val2) {
-    constexpr double epsilon = 0.00001;
-    return abs(val1 - val2) < epsilon;
+    return abs(val1 - val2) < epsilon();
 }
 
 constexpr double deg_to_rad(double degrees) {

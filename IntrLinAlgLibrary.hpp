@@ -106,6 +106,10 @@ public:
 //----------------------------------------------------------------------//
 //NON-LINEAR ALGEBRA FUNCTIONS:
 
+/* The range of tolerance for double equality.
+ */
+constexpr double epsilon();
+
 /* Checks equality between two doubles if their difference lies within a tolerance range.
  */
 bool is_equal(double val1, double val2);
