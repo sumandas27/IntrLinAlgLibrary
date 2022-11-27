@@ -2,7 +2,13 @@
 
 int main(int argc, char** argv) {
     
-    std::vector<double> matrix
+    IntrLinAlgLibrary_init();
+
+    std::array<double, 4> test = { 1.0, 2.0, 3.0, 4.0 };
+    Vector<4> vec = Vector<4>(test);
+    std::cout << vec;
+
+   /*std::vector<double> matrix
     {
         1, 2, -1, 2, 1, 2,
         -1, -2, 1, 2, 3, 6,
@@ -22,7 +28,7 @@ int main(int argc, char** argv) {
     ERO_row_sum(m, -2, 3, 1);
     ERO_scalar_multiplication(m, -1, 2);
     ERO_row_sum(m, 1, 2, 1);
-    m.print();
+    m.print();*/
 
     return 0;
 }
