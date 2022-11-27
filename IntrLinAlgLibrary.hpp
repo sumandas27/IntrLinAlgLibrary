@@ -41,7 +41,7 @@ constexpr double deg_to_rad(double degrees) {
 //VECTOR STRUCT AND METHODS:
 
 /* A vector is an array of real numbers.
- * Vectors will be represented as column vectors as row vectors are rarely used in Linear Algebra.
+ * Vectors are represented as column vectors as row vectors are rarely used.
  * @param D The dimension of the vector.
  */
 template <unsigned int D>
