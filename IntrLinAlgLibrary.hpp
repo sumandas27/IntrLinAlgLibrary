@@ -130,7 +130,7 @@ struct Matrix {
         double const& operator[](unsigned int col) const;
     };
 
-    Proxy& operator[](unsigned int row);
+    Proxy operator[](unsigned int row);
 
     void print() const;
 
@@ -175,7 +175,7 @@ double const& Matrix<R, C>::Proxy::operator[](unsigned int col) const {
  * The proxy's subscript overloaders can then be used to access specific entries in the row.
  */
 template <unsigned int R, unsigned int C>
-Matrix<R, C>::Proxy& Matrix<R, C>::operator[](unsigned int row) {
+typename Matrix<R, C>::Proxy Matrix<R, C>::operator[](unsigned int row) {
     assert (row >= 1 && row <= R);
     return Proxy(&entries[(row - 1) * C]);
 }
@@ -200,6 +200,7 @@ void Matrix<R, C>::print() const {
 template <unsigned int X, unsigned int Y>
 std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m) {
     os << "yo wassup[ matrx";
+    return os;
 }
 
 //----------------------------------------------------------------------//
