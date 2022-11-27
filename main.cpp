@@ -4,16 +4,8 @@ int main(int argc, char** argv) {
     
     IntrLinAlgLibrary_init();
 
-    std::array<double, 9> entries =
-    {
-        1.0, 2.0, 3.0,
-        4.0, 5.0, 6.0,
-        7.0, 8.0, 9.0
-    };
-
-    Matrix<3, 3> mat(entries);
-    mat[2][2] = 3.4;
-    mat.print();
+    std::array<double, 5> vec1{};
+    std::cout << vec1[1];
 
    /*std::vector<double> matrix
     {

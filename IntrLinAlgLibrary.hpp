@@ -120,14 +120,14 @@ struct Matrix {
 
     class Proxy {
 
-    private:
-        double* rowPtr;
-
     public:
         Proxy(double* _rowPtr) : rowPtr(_rowPtr) { };
 
         double&       operator[](unsigned int col);
         double const& operator[](unsigned int col) const;
+
+    private:
+        double* rowPtr;
     };
 
     Proxy operator[](unsigned int row);
@@ -209,26 +209,60 @@ std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m) {
 /* Two vectors are equal if all corresponding components are equal.
  * @returns true if the vector arguments v1 and v2 are equal, false if otherwise.
  */
-//bool operator==(const Vector& v1, const Vector& v2);
+template <unsigned int D>
+bool operator==(const Vector<D>& lhs, const Vector<D>& rhs) {
+    return std::equal(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), is_equal);
+}
+
 /* Two matrices are equal if all corresponding entries are equal.
  * @returns true if the matrix arguments m1 and m2 are equal, false if otherwise.
  */
-//bool operator==(const Matrix& m1, const Matrix& m2);
+template <unsigned int R, unsigned int C>
+bool operator==(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
+    return std::equal(lhs.entries.begin(), lhs.entries.end(), rhs.entries.begin(), is_equal);
+}
+
 /* The sum of two vectors is a vector of the same size with corresponding components added.
  * @returns A vector that is the sum of two argument vectors.
  */
-//Vector operator+(const Vector& v1, const Vector& v2);
+template <unsigned int D>
+Vector<D> operator+(const Vector<D>& lhs, const Vector<D> rhs) {
+    std::array<double, D> sum;
+    std::transform(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), sum.begin(), std::plus<double>());
+    return Vector<D>(sum);
+}
+
 /* The sum of two matrices is a matrix of the same size with corresponding entries added.
  * @returns A matrix that is the sum of two argument matrices.
  */
-//Matrix operator+(const Matrix& m1, const Matrix& m2);
+template <unsigned int R, unsigned int C>
+Matrix<R, C> operator+(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
+    std::array<double, R * C> sum;
+    std::transform(lhs.entries.begin(), lhs.entries.end(), rhs.entries.begin(), sum.begin(), std::plus<double>());
+    return Matrix<R, C>(sum);
+}
+
 /* The difference of two vectors is a vector of the same size with corresponding components subtracted.
  * @returns A vector that is the difference of two argument vectors.
  */
+template <unsigned int D>
+Vector<D> operator-(const Vector<D>& lhs, const Vector<D>& rhs) {
+    std::array<double, D> diff;
+    std::transform(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), diff.begin(), std::minus<double>());
+    return Vector<D>(diff);
+}
+
 //Vector operator-(const Vector& v1, const Vector& v2);
 /* The difference of two matrices is a matrix of the same size with corresponding entries subtracted.
  * @returns A matrix that is the difference of two argument matrices.
  */
+template <unsigned int R, unsigned int C>
+Matrix<R, C> operator-(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
+    std::array<double, R * C> diff;
+    std::transform(lhs.entries.begin(), lhs.entries.end(), rhs.entries.begin(), diff.begin(), std::minus<double>());
+    return Matrix<R, C>(diff);
+}
+
 //Matrix operator-(const Matrix& m1, const Matrix& m2);
 /* The product of a scalar and a vector is a vector of the same size with all its components multiplied by the scalar.
  * @returns A vector that is the product of a scalar and a vector.
@@ -316,54 +350,6 @@ std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m) {
 
 /*//----------------------------------------------------------------------//
 //CHAPTER 1 - MATRICES, VECTORS, AND SYSTEMS OF LINEAR EQUATIONS
-
-bool operator==(const Vector& v1, const Vector& v2) {
-    if (v1.get_dim() != v2.get_dim())
-        return false;
-
-    return std::equal(v1.components.begin(), v1.components.end(), v2.components.begin(), is_equal);
-}
-
-bool operator==(const Matrix& m1, const Matrix& m2) {
-    if (m1.get_rows() != m2.get_rows() || m1.get_cols() != m2.get_cols())
-        return false;
-
-    return std::equal(m1.entries.begin(), m1.entries.end(), m2.entries.begin(), is_equal);
-}
-
-Vector operator+(const Vector& v1, const Vector& v2) {
-    assert (v1.get_dim() == v2.get_dim());
-
-    std::vector<double> sum(v1.components.size());
-    std::transform(v1.components.begin(), v1.components.end(), v2.components.begin(), sum.begin(), std::plus<double>());
-    return Vector(v1.get_dim(), sum);
-}
-
-Matrix operator+(const Matrix& m1, const Matrix& m2) {
-    assert (m1.get_rows() == m2.get_rows());
-    assert (m1.get_cols() == m2.get_cols());
-
-    std::vector<double> sum(m1.entries.size());
-    std::transform(m1.entries.begin(), m1.entries.end(), m2.entries.begin(), sum.begin(), std::plus<double>());
-    return Matrix(m1.get_rows(), m1.get_cols(), sum);
-}
-
-Vector operator-(const Vector& v1, const Vector& v2) {
-    assert (v1.get_dim() == v2.get_dim());
-
-    std::vector<double> diff(v1.components.size());
-    std::transform(v1.components.begin(), v1.components.end(), v2.components.begin(), diff.begin(), std::minus<double>());
-    return Vector(v1.get_dim(), diff);
-}
-
-Matrix operator-(const Matrix& m1, const Matrix& m2) {
-    assert (m1.get_rows() == m2.get_rows());
-    assert (m1.get_cols() == m2.get_cols());
-
-    std::vector<double> diff(m1.entries.size());
-    std::transform(m1.entries.begin(), m1.entries.end(), m2.entries.begin(), diff.begin(), std::minus<double>());
-    return Matrix(m1.get_rows(), m1.get_cols(), diff);
-}
 
 Vector operator*(double scalar, const Vector& v) {
     std::vector<double> product(v.components.size());
