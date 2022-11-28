@@ -10,6 +10,8 @@
 #include <functional>
 #include <array>
 
+//TODO: Need to write << overloaders for Vector and Matrix.
+
 //----------------------------------------------------------------------//
 //NON-LINEAR ALGEBRA FUNCTIONS:
 
@@ -187,7 +189,7 @@ void Matrix<R, C>::print() const {
     for (int i = 0; i < R; i++) {
         std::cout << "{\t";
         for (int j = 0; j < C; j++)
-            std::cout << (abs(entries.at(i * C + j)) < epsilon() ? 0 : entries.at(i * C + j)) << "\t";
+            std::cout << (abs(entries[i * C + j]) < epsilon() ? 0 : entries[i * C + j]) << "\t";
         std::cout << "}\n";
     }
     std::cout << "\n";
@@ -227,7 +229,7 @@ bool operator==(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
  */
 template <unsigned int D>
 Vector<D> operator+(const Vector<D>& lhs, const Vector<D> rhs) {
-    std::array<double, D> sum;
+    std::array<double, D> sum{};
     std::transform(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), sum.begin(), std::plus<double>());
     return Vector<D>(sum);
 }
@@ -237,7 +239,7 @@ Vector<D> operator+(const Vector<D>& lhs, const Vector<D> rhs) {
  */
 template <unsigned int R, unsigned int C>
 Matrix<R, C> operator+(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
-    std::array<double, R * C> sum;
+    std::array<double, R * C> sum{};
     std::transform(lhs.entries.begin(), lhs.entries.end(), rhs.entries.begin(), sum.begin(), std::plus<double>());
     return Matrix<R, C>(sum);
 }
@@ -247,7 +249,7 @@ Matrix<R, C> operator+(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
  */
 template <unsigned int D>
 Vector<D> operator-(const Vector<D>& lhs, const Vector<D>& rhs) {
-    std::array<double, D> diff;
+    std::array<double, D> diff{};
     std::transform(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), diff.begin(), std::minus<double>());
     return Vector<D>(diff);
 }
@@ -258,209 +260,186 @@ Vector<D> operator-(const Vector<D>& lhs, const Vector<D>& rhs) {
  */
 template <unsigned int R, unsigned int C>
 Matrix<R, C> operator-(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
-    std::array<double, R * C> diff;
+    std::array<double, R * C> diff{};
     std::transform(lhs.entries.begin(), lhs.entries.end(), rhs.entries.begin(), diff.begin(), std::minus<double>());
     return Matrix<R, C>(diff);
 }
 
-//Matrix operator-(const Matrix& m1, const Matrix& m2);
 /* The product of a scalar and a vector is a vector of the same size with all its components multiplied by the scalar.
  * @returns A vector that is the product of a scalar and a vector.
  */
-//Vector operator*(double scalar, const Vector& v);
+template <unsigned int D>
+Vector<D> operator*(double scalar, const Vector<D>& v) {
+    std::array<double, D> product{};
+    std::transform(v.components.begin(), v.components.end(), product.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+    return Vector<D>(product);
+}
+
 /* Scalar-vector multiplication is commutative.
  * @returns A vector that is the product of a vector and a scalar.
  */
-//Vector operator*(const Vector& v, double scalar);
+template <unsigned int D>
+Vector<D> operator*(const Vector<D>& v, double scalar) {
+    return scalar * v;
+}
+
 /* The product of a scalar and a matrix is a matrix of the same size with all its entries multiplied by the scalar.
  * @returns A matrix that is the product of a scalar and a matrix.
  */
-//Matrix operator*(double scalar, const Matrix& m);
+template <unsigned int R, unsigned int C>
+Matrix<R, C> operator*(double scalar, const Matrix<R, C>& m) {
+    std::array<double, R * C> product{};
+    std::transform(m.entries.begin(), m.entries.end(), product.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+    return Matrix<R, C>(product);
+}
+
 /* Scalar-matrix multiplication is commutative.
  * @returns A matrix that is the product of a scalar and a matrix.
  */
-//Matrix operator*(const Matrix& m, double scalar);
+template <unsigned int R, unsigned int C>
+Matrix<R, C> operator*(const Matrix<R, C>& m, double scalar) {
+    return scalar * m;
+}
+
 /* A matrix-vector product is the linear combination of the vector's components and the matrix's column vectors.
  * @returns The matrix-vector product of the argument matrix and vector.
  */
-//Vector operator*(const Matrix& m, const Vector& v);
+template <unsigned int R, unsigned int C>
+Vector<R> operator*(const Matrix<R, C>& m, const Vector<C>& v) {
+    std::array<double, R> product{};
+    for (unsigned int i = 0; i < R; i++) {
+        double entry = 0.0;
+        for (unsigned int j = 0; j < C; j++)
+            entry += v.components[j] * m.entries[i * C + j];
+        product[i] = entry;
+    }
+    return Vector<R>(product);
+}
 
 /* A zero vector is a vector where all components are zero.
- * @param dim The dimension of the zero matrix.
+ * @param D The dimension of the zero matrix.
  * @returns A zero vector of the argument size.
  */
-//Vector zero_vector(unsigned int dim);
+template <unsigned int D>
+Vector<D> zero_vector() {
+    std::array<double, D> zero{};
+    return Vector<D>(zero);
+}
+
 /* A zero matrix is a matrix where all entries are zero.
- * @param rows The number of rows in the zero matrix.
- * @param cols The number of columns in the zero matrix.
+ * @param R The number of rows in the zero matrix.
+ * @param C The number of columns in the zero matrix.
  * @returns A zero matrix of the argument size.
  */
-//Matrix zero_matrix(unsigned int rows, unsigned int cols);
+template <unsigned int R, unsigned int C>
+Matrix<R, C> zero_matrix() {
+    std::array<double, R * C> zero{};
+    return Matrix<R, C>(zero);
+}
 
 /* A standard vector is a zero vector with one component being a one instead of a zero.
- * @param dim The dimension of the standard vector.
+ * @param D The dimension of the standard vector.
  * @param one_component The location of the "one" component.
  * @returns A standard vector of the argument dimension with the 1 in the argument location.
  */
-//Vector standard_vector(unsigned int dim, unsigned int one_component);
+template <unsigned int D>
+Vector<D> standard_vector(unsigned int one_component) {
+    assert (one_component >= 1 && one_component <= D);
+
+    std::array<double, D> standardVector{};
+    standardVector[one_component - 1] = 1.0;
+    return Vector<D>(standardVector);
+}
+
 /* An identity matrix is a square zero matrix with diagonal entries being a one instead of a zero.
- * @param size The number of rows and columns of the identity matrix.
+ * @param S The size: the number of rows and columns of the identity matrix.
  * @returns An identity matrix of the argument size.
  */
-//Matrix identity_matrix(unsigned int size);
+template <unsigned int S>
+Matrix<S, S> identity_matrix() {
+    std::array<double, S * S> identityMatrix{};
+    for (unsigned int i = 0; i < S; i++)
+        identityMatrix[i * S + i] = 1.0;
+    return Matrix<S, S>(identityMatrix);
+}
 
 /* A rotation matrix is a 2x2 matrix that rotates an R^2 vector by some amount of degrees counter-clockwise.
  * Given rotation matrix A and some R^2 vector x, Ax = x' where x' is the rotated R^2 vector.
  * @param degrees The angle (in degrees) of the rotation matrix.
  * @returns The 2x2 rotation matrix of the argument angle in degrees.
  */
-//Matrix rotation_matrix(double degrees);
-
-/* A matrix is a square if it has the same number of rows and columns.
- * @param m The matrix argument.
- * @returns true if the matrix argument is a square, false if otherwise.
- */
-//bool is_square(const Matrix& m);
+Matrix<2, 2> rotation_matrix(double degrees) {
+    std::array<double, 4> rotationMatrix{
+         cos(deg_to_rad(degrees)),
+        -sin(deg_to_rad(degrees)),
+         sin(deg_to_rad(degrees)),
+         cos(deg_to_rad(degrees))
+    };
+    return Matrix<2, 2>(rotationMatrix);
+}
 
 /* The transpose of an nxm matrix is an mxn matrix where (i,j)-entries are transformed to (j,i)-entries.
  * @param m The matrix whose transpose is to be returned.
  * @returns The transpose of the argument matrix.
  */
-//Matrix transpose(const Matrix& m);
+template <unsigned int R, unsigned int C>
+Matrix<C, R> transpose(const Matrix<R, C>& m) {
+    std::array<double, C * R> transpose{};
+    for (unsigned int i = 0; i < C; i++)
+    for (unsigned int j = 0; j < R; j++)
+        transpose[i * R + j] = m.entries[j * C + i];
+    return Matrix<C, R>(transpose);
+}
 
 /* An elementary row operation where two rows are exchanged in a matrix: row1 <--> row2
  * @param m The matrix to be modified.
  * @param row1 The first row to be exchanged.
  * @param row2 The second row to be exchanged.
  */
-//void ERO_row_swap(Matrix& m, unsigned int row1, unsigned int row2);
+template <unsigned int R, unsigned int C>
+void ERO_row_swap(Matrix<R, C>& m, unsigned int row1, unsigned int row2) {
+    assert (row1 >= 1 && row1 <= R);
+    assert (row2 >= 1 && row2 <= R);
+
+    if (row1 == row2)
+        return;
+
+    for (unsigned int col = 0; col < C; col++)
+        std::swap(m.entries[(row1 - 1) * C + col], m.entries[(row2 - 1) * C + col]);
+}
+
 /* An elementary row operation where a row is multiplied by a constant in a matrix: scalar * row --> row
  * @param m The matrix to be modified.
  * @param scalar The scalar to multiply the row by.
  * @param row The row to be multiplied.
  */
 //void ERO_scalar_multiplication(Matrix& m, double scalar, unsigned int row);
+template <unsigned int R, unsigned int C>
+void ERO_scalar_multiplication(Matrix<R, C>& m, double scalar, unsigned int row) {
+    assert (row >= 1 && row1 <= R);
+
+    unsigned int beg = (row - 1) * C;
+    unsigned int end = (row - 1) * C + C;
+    std::transform(m.entries.begin() + beg, m.entries.begin() + end, m.entries.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+}
+
 /* An elementary row where a multiple of one row is added to another row in a matrix: scalar * scaledRow + outputRow --> outputRow
  * @param m The matrix to be modified.
  * @param scalar The scalar to multiply the scaled row by.
  * @param scaledRow The row to be scaled by.
  * @param outputRow The output row to add and to copy the results into.
  */
-//void ERO_row_sum(Matrix& m, double scalar, unsigned int rowToScale, unsigned int outputRow);
+template <unsigned int R, unsigned int C>
+void ERO_row_sum(Matrix<R, C>& m, double scalar, unsigned int rowToScale, unsigned int outputRow) {
+    assert (rowToScale >= 1 && rowToScale <= R);
+    assert (outputRow >= 1 && outputRow <= R);
 
-/*//----------------------------------------------------------------------//
-//CHAPTER 1 - MATRICES, VECTORS, AND SYSTEMS OF LINEAR EQUATIONS
+    std::array<double, C> scaledRow{};
+    unsigned int beg = (rowToScale - 1) * C;
+    unsigned int end = (rowToScale - 1) * C + C;
+    std::transform(m.entries.begin() + beg, m.entries.begin() + end, scaledRow.begin(), std::bind(std::multiplies<double>(), std::placeholder::_1, scalar));
 
-Vector operator*(double scalar, const Vector& v) {
-    std::vector<double> product(v.components.size());
-    std::transform(v.components.begin(), v.components.end(), product.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
-    return Vector(v.get_dim(), product);
-}
-
-Vector operator*(const Vector& v, double scalar) {
-    return scalar * v;
-}
-
-Matrix operator*(double scalar, const Matrix& m) {
-    std::vector<double> product(m.entries.size());
-    std::transform(m.entries.begin(), m.entries.end(), product.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
-    return Matrix(m.get_rows(), m.get_cols(), product);
-}
-
-Matrix operator*(const Matrix& m, double scalar) {
-    return scalar * m;
-}
-
-Vector operator*(const Matrix& m, const Vector& v) {
-    assert (m.get_cols() == v.get_dim());
-
-    std::vector<double> product(m.get_rows());
-    for (unsigned int i = 0; i < m.get_rows(); i++) {
-        double entry = 0.0;
-        for (unsigned int j = 0; j < v.get_dim(); j++)
-            entry += v.components.at(j) * m.entries.at(i * m.get_cols() + j);
-        product.at(i) = entry;
-    }
-    return Vector(m.get_rows(), product);
-}
-
-Vector zero_vector(unsigned int dim) {
-    std::vector<double> zeroVector(dim, 0.0);
-    return Vector(dim, zeroVector);
-}
-
-Matrix zero_matrix(unsigned int rows, unsigned int cols) {
-    std::vector<double> zeroMatrix(rows * cols, 0.0);
-    return Matrix(rows, cols, zeroMatrix);
-}
-
-Vector standard_vector(unsigned int dim, unsigned int one_component) {
-    assert (one_component >= 1 && one_component <= dim);
-    
-    std::vector<double> standardVector(dim, 0.0);
-    standardVector.at(one_component - 1) = 1.0;
-    return Vector(dim, standardVector);
-}
-
-Matrix identity_matrix(unsigned int size) {
-    std::vector<double> identityMatrix(size * size, 0.0);
-    for (unsigned int i = 0; i < size; i++)
-        identityMatrix.at(i * size + i) = 1.0;
-    return Matrix(size, size, identityMatrix);
-}
-
-Matrix transpose(const Matrix& m) {
-    unsigned int tRows = m.get_cols();
-    unsigned int tCols = m.get_rows();
-    std::vector<double> transpose(tRows * tCols);
-    for (unsigned int i = 0; i < tRows; i++)
-    for (unsigned int j = 0; j < tCols; j++)
-        transpose.at(i * tCols + j) = m.entries.at(j * tRows + i);
-    return Matrix(tRows, tCols, transpose);
-}
-
-bool is_square(const Matrix& m) {
-    return m.get_rows() == m.get_cols();
-}
-
-Matrix rotation_matrix(double degrees) {
-    std::vector<double> rotationMatrix{
-         cos(deg_to_rad(degrees)),
-        -sin(deg_to_rad(degrees)),
-         sin(deg_to_rad(degrees)),
-         cos(deg_to_rad(degrees))
-    };
-    return Matrix(2, 2, rotationMatrix);
-}
-
-void ERO_row_swap(Matrix& m, unsigned int row1, unsigned int row2) {
-    assert (row1 >= 1 && row1 <= m.get_rows());
-    assert (row2 >= 1 && row2 <= m.get_rows());
-    assert (row1 != row2);
-
-    for (unsigned int col = 0; col < m.get_cols(); col++)
-        std::swap(m.entries.at((row1 - 1) * m.get_cols() + col), m.entries.at((row2 - 1) * m.get_cols() + col));
-}
-
-void ERO_scalar_multiplication(Matrix& m, double scalar, unsigned int row) {
-    assert (row >= 1 && row <= m.get_rows());
-    
-    unsigned int beg = (row - 1) * m.get_cols();
-    unsigned int end = (row - 1) * m.get_cols() + m.get_cols();
-    std::transform(m.entries.begin() + beg, m.entries.begin() + end, m.entries.begin() + beg, std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
-}
-
-void ERO_row_sum(Matrix& m, double scalar, unsigned int rowToScale, unsigned int outputRow) {
-    assert (rowToScale >= 1 && rowToScale <= m.get_rows());
-    assert (outputRow >= 1 && outputRow <= m.get_rows());
-    assert (rowToScale != outputRow);
-
-    std::vector<double> scaledRow(m.get_cols());
-    unsigned int beg = (rowToScale - 1) * m.get_cols();
-    unsigned int end = (rowToScale - 1) * m.get_cols() + m.get_cols();
-    std::transform(m.entries.begin() + beg, m.entries.begin() + end, scaledRow.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
-
-    beg = (outputRow - 1) * m.get_cols();
-    end = (outputRow - 1) * m.get_cols() + m.get_cols();
+    beg = (outputRow - 1) * C;
+    end = (outputRow - 1) * C + C;
     std::transform(m.entries.begin() + beg, m.entries.begin() + end, scaledRow.begin(), m.entries.begin() + beg, std::plus<double>());
-}*/
+}
