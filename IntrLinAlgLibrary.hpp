@@ -11,6 +11,7 @@
 #include <array>
 
 //TODO: Need to write << overloaders for Vector and Matrix.
+//TODO: Find a way to initialize matrices and vectors with variable argument list.
 
 //----------------------------------------------------------------------//
 //NON-LINEAR ALGEBRA FUNCTIONS:
@@ -416,7 +417,7 @@ void ERO_row_swap(Matrix<R, C>& m, unsigned int row1, unsigned int row2) {
 //void ERO_scalar_multiplication(Matrix& m, double scalar, unsigned int row);
 template <unsigned int R, unsigned int C>
 void ERO_scalar_multiplication(Matrix<R, C>& m, double scalar, unsigned int row) {
-    assert (row >= 1 && row1 <= R);
+    assert (row >= 1 && row <= R);
 
     unsigned int beg = (row - 1) * C;
     unsigned int end = (row - 1) * C + C;
@@ -437,9 +438,41 @@ void ERO_row_sum(Matrix<R, C>& m, double scalar, unsigned int rowToScale, unsign
     std::array<double, C> scaledRow{};
     unsigned int beg = (rowToScale - 1) * C;
     unsigned int end = (rowToScale - 1) * C + C;
-    std::transform(m.entries.begin() + beg, m.entries.begin() + end, scaledRow.begin(), std::bind(std::multiplies<double>(), std::placeholder::_1, scalar));
+    std::transform(m.entries.begin() + beg, m.entries.begin() + end, scaledRow.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
 
     beg = (outputRow - 1) * C;
     end = (outputRow - 1) * C + C;
     std::transform(m.entries.begin() + beg, m.entries.begin() + end, scaledRow.begin(), m.entries.begin() + beg, std::plus<double>());
+}
+
+template <unsigned int R, unsigned int C>
+Matrix<R, C> ref(Matrix<R, C> m) {
+    unsigned int pivotRow = 0;
+    for (unsigned int i = 0; i < C; i++) {
+        if (pivotRow >= R - 1)
+            break;
+
+        double nonzeroFound = 0.0; /* 0 means a nonzero entry has not been found, else nonzero entry is set to this variable */
+        for (unsigned int j = pivotRow; j < R; j++) {
+            if (is_equal(m.entries[j * C + i], 0.0))
+                continue;
+
+            if (nonzeroFound == 0.0) {
+                nonzeroFound = m.entries[j * C + i];
+                ERO_row_swap(m, pivotRow + 1, j + 1);
+                pivotRow++;
+            }
+            else {
+                double scalar = -m.entries[j * C + i] / nonzeroFound;
+                ERO_row_sum(m, scalar, pivotRow, j + 1);
+            }
+        }
+    }
+
+    return m;
+}
+
+template <unsigned int R, unsigned int C>
+Matrix<R, C> rref(Matrix<R, C> m) {
+    return m; //temp
 }

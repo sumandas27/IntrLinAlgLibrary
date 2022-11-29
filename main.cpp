@@ -4,27 +4,15 @@ int main(int argc, char** argv) {
     
     IntrLinAlgLibrary_init();
 
-    std::array<double, 6> m =
-    {
-        1.0, 4.0,
-        2.0, 5.0,
-        3.0, 6.0
-    };
-
-    std::array<double, 2> v = { 7.0, 8.0 };
-
-    Matrix<3, 2> mat
+    Matrix<4, 6> mat
     ({
-        1.0, 4.0,
-        2.0, 5.0,
-        3.0, 6.0
+        1, 2, -1, 2, 1, 2,
+        -1, -2, 1, 2, 3, 6,
+        2, 4, -3, 2, 0, 3,
+        -3, -6, 2, 0, 3, 9
     });
 
-    Vector<2> vec({ 7.0, 8.0 });
-
-    Vector<3> product = mat * vec;
-
-    product.print();
+    ref(mat).print();
 
     return 0;
 }
