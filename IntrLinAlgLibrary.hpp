@@ -446,11 +446,10 @@ void ERO_row_sum(Matrix<R, C>& m, double scalar, unsigned int rowToScale, unsign
 }
 
 /* The row-echelon form (ref) of a matrix is a matrix with the same solution set that follows 2 restrictions:
- *   1. Every nonzero row lies above all zero rows
- *   2. The leading entry of a nonzero row is in a column to the right of every leading entry of a nonzero row above
+ *  1. Every nonzero row lies above all zero rows
+ *  2. The leading entry of a nonzero row is in a column to the right of every leading entry of a nonzero row above
  * 
- * Matrices may have an infinite amount of row-echelon form, this function returns the one calculated by the forward pass
- * of the Gaussian Elimination.
+ * Matrices may have an infinite amount of row-echelon form, this function returns the one calculated by the forward pass of the Gaussian Elimination.
  * @param m The matrix whose row-echelon form is to be returned.
  * @returns The row-echelon form of the argument matrix.
  */
