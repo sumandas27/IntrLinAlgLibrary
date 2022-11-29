@@ -414,7 +414,6 @@ void ERO_row_swap(Matrix<R, C>& m, unsigned int row1, unsigned int row2) {
  * @param scalar The scalar to multiply the row by.
  * @param row The row to be multiplied.
  */
-//void ERO_scalar_multiplication(Matrix& m, double scalar, unsigned int row);
 template <unsigned int R, unsigned int C>
 void ERO_scalar_multiplication(Matrix<R, C>& m, double scalar, unsigned int row) {
     assert (row >= 1 && row <= R);
