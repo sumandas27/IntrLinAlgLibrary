@@ -444,42 +444,60 @@ void ERO_row_sum(Matrix<R, C>& m, double scalar, unsigned int rowToScale, unsign
     std::transform(m.entries.begin() + beg, m.entries.begin() + end, scaledRow.begin(), m.entries.begin() + beg, std::plus<double>());
 }
 
-/* The row-echelon form (ref) of a matrix is a matrix with the same solution set that follows 2 restrictions:
- *  1. Every nonzero row lies above all zero rows
- *  2. The leading entry of a nonzero row is in a column to the right of every leading entry of a nonzero row above
- * 
- * Matrices may have an infinite amount of row-echelon form, this function returns the one calculated by the forward pass of the Gaussian Elimination.
- * @param m The matrix whose row-echelon form is to be returned.
- * @returns The row-echelon form of the argument matrix.
+/* This function transforms the matrix argument itself to reduced-row echelon form, avoiding an unnecessary copy.
+ * This function should only be read for implementation details and *SHOULD NOT* be used outside this file.
+ * Instead, use the function "ref(Matrix)" to get the row-echelon form of a matrix.
  */
 template <unsigned int R, unsigned int C>
-Matrix<R, C> ref(Matrix<R, C> m) {
+void ref_by_reference(Matrix<R, C>& m) {
     unsigned int pivotRow = 0;
-    for (unsigned int i = 0; i < C; i++) {
+    for (unsigned int col = 0; col < C; col++) {
         if (pivotRow >= R - 1)
             break;
 
         double nonzeroFound = 0.0; /* 0 means a nonzero entry has not been found, else nonzero entry is set to this variable */
-        for (unsigned int j = pivotRow; j < R; j++) {
-            if (is_equal(m.entries[j * C + i], 0.0))
+        for (unsigned int row = pivotRow; row < R; row++) {
+            if (is_equal(m.entries[row * C + col], 0.0))
                 continue;
 
             if (nonzeroFound == 0.0) {
-                nonzeroFound = m.entries[j * C + i];
-                ERO_row_swap(m, pivotRow + 1, j + 1);
+                nonzeroFound = m.entries[row * C + col];
+                ERO_row_swap(m, pivotRow + 1, row + 1);
                 pivotRow++;
             }
             else {
-                double scalar = -m.entries[j * C + i] / nonzeroFound;
-                ERO_row_sum(m, scalar, pivotRow, j + 1);
+                double scalar = -m.entries[row * C + col] / nonzeroFound;
+                ERO_row_sum(m, scalar, pivotRow, row + 1);
             }
         }
     }
+}
 
+/* The row-echelon form (ref) of a matrix is a matrix with the same solution set that follows 2 restrictions:
+ *  1. Every nonzero row lies above all zero rows
+ *  2. The leading entry of a nonzero row is in a column to the right of every leading entry of a nonzero row above
+ * 
+ * Matrices may have an infinite amount of row-echelon form. This function returns the one calculated by the forward pass of Gaussian Elimination.
+ * For implementation details, read the function "ref_by_reference(Matrix)".
+ * @param m The argument matrix.
+ * @returns The row-echelon form of the argument matrix.
+ */
+template <unsigned int R, unsigned int C>
+Matrix<R, C> ref(Matrix<R, C> m) {
+    ref_by_reference(m);
     return m;
 }
 
+/* The reduced row-echelon form (rref) of a matrix is the matrix in row-echelon form (ref) with 2 additional conditions:
+ *  1. If a column contains the leading entry of some nonzero row, all other entries in that column are 0.
+ *  2. The leading entry of all nonzero rows is 1.
+ * 
+ * Matrices have one unique reduced row-echelon form.
+ * @param m The argument matrix.
+ * @returns The reduced row-echelon form of the argument matrix.
+ */
 template <unsigned int R, unsigned int C>
 Matrix<R, C> rref(Matrix<R, C> m) {
-    return m; //temp
+    ref_by_reference(m);
+    return m; //TODO: implement this
 }
