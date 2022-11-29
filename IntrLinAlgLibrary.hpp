@@ -445,6 +445,15 @@ void ERO_row_sum(Matrix<R, C>& m, double scalar, unsigned int rowToScale, unsign
     std::transform(m.entries.begin() + beg, m.entries.begin() + end, scaledRow.begin(), m.entries.begin() + beg, std::plus<double>());
 }
 
+/* The row-echelon form (ref) of a matrix is a matrix with the same solution set that follows 2 restrictions:
+ *   1. Every nonzero row lies above all zero rows
+ *   2. The leading entry of a nonzero row is in a column to the right of every leading entry of a nonzero row above
+ * 
+ * Matrices may have an infinite amount of row-echelon form, this function returns the one calculated by the forward pass
+ * of the Gaussian Elimination.
+ * @param m The matrix whose row-echelon form is to be returned.
+ * @returns The row-echelon form of the argument matrix.
+ */
 template <unsigned int R, unsigned int C>
 Matrix<R, C> ref(Matrix<R, C> m) {
     unsigned int pivotRow = 0;
