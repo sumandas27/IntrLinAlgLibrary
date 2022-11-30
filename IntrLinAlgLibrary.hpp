@@ -557,3 +557,19 @@ template <unsigned int R, unsigned int C>
 unsigned int nullity(const Matrix<R, C>& m) {
     return C - rank(m);
 }
+
+//TODO: augment matrix with vector
+template <unsigned int R, unsigned int C>
+Matrix<R, C + 1> augment(const Matrix<R, C>& m, const Vector<R>& v) {
+    std::array<double, R * (C + 1)> augmentedMatrix{};
+    return Matrix<R, C + 1>(augmentedMatrix); // temp
+}
+
+//TODO: augment matrix with matrix
+template <unsigned int R, unsigned int C1, unsigned int C2>
+Matrix<R, C1 + C2> augment(const Matrix<R, C1>& m1, const Matrix<R, C2>& m2) {
+    std::array<double, R * (C1 + C2)> augmentedMatrix{};
+    return Matrix<R, C1 + C2>(augmentedMatrix);
+}
+
+//TODO: Solve solution system between a matrix and a vector by returning rref by them augmented
