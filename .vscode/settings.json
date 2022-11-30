@@ -66,6 +66,7 @@
         "__functional_base": "cpp",
         "functional": "cpp",
         "utility": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "iomanip": "cpp"
     }
 }

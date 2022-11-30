@@ -12,7 +12,10 @@ int main(int argc, char** argv) {
         -3, -6, 2, 0, 3, 9
     });
 
-    ref(mat).print();
+    Vector<5> vec({1.0, 2.0, 3.0, 4.0, -50.0});
+    std::cout << vec;
 
+    rref(mat).print();
+    std::cout << rref(mat);
     return 0;
 }

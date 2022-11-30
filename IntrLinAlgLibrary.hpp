@@ -10,7 +10,6 @@
 #include <functional>
 #include <array>
 
-//TODO: Need to write << overloaders for Vector and Matrix.
 //TODO: Find a way to initialize matrices and vectors with variable argument list.
 
 //----------------------------------------------------------------------//
@@ -95,7 +94,7 @@ double const& Vector<D>::operator[](unsigned int index) const {
 template <unsigned int D>
 void Vector<D>::print() const {
     for (const double& component : components)
-        std::cout << "{\t" << (component < epsilon() ? 0 : component) << "\t}\n";
+        std::cout << "{\t" << (abs(component) < epsilon() ? 0 : component) << "\t}\n";
     std::cout << "\n";
 }
 
@@ -105,7 +104,9 @@ void Vector<D>::print() const {
  */
 template <unsigned int X>
 std::ostream& operator<<(std::ostream& os, const Vector<X>& v) {
-    os << "yo awsss cvector b " << X;
+    for (const double& component : v.components)
+        os << "{\t" << (abs(component) < epsilon() ? 0 : component) << "\t}\n";
+    os << "\n";
     return os;
 }
 
@@ -202,7 +203,13 @@ void Matrix<R, C>::print() const {
  */
 template <unsigned int X, unsigned int Y>
 std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m) {
-    os << "yo wassup[ matrx";
+    for (int i = 0; i < X; i++) {
+        os << "{\t";
+        for (int j = 0; j < Y; j++)
+            os << (abs(m.entries[i * Y + j]) < epsilon() ? 0 : m.entries[i * Y + j]) << "\t";
+        os << "}\n";
+    }
+    os << "\n";
     return os;
 }
 
@@ -420,7 +427,7 @@ void ERO_scalar_multiplication(Matrix<R, C>& m, double scalar, unsigned int row)
 
     unsigned int beg = (row - 1) * C;
     unsigned int end = (row - 1) * C + C;
-    std::transform(m.entries.begin() + beg, m.entries.begin() + end, m.entries.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+    std::transform(m.entries.begin() + beg, m.entries.begin() + end, m.entries.begin() + beg, std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
 }
 
 /* An elementary row where a multiple of one row is added to another row in a matrix: scalar * scaledRow + outputRow --> outputRow
@@ -447,15 +454,17 @@ void ERO_row_sum(Matrix<R, C>& m, double scalar, unsigned int rowToScale, unsign
 /* This function transforms the matrix argument itself to reduced-row echelon form, avoiding an unnecessary copy.
  * This function should only be read for implementation details and *SHOULD NOT* be used outside this file.
  * Instead, use the function "ref(Matrix)" to get the row-echelon form of a matrix.
+ * @param m The argument matrix to be changed to its row-echelon form.
+ * @param rank This pointer will be populated with the rank of the matrix. Pass in 'nullptr' if the rank isn't wanted.
  */
 template <unsigned int R, unsigned int C>
-void ref_by_reference(Matrix<R, C>& m) {
+void ref_by_reference(Matrix<R, C>& m, unsigned int* rank) {
     unsigned int pivotRow = 0;
     for (unsigned int col = 0; col < C; col++) {
-        if (pivotRow >= R - 1)
+        if (pivotRow > R - 1)
             break;
 
-        double nonzeroFound = 0.0; /* 0 means a nonzero entry has not been found, else nonzero entry is set to this variable */
+        double nonzeroFound = 0.0; /* 0.0 means a nonzero entry has not been found, else nonzero entry is set to this variable */
         for (unsigned int row = pivotRow; row < R; row++) {
             if (is_equal(m.entries[row * C + col], 0.0))
                 continue;
@@ -471,6 +480,9 @@ void ref_by_reference(Matrix<R, C>& m) {
             }
         }
     }
+
+    if (rank != nullptr)
+        *rank = pivotRow;
 }
 
 /* The row-echelon form (ref) of a matrix is a matrix with the same solution set that follows 2 restrictions:
@@ -478,13 +490,13 @@ void ref_by_reference(Matrix<R, C>& m) {
  *  2. The leading entry of a nonzero row is in a column to the right of every leading entry of a nonzero row above
  * 
  * Matrices may have an infinite amount of row-echelon form. This function returns the one calculated by the forward pass of Gaussian Elimination.
- * For implementation details, read the function "ref_by_reference(Matrix)".
+ * For implementation details, read the function "ref_by_reference(Matrix&, unsigned int*)".
  * @param m The argument matrix.
  * @returns The row-echelon form of the argument matrix.
  */
 template <unsigned int R, unsigned int C>
 Matrix<R, C> ref(Matrix<R, C> m) {
-    ref_by_reference(m);
+    ref_by_reference(m, nullptr);
     return m;
 }
 
@@ -492,12 +504,56 @@ Matrix<R, C> ref(Matrix<R, C> m) {
  *  1. If a column contains the leading entry of some nonzero row, all other entries in that column are 0.
  *  2. The leading entry of all nonzero rows is 1.
  * 
- * Matrices have one unique reduced row-echelon form.
+ * Matrices have one unique reduced row-echelon form. This function finds the rref via. Gaussian Elimination.
  * @param m The argument matrix.
  * @returns The reduced row-echelon form of the argument matrix.
  */
 template <unsigned int R, unsigned int C>
 Matrix<R, C> rref(Matrix<R, C> m) {
-    ref_by_reference(m);
-    return m; //TODO: implement this
+    ref_by_reference(m, nullptr);
+    unsigned int pivotRow = 0;
+    for (unsigned int col = 0; col < C; col++) {
+        if (pivotRow > R - 1)
+            break;
+
+        if (is_equal(m.entries[pivotRow * C + col], 0.0))
+            continue;
+
+        if (m.entries[pivotRow * C + col] != 1.0) {
+            double scalar = 1.0 / m.entries[pivotRow * C + col];
+            ERO_scalar_multiplication(m, scalar, pivotRow + 1);
+        }
+
+        for (int row = pivotRow - 1; row >= 0; row--)
+            if (m.entries[row * C + col] != 0) {
+                double scalar = -m.entries[row * C + col];
+                ERO_row_sum(m, scalar, pivotRow + 1, row + 1);
+            }
+
+        pivotRow++;
+    }
+    return m; 
+}
+
+/* The rank of a matrix is the dimension of the vector space generated by its column.
+ * This is equivalent to the number of pivot rows in the matrix's row-echelon form (which is how this method calculates the rank).
+ * @param m The argument matrix.
+ * @returns The rank of the argument matrix.
+ */
+template <unsigned int R, unsigned int C>
+unsigned int rank(const Matrix<R, C>& m) {
+    unsigned int rank = 0;
+    Matrix<R, C> copy = m;
+    ref_by_reference(copy, &rank);
+    return rank;
+}
+
+/* The nullity of a matrix is the dimension of the matrix's null space.
+ * This is equivalent to the rank of the matrix subtracted from its total number of columns.
+ * @param m The argument matrix.
+ * @returns The nullity of the argument matrix.
+ */
+template <unsigned int R, unsigned int C>
+unsigned int nullity(const Matrix<R, C>& m) {
+    return C - rank(m);
 }
