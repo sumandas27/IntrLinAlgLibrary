@@ -11,6 +11,10 @@
 #include <array>
 
 //TODO: Find a way to initialize matrices and vectors with variable argument list.
+    //TODO: Variadic templates
+    //TODO: rvalue references: move semantics and perfect forwarding
+    //TODO: std::move and std::forward
+
 //TODO: Replace unsigned int with size_t
 
 //----------------------------------------------------------------------//
