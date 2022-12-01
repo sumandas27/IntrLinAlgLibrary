@@ -4,18 +4,17 @@ int main(int argc, char** argv) {
     
     IntrLinAlgLibrary_init();
 
-    Matrix<4, 6> mat
+    Matrix<3, 4> mat
     ({
-        1, 2, -1, 2, 1, 2,
-        -1, -2, 1, 2, 3, 6,
-        2, 4, -3, 2, 0, 3,
-        -3, -6, 2, 0, 3, 9
+        1, 3, 0, 2,
+        0, 0, 1, 4,
+        1, 3, 1, 6
     });
 
-    Vector<5> vec({1.0, 2.0, 3.0, 4.0, -50.0});
-    std::cout << vec;
+    Vector<3> vec({1, 6, 5});
 
-    rref(mat).print();
-    std::cout << rref(mat);
+    solve(mat, vec).print();
+    std::cout << is_consistent(mat, vec);
+
     return 0;
 }

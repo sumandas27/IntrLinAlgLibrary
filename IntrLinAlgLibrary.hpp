@@ -11,6 +11,7 @@
 #include <array>
 
 //TODO: Find a way to initialize matrices and vectors with variable argument list.
+//TODO: Replace unsigned int with size_t
 
 //----------------------------------------------------------------------//
 //NON-LINEAR ALGEBRA FUNCTIONS:
@@ -51,8 +52,7 @@ struct Vector {
     std::array<double, D> components;
     Vector(const std::array<double, D>& _components);
 
-    double&       operator[](unsigned int index);
-    double const& operator[](unsigned int index) const;
+    double operator[](unsigned int index);
 
     void print() const;
 
@@ -69,22 +69,12 @@ Vector<D>::Vector(const std::array<double, D>& _components) {
     components = _components;
 }
 
-/* Vector indexing is 1-based. This overload is primarly intended for the left side of an assignment.
+/* Vector indexing is 1-based.
  * @param index The index of the vector wanted to be changed/accessed.
  * @returns The component at the argument index.
  */
 template <unsigned int D>
-double& Vector<D>::operator[](unsigned int index) {
-    assert (index >= 1 && index <= D);
-    return components[index - 1];
-}
-
-/* Vector indexing is 1-based. This overload is exclusively used for the right side of an assignment.
- * @param index The index of the vector wanted to be accessed.
- * @returns The component at the argument index.
- */
-template <unsigned int D>
-double const& Vector<D>::operator[](unsigned int index) const {
+double Vector<D>::operator[](unsigned int index) {
     assert (index >= 1 && index <= D);
     return components[index - 1];
 }
@@ -93,7 +83,7 @@ double const& Vector<D>::operator[](unsigned int index) const {
  */
 template <unsigned int D>
 void Vector<D>::print() const {
-    for (const double& component : components)
+    for (double component : components)
         std::cout << "{\t" << (abs(component) < epsilon() ? 0 : component) << "\t}\n";
     std::cout << "\n";
 }
@@ -104,7 +94,7 @@ void Vector<D>::print() const {
  */
 template <unsigned int X>
 std::ostream& operator<<(std::ostream& os, const Vector<X>& v) {
-    for (const double& component : v.components)
+    for (double component : v.components)
         os << "{\t" << (abs(component) < epsilon() ? 0 : component) << "\t}\n";
     os << "\n";
     return os;
@@ -127,8 +117,7 @@ struct Matrix {
     public:
         Proxy(double* _rowPtr) : rowPtr(_rowPtr) { };
 
-        double&       operator[](unsigned int col);
-        double const& operator[](unsigned int col) const;
+        double operator[](unsigned int col);
 
     private:
         double* rowPtr;
@@ -151,24 +140,13 @@ Matrix<R, C>::Matrix(const std::array<double, R * C>& _entries) {
     entries = _entries;
 }
 
-/* Accesses the argument column of the proxy's row. Matrix indexing is 1-based. 
+/* Accesses the argument column of the proxy's row.
  * This overload is intended for the left hand side of an assignment.
  * @param col The column index of the proxy row wanted to be changed/accessed.
  * @returns The entry at the argument column of the proxy row.
  */
 template <unsigned int R, unsigned int C>
-double& Matrix<R, C>::Proxy::operator[](unsigned int col) {
-    assert (col >= 1 && col <= C);
-    return rowPtr[col - 1];
-}
-
-/* Accesses the argument column of the proxy's row. Matrix indexing is 1-based. 
- * This overload is exclusively for the right hand side of an assignment.
- * @param col The column index of the proxy row wanted to be changed/accessed.
- * @returns The entry at the argument column of the proxy row.
- */
-template <unsigned int R, unsigned int C>
-double const& Matrix<R, C>::Proxy::operator[](unsigned int col) const {
+double Matrix<R, C>::Proxy::operator[](unsigned int col) {
     assert (col >= 1 && col <= C);
     return rowPtr[col - 1];
 }
@@ -558,18 +536,75 @@ unsigned int nullity(const Matrix<R, C>& m) {
     return C - rank(m);
 }
 
-//TODO: augment matrix with vector
+/* A matrix augmented with a vector produces a matrix containing the matrix on the left side and the vector on the right side.
+ * Given matrix A and vector v, A augmented with v is written as [ A | v ].
+ * @param m The argument matrix.
+ * @param v The argument vector.
+ * @returns The argument matrix augmented with the argument vector.
+ */
 template <unsigned int R, unsigned int C>
 Matrix<R, C + 1> augment(const Matrix<R, C>& m, const Vector<R>& v) {
     std::array<double, R * (C + 1)> augmentedMatrix{};
-    return Matrix<R, C + 1>(augmentedMatrix); // temp
+    for (unsigned int row = 0; row < R; row++)
+    for (unsigned int col = 0; col < C + 1; col++)
+        augmentedMatrix[row * (C + 1) + col] = (col == C) ? v.components[row] : m.entries[row * C + col];
+    return Matrix<R, C + 1>(augmentedMatrix);
 }
 
-//TODO: augment matrix with matrix
+/* A matrix augmented with another matrix appends the matrices together to form a larger matrix.
+ * Given matrix A and matrix B, A augmented with B is written as [ A | B ].
+ * @param lhs The matrix to be augmented to the left hand side of the result matrix.
+ * @param rhs The matrix to be augmented to the right hand side of the result matrix.
+ * @returns The lhs argument matrix augmented with the rhs augmented matrix.
+ */
 template <unsigned int R, unsigned int C1, unsigned int C2>
-Matrix<R, C1 + C2> augment(const Matrix<R, C1>& m1, const Matrix<R, C2>& m2) {
+Matrix<R, C1 + C2> augment(const Matrix<R, C1>& lhs, const Matrix<R, C2>& rhs) {
     std::array<double, R * (C1 + C2)> augmentedMatrix{};
+    for (unsigned int row = 0; row < R; row++)
+    for (unsigned int col = 0; col < C1 + C2; col++)
+        augmentedMatrix[row * (C1 + C2) + col] = (col < C1) ? lhs.entries[row * C1 + col] : rhs.entries[row * C2 + (col - C1)];
     return Matrix<R, C1 + C2>(augmentedMatrix);
 }
 
-//TODO: Solve solution system between a matrix and a vector by returning rref by them augmented
+/* Given a coefficient matrix A and a constant vector b, this solves Ax = b (where x is the solution vector).
+ * The reduced row-echelon form of A augmented to b allows the general solution of x to be easily found.
+ * 
+ *                       x1 x2 x3 x4  x5 b
+ * Given an rref row: [  0  1  0  2  -3  3  ]
+ * The leading entry of the rref can be solved for: x2 + 2x4 - 3x5 = 3 --> x2 = 3 - 2x4 + 3x5
+ * A solution variable whose corresponding column has no pivot spot is a free variable.
+ * 
+ * @param coeffMat The argument coefficient matrix.
+ * @param constantVec The argument constant vector.
+ * @returns The reduced row-echelon form of the augmented matrix of the coefficient matrix and the constant vector.
+ */
+template <unsigned int R, unsigned int C>
+Matrix<R, C + 1> solve(const Matrix<R, C>& coeffMat, const Vector<R>& constantVec) {
+    return rref(augment(coeffMat, constantVec));
+}
+
+/* A system is consistent if given a coefficient matrix A and a constant vector b, a solution x exists for Ax = b.
+ * Given the reduced row-echelon form of the augmented matrix of A and b, the system is not consistent if a row as follows exists:
+ *
+ *    x1 x2      xn b
+ * [  0  0  ...  0  c ] where c is a nonzero scalar
+ * This is synonymous to 0x1 + 0x2 + ... + 0xn = c --> 0 = c. 0 cannot equal a nonzero number. Therefore, no solution exists for x and the system is inconsistent.
+ * 
+ * @param coeffMat The argument coefficient matrix (A).
+ * @param constantVec The argument constant vector (b).
+ * @returns True if Ax = b is a consistent solution. False if otherwise.
+ */
+template <unsigned int R, unsigned int C>
+bool is_consistent(const Matrix<R, C>& coeffMat, const Vector<R>& constantVec) {
+    Matrix<R, C + 1> rrefAugment = rref(solve(coeffMat, constantVec));
+    for (unsigned int row = 0; row < R; row++) {
+        if (rrefAugment.entries[row * (C + 1) + C] == 0.0)
+            continue;
+
+        unsigned int beg = row * (C + 1);
+        unsigned int end = row * (C + 1) + C;
+        if (std::all_of(rrefAugment.entries.begin() + beg, rrefAugment.entries.begin() + end, [](double entry){ return entry == 0.0; }))
+            return false;
+    }
+    return true;
+}
