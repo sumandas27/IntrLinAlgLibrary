@@ -11,6 +11,8 @@
 #include <initializer_list>
 #include <array>
 
+//TODO: Fix all methods lol
+
 //----------------------------------------------------------------------//
 //NON-LINEAR ALGEBRA FUNCTIONS:
 
@@ -49,8 +51,9 @@ template <size_t D>
 struct Vector {
     std::array<double, D> components;
 
-    template <typename... T>
-    Vector(T... _components);
+    template <typename... Ts>
+    Vector(Ts... _components);
+    Vector();
 
     double operator[](size_t index);
 
@@ -60,17 +63,22 @@ struct Vector {
     friend std::ostream& operator<<(std::ostream& os, const Vector<X>& v);
 };
 
-/* Constructs a vector. Example Vector object creation: 
+/* Constructs a vector with a list of arguments. Example Vector object creation: 
  * Vector<5> vec(1.0, 2.0, 3.0, 4.0, 5.0);
  * 
  * @param _components The list of scalar arguments containing the components of the vector.
  */
 template <size_t D>
-template <typename... T>
-Vector<D>::Vector(T... _components) : components{ (double)_components... } {
+template <typename... Ts>
+Vector<D>::Vector(Ts... _components) : components{ (double)_components... } {
     assert (D != 0);
     assert (sizeof...(_components) == D);
 }
+
+/* Constructs a vector with zero-initialized components.
+ */
+template <size_t D>
+Vector<D>::Vector() : components{} { }
 
 /* Vector indexing is 1-based.
  * @param index The index of the vector wanted to be changed/accessed.
@@ -114,8 +122,9 @@ template <size_t R, size_t C>
 struct Matrix {
     std::array<double, R * C> entries;
     
-    template <typename... T>
-    Matrix(T... _entries);
+    template <typename... Ts>
+    Matrix(Ts... _entries);
+    Matrix();
 
     class Proxy {
 
@@ -146,11 +155,16 @@ struct Matrix {
  * @param _entries The list of scalar arguments containing the entries of the matrix.
  */
 template <size_t R, size_t C>
-template <typename... T>
-Matrix<R, C>::Matrix(T... _entries) : entries{ (double)_entries... } {
+template <typename... Ts>
+Matrix<R, C>::Matrix(Ts... _entries) : entries{ (double)_entries... } {
     assert (R != 0 && C != 0);
     assert (sizeof...(_entries) == R * C);
 }
+
+/* Constructs a Matrix object with zero-intialized entries.
+ */
+template <size_t R, size_t C>
+Matrix<R, C>::Matrix() : entries{} { }
 
 /* Accesses the argument column of the proxy's row.
  * This overload is intended for the left hand side of an assignment.
@@ -618,3 +632,14 @@ bool is_consistent(const Matrix<R, C>& coeffMat, const Vector<R>& constantVec) {
     }
     return true;
 }
+
+/*template <size_t D, size_t S>
+Matrix<D, S> augment_vector_set(const std::array<Vector<D>, S>& set) {
+    assert (S != 0);
+
+    std::array<double, D * S> augmentedVectorSet
+    for (size_t col = 0; col < S; col++)
+    for (size_t row = 0; row < D; row++) {
+
+    }
+}*/

@@ -4,14 +4,14 @@ int main(int argc, char** argv) {
     
     IntrLinAlgLibrary_init();
 
-    Matrix<3, 4> mat
-    (
-        1, 2, 3, 4,
-        5, 6, 7, 8,
-        9, 10, 11, 12, 13
-    );
+    /*Vector<5> v1(1, 2, 3, 4, 5);
+    Vector<5> v2(6, 4, 2, 7, 5);
+    Vector<5> sum = v1 + v2;
 
-    mat.print();
+    sum.print();*/
+
+    Matrix<10, 9> vec;
+    vec.print();
 
     return 0;
 }
