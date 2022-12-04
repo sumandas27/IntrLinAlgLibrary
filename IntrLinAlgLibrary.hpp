@@ -8,12 +8,8 @@
 //--- Standard Template Library ---//
 #include <algorithm>
 #include <functional>
+#include <initializer_list>
 #include <array>
-
-//TODO: Find a way to initialize matrices and vectors with variable argument list.
-    //TODO: Variadic templates
-    //TODO: rvalue references: move semantics and perfect forwarding
-    //TODO: std::move and std::forward
 
 //----------------------------------------------------------------------//
 //NON-LINEAR ALGEBRA FUNCTIONS:
@@ -52,7 +48,9 @@ constexpr double deg_to_rad(double degrees) {
 template <size_t D>
 struct Vector {
     std::array<double, D> components;
-    Vector(const std::array<double, D>& _components);
+
+    template <typename... T>
+    Vector(T... _components);
 
     double operator[](size_t index);
 
@@ -62,13 +60,16 @@ struct Vector {
     friend std::ostream& operator<<(std::ostream& os, const Vector<X>& v);
 };
 
-/* Constructs a vector.
- * @param _components The input structure containing the components of the vector.
+/* Constructs a vector. Example: 
+ * Vector<5> vec(1.0, 2.0, 3.0, 4.0, 5.0);
+ * 
+ * @param _components The list of scalar arguments containing the components of the vector.
  */
 template <size_t D>
-Vector<D>::Vector(const std::array<double, D>& _components) {
+template <typename... T>
+Vector<D>::Vector(T... _components) : components{ (double)_components... } {
     assert (D != 0);
-    components = _components;
+    assert (sizeof...(_components) == D);
 }
 
 /* Vector indexing is 1-based.
@@ -112,7 +113,9 @@ std::ostream& operator<<(std::ostream& os, const Vector<X>& v) {
 template <size_t R, size_t C>
 struct Matrix {
     std::array<double, R * C> entries;
-    Matrix(const std::array<double, R * C>& _entries);
+    
+    template <typename... T>
+    Matrix(T... _entries);
 
     class Proxy {
 
@@ -134,12 +137,13 @@ struct Matrix {
 };
 
 /* Constructs a matrix.
- * @param _entries The input structure containing the entries of the matrix.
+ * @param _entries The list of scalar arguments containing the entries of the matrix.
  */
 template <size_t R, size_t C>
-Matrix<R, C>::Matrix(const std::array<double, R * C>& _entries) {
+template <typename... T>
+Matrix<R, C>::Matrix(T... _entries) : entries{ (double)_entries... } {
     assert (R != 0 && C != 0);
-    entries = _entries;
+    assert (sizeof...(_entries) == R * C);
 }
 
 /* Accesses the argument column of the proxy's row.
@@ -357,13 +361,11 @@ Matrix<S, S> identity_matrix() {
  * @returns The 2x2 rotation matrix of the argument angle in degrees.
  */
 Matrix<2, 2> rotation_matrix(double degrees) {
-    std::array<double, 4> rotationMatrix{
-         cos(deg_to_rad(degrees)),
-        -sin(deg_to_rad(degrees)),
-         sin(deg_to_rad(degrees)),
-         cos(deg_to_rad(degrees))
-    };
-    return Matrix<2, 2>(rotationMatrix);
+    return Matrix<2, 2>
+    (
+        cos(deg_to_rad(degrees)),  -sin(deg_to_rad(degrees)),
+        sin(deg_to_rad(degrees)),   cos(deg_to_rad(degrees))
+    );
 }
 
 /* The transpose of an nxm matrix is an mxn matrix where (i,j)-entries are transformed to (j,i)-entries.

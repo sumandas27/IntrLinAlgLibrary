@@ -5,16 +5,13 @@ int main(int argc, char** argv) {
     IntrLinAlgLibrary_init();
 
     Matrix<3, 4> mat
-    ({
-        1, 3, 0, 2,
-        0, 0, 1, 4,
-        1, 3, 1, 6
-    });
+    (
+        1, 2, 3, 4,
+        5, 6, 7, 8,
+        9, 10, 11, 12
+    );
 
-    Vector<3> vec({1, 6, 5});
-
-    solve(mat, vec).print();
-    std::cout << is_consistent(mat, vec);
+    mat.print();
 
     return 0;
 }
