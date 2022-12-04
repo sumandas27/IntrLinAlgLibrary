@@ -60,7 +60,7 @@ struct Vector {
     friend std::ostream& operator<<(std::ostream& os, const Vector<X>& v);
 };
 
-/* Constructs a vector. Example: 
+/* Constructs a vector. Example Vector object creation: 
  * Vector<5> vec(1.0, 2.0, 3.0, 4.0, 5.0);
  * 
  * @param _components The list of scalar arguments containing the components of the vector.
@@ -136,7 +136,13 @@ struct Matrix {
     friend std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m);
 };
 
-/* Constructs a matrix.
+/* Constructs a matrix. Example Matrix object creation:
+ * Matrix<2, 3> mat
+ * (
+ *     1.0, 2.0, 3.0,
+ *     4.0, 5.0, 6.0
+ * );
+ *
  * @param _entries The list of scalar arguments containing the entries of the matrix.
  */
 template <size_t R, size_t C>
