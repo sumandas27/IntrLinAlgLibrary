@@ -112,13 +112,6 @@ std::ostream& operator<<(std::ostream& os, const Vector<X>& v) {
 //VECTORSET STRUCT:
 
 /* A VectorSet holds a set of vectors.
- * Example VectorSet object creation:
- * VectorSet<3, 2> vectorSet
- * (
- *     Vector<3>(1.0, 2.0, 3.0);
- *     Vector<3>(4.0, 5.0, 6.0);
- * ) 
- *
  * @param D The dimension of the vectors in the set.
  * @param S The number of vectors or "size" in the set. 
  */
@@ -134,6 +127,11 @@ struct VectorSet {
 };
 
 /* Constructs a VectorSet object.
+ * Example VectorSet object creation:
+ * VectorSet<3, 2> vectorSet(
+ *     Vector<3>(1.0, 2.0, 3.0),
+ *     Vector<3>(4.0, 5.0, 6.0)
+ * );
  * @param _set The list holding the vectors in the set.
  */
 template <size_t D, size_t S>
@@ -198,8 +196,7 @@ struct Matrix {
 };
 
 /* Constructs a matrix. Example Matrix object creation:
- * Matrix<2, 3> mat
- * (
+ * Matrix<2, 3> mat(
  *     1.0, 2.0, 3.0,
  *     4.0, 5.0, 6.0
  * );
@@ -433,8 +430,7 @@ Matrix<S, S> identity_matrix() {
  * @returns The 2x2 rotation matrix of the argument angle in degrees.
  */
 Matrix<2, 2> rotation_matrix(double degrees) {
-    return Matrix<2, 2>
-    (
+    return Matrix<2, 2>(
         cos(deg_to_rad(degrees)), -sin(deg_to_rad(degrees)),
         sin(deg_to_rad(degrees)),  cos(deg_to_rad(degrees))
     );
@@ -741,4 +737,24 @@ Matrix<R, C + 1> solve_homogenous_system(const Matrix<R, C>& coeffMat) {
 //------------------------------------------------------------------------------------------//
 //CHAPTER 2 - MATRICES AND LINEAR TRANSFORMATIONS
 
-//TODO: Operator overload Matrix * Matrix
+/* The product of an AxB matrix and a BxC matrix produces an AxC matrix.
+ * The (i,j)-entry of the product matrix is the dot product of the ith row of the AxB matrix and the jth column of the BxC matrix.
+ * @param lhs The left hand side argument matrix (of dimension AxB).
+ * @param rhs The right hand side argument matrix (of dimension BxC).
+ * @returns The product of the two argument matrices (of dimension AxC).
+ */
+template <size_t A, size_t B, size_t C>
+Matrix<A, C> operator*(const Matrix<A, B>& lhs, const Matrix<B, C>& rhs) {
+    Matrix<A, C> product{};
+    for (size_t row = 0; row < A; row++)
+    for (size_t col = 0; col < C; col++) {
+        double entry = 0.0;
+        for (size_t dot = 0; dot < B; dot++)
+            entry += lhs.entries[row * B + dot] * rhs.entries[dot * C + col];
+        product.entries[row * C + col] = entry;
+    }
+    return product;
+}
+
+//TODO: is_diagonal()
+//TODO: is_symmetric()
