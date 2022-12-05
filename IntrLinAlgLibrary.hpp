@@ -795,3 +795,10 @@ bool is_symmetric(const Matrix<R, C>& m) {
     }
     return true;
 }
+
+//TODO: EM_row_swap()
+//TODO: EM_scalar_multiplication()
+//TODO: EM_row_sum()
+
+//TODO: is_invertible()
+//TODO: inverse()
