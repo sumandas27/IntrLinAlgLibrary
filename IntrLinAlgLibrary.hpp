@@ -241,9 +241,9 @@ bool operator==(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
  */
 template <size_t D>
 Vector<D> operator+(const Vector<D>& lhs, const Vector<D> rhs) {
-    std::array<double, D> sum{};
-    std::transform(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), sum.begin(), std::plus<double>());
-    return Vector<D>(sum);
+    Vector<D> sum{};
+    std::transform(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), sum.components.begin(), std::plus<double>());
+    return sum;
 }
 
 /* The sum of two matrices is a matrix of the same size with corresponding entries added.
@@ -251,9 +251,9 @@ Vector<D> operator+(const Vector<D>& lhs, const Vector<D> rhs) {
  */
 template <size_t R, size_t C>
 Matrix<R, C> operator+(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
-    std::array<double, R * C> sum{};
-    std::transform(lhs.entries.begin(), lhs.entries.end(), rhs.entries.begin(), sum.begin(), std::plus<double>());
-    return Matrix<R, C>(sum);
+    Matrix<R, C> sum{};
+    std::transform(lhs.entries.begin(), lhs.entries.end(), rhs.entries.begin(), sum.entries.begin(), std::plus<double>());
+    return sum;
 }
 
 /* The difference of two vectors is a vector of the same size with corresponding components subtracted.
@@ -261,9 +261,9 @@ Matrix<R, C> operator+(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
  */
 template <size_t D>
 Vector<D> operator-(const Vector<D>& lhs, const Vector<D>& rhs) {
-    std::array<double, D> diff{};
-    std::transform(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), diff.begin(), std::minus<double>());
-    return Vector<D>(diff);
+    Vector<D> diff{};
+    std::transform(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), diff.components.begin(), std::minus<double>());
+    return diff;
 }
 
 //Vector operator-(const Vector& v1, const Vector& v2);
@@ -272,9 +272,9 @@ Vector<D> operator-(const Vector<D>& lhs, const Vector<D>& rhs) {
  */
 template <size_t R, size_t C>
 Matrix<R, C> operator-(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
-    std::array<double, R * C> diff{};
-    std::transform(lhs.entries.begin(), lhs.entries.end(), rhs.entries.begin(), diff.begin(), std::minus<double>());
-    return Matrix<R, C>(diff);
+    Matrix<R, C> diff{};
+    std::transform(lhs.entries.begin(), lhs.entries.end(), rhs.entries.begin(), diff.entries.begin(), std::minus<double>());
+    return diff;
 }
 
 /* The product of a scalar and a vector is a vector of the same size with all its components multiplied by the scalar.
@@ -282,9 +282,9 @@ Matrix<R, C> operator-(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
  */
 template <size_t D>
 Vector<D> operator*(double scalar, const Vector<D>& v) {
-    std::array<double, D> product{};
-    std::transform(v.components.begin(), v.components.end(), product.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
-    return Vector<D>(product);
+    Vector<D> product{};
+    std::transform(v.components.begin(), v.components.end(), product.components.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+    return product;
 }
 
 /* Scalar-vector multiplication is commutative.
@@ -300,9 +300,9 @@ Vector<D> operator*(const Vector<D>& v, double scalar) {
  */
 template <size_t R, size_t C>
 Matrix<R, C> operator*(double scalar, const Matrix<R, C>& m) {
-    std::array<double, R * C> product{};
-    std::transform(m.entries.begin(), m.entries.end(), product.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
-    return Matrix<R, C>(product);
+    Matrix<R, C> product{};
+    std::transform(m.entries.begin(), m.entries.end(), product.entries.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+    return product;
 }
 
 /* Scalar-matrix multiplication is commutative.
@@ -318,14 +318,14 @@ Matrix<R, C> operator*(const Matrix<R, C>& m, double scalar) {
  */
 template <size_t R, size_t C>
 Vector<R> operator*(const Matrix<R, C>& m, const Vector<C>& v) {
-    std::array<double, R> product{};
+    Vector<R> product{};
     for (size_t i = 0; i < R; i++) {
         double entry = 0.0;
         for (size_t j = 0; j < C; j++)
             entry += v.components[j] * m.entries[i * C + j];
-        product[i] = entry;
+        product.components[i] = entry;
     }
-    return Vector<R>(product);
+    return product;
 }
 
 /* A zero vector is a vector where all components are zero.
@@ -334,8 +334,8 @@ Vector<R> operator*(const Matrix<R, C>& m, const Vector<C>& v) {
  */
 template <size_t D>
 Vector<D> zero_vector() {
-    std::array<double, D> zero{};
-    return Vector<D>(zero);
+    assert (D != 0);
+    return Vector<D>();
 }
 
 /* A zero matrix is a matrix where all entries are zero.
@@ -345,8 +345,8 @@ Vector<D> zero_vector() {
  */
 template <size_t R, size_t C>
 Matrix<R, C> zero_matrix() {
-    std::array<double, R * C> zero{};
-    return Matrix<R, C>(zero);
+    assert (R != 0 && C != 0);
+    return Matrix<R, C>();
 }
 
 /* A standard vector is a zero vector with one component being a one instead of a zero.
@@ -358,9 +358,9 @@ template <size_t D>
 Vector<D> standard_vector(size_t one_component) {
     assert (one_component >= 1 && one_component <= D);
 
-    std::array<double, D> standardVector{};
-    standardVector[one_component - 1] = 1.0;
-    return Vector<D>(standardVector);
+    Vector<D> standardVector{};
+    standardVector.components[one_component - 1] = 1.0;
+    return standardVector;
 }
 
 /* An identity matrix is a square zero matrix with diagonal entries being a one instead of a zero.
@@ -369,9 +369,9 @@ Vector<D> standard_vector(size_t one_component) {
  */
 template <size_t S>
 Matrix<S, S> identity_matrix() {
-    std::array<double, S * S> identityMatrix{};
+    Matrix<S, S> identityMatrix{};
     for (size_t i = 0; i < S; i++)
-        identityMatrix[i * S + i] = 1.0;
+        identityMatrix.entries[i * S + i] = 1.0;
     return Matrix<S, S>(identityMatrix);
 }
 
@@ -383,8 +383,8 @@ Matrix<S, S> identity_matrix() {
 Matrix<2, 2> rotation_matrix(double degrees) {
     return Matrix<2, 2>
     (
-        cos(deg_to_rad(degrees)),  -sin(deg_to_rad(degrees)),
-        sin(deg_to_rad(degrees)),   cos(deg_to_rad(degrees))
+        cos(deg_to_rad(degrees)), -sin(deg_to_rad(degrees)),
+        sin(deg_to_rad(degrees)),  cos(deg_to_rad(degrees))
     );
 }
 
@@ -394,11 +394,11 @@ Matrix<2, 2> rotation_matrix(double degrees) {
  */
 template <size_t R, size_t C>
 Matrix<C, R> transpose(const Matrix<R, C>& m) {
-    std::array<double, C * R> transpose{};
+    Matrix<C, R> transpose{};
     for (size_t i = 0; i < C; i++)
     for (size_t j = 0; j < R; j++)
-        transpose[i * R + j] = m.entries[j * C + i];
-    return Matrix<C, R>(transpose);
+        transpose.entries[i * R + j] = m.entries[j * C + i];
+    return transpose;
 }
 
 /* An elementary row operation where two rows are exchanged in a matrix: row1 <--> row2
@@ -568,11 +568,11 @@ unsigned int nullity(const Matrix<R, C>& m) {
  */
 template <size_t R, size_t C>
 Matrix<R, C + 1> augment(const Matrix<R, C>& m, const Vector<R>& v) {
-    std::array<double, R * (C + 1)> augmentedMatrix{};
+    Matrix<R, C + 1> augmentedMatrix{};
     for (size_t row = 0; row < R; row++)
     for (size_t col = 0; col < C + 1; col++)
-        augmentedMatrix[row * (C + 1) + col] = (col == C) ? v.components[row] : m.entries[row * C + col];
-    return Matrix<R, C + 1>(augmentedMatrix);
+        augmentedMatrix.entries[row * (C + 1) + col] = (col == C) ? v.components[row] : m.entries[row * C + col];
+    return augmentedMatrix;
 }
 
 /* A matrix augmented with another matrix appends the matrices together to form a larger matrix.
@@ -583,11 +583,11 @@ Matrix<R, C + 1> augment(const Matrix<R, C>& m, const Vector<R>& v) {
  */
 template <size_t R, size_t C1, size_t C2>
 Matrix<R, C1 + C2> augment(const Matrix<R, C1>& lhs, const Matrix<R, C2>& rhs) {
-    std::array<double, R * (C1 + C2)> augmentedMatrix{};
+    Matrix<R, C1 + C2> augmentedMatrix{};
     for (size_t row = 0; row < R; row++)
     for (size_t col = 0; col < C1 + C2; col++)
-        augmentedMatrix[row * (C1 + C2) + col] = (col < C1) ? lhs.entries[row * C1 + col] : rhs.entries[row * C2 + (col - C1)];
-    return Matrix<R, C1 + C2>(augmentedMatrix);
+        augmentedMatrix.entries[row * (C1 + C2) + col] = (col < C1) ? lhs.entries[row * C1 + col] : rhs.entries[row * C2 + (col - C1)];
+    return augmentedMatrix;
 }
 
 /* Given a coefficient matrix A and a constant vector b, this solves Ax = b (where x is the solution vector).

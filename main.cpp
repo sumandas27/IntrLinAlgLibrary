@@ -10,8 +10,10 @@ int main(int argc, char** argv) {
 
     sum.print();*/
 
-    Matrix<10, 9> vec;
-    vec.print();
+    Vector<4> vec(1, 2, 3, 4);
+    Vector<4> zero = zero_vector<4>();
+    Vector<4> test = vec + zero;
+    test.print();
 
     return 0;
 }
