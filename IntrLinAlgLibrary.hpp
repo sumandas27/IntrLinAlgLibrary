@@ -113,6 +113,13 @@ std::ostream& operator<<(std::ostream& os, const Vector<X>& v) {
 //VECTORSET STRUCT:
 
 /* A VectorSet holds a set of vectors.
+ * Example VectorSet object creation:
+ * VectorSet<3, 2> vectorSet
+ * (
+ *     Vector<3>(1.0, 2.0, 3.0);
+ *     Vector<3>(4.0, 5.0, 6.0);
+ * ) 
+ *
  * @param D The dimension of the vectors in the set.
  * @param S The number of vectors or "size" in the set. 
  */
@@ -698,15 +705,39 @@ Matrix<D, S> augment_vector_set(const VectorSet<D, S>& set) {
  * @param set The argument set of vectors.
  * @returns True if the argument vector is in the span of the argument set of vectors. False if otherwise.
  */
-template <unsigned int D, unsigned int S>
-bool is_vector_in_span(const Vector<D>& vec, const VectorSet<D, S>& set) {
+template <size_t D, size_t S>
+bool is_in_span(const Vector<D>& vec, const VectorSet<D, S>& set) {
     Matrix<D, S> augmentedSet = augment_vector_set(set);
     return is_consistent(augmentedSet, vec);
 }
 
-//TODO: is_set_linearly_dependent()
-//TODO: is_set_linearly_independent()
-//TODO: solve_homogenous_system()
+/* A set of vectors is linearly independent if it is NOT possible to get a vector in the set as a linear combination of the other vectors in the set.
+ * @param set The argument set of vectors.
+ * @returns True if the argument set of vectors is linearly independent. False if otherwise.
+ */
+template <size_t D, size_t S>
+bool is_linearly_independent(const VectorSet<D, S>& set) {
+    return rank(augment_vector_set(set)) == S;
+}
+
+/* A set of vectors is linearly dependent if it is possible to get a vector in the set as a linear combination of the other vectors in the set.
+ * @param set The argument set of vectors.
+ * @returns True if the argument set of vectors is linearly dependent. False if otherwise.
+ */
+template <size_t D, size_t S>
+bool is_linearly_dependent(const VectorSet<D, S>& set) {
+    return !is_linearly_independent(set);
+}
+
+/* A homogenous system (given a coefficient matrix "A") is Ax = 0.
+ * Similar to the solve() function, this will output the reduced row-echelon form of the coefficient matrix augmented with a zero vector.
+ * @param coeffMat The argument coefficient matrix.
+ * @returns The reduced row-echelon form of the coefficient matrix augmented with a zero vector.
+ */
+template <size_t R, size_t C>
+Matrix<R, C + 1> solve_homogenous_system(const Matrix<R, C>& coeffMat) {
+    return solve(coeffMat, zero_vector<R>());
+}
 
 //------------------------------------------------------------------------------------------//
 //CHAPTER 2 - MATRICES AND LINEAR TRANSFORMATIONS
