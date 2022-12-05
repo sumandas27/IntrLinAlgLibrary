@@ -270,7 +270,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m) {
 //CHAPTER 1 - MATRICES, VECTORS, AND SYSTEMS OF LINEAR EQUATIONS
 
 /* Two vectors are equal if all corresponding components are equal.
- * @returns True if the vector arguments v1 and v2 are equal, false if otherwise.
+ * @returns True if the vector arguments v1 and v2 are equal. False if otherwise.
  */
 template <size_t D>
 bool operator==(const Vector<D>& lhs, const Vector<D>& rhs) {
@@ -278,7 +278,7 @@ bool operator==(const Vector<D>& lhs, const Vector<D>& rhs) {
 }
 
 /* Two matrices are equal if all corresponding entries are equal.
- * @returns True if the matrix arguments m1 and m2 are equal, false if otherwise.
+ * @returns True if the matrix arguments m1 and m2 are equal. False if otherwise.
  */
 template <size_t R, size_t C>
 bool operator==(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
@@ -756,5 +756,42 @@ Matrix<A, C> operator*(const Matrix<A, B>& lhs, const Matrix<B, C>& rhs) {
     return product;
 }
 
-//TODO: is_diagonal()
-//TODO: is_symmetric()
+/* A matrix is diagonal if it is a square matrix and all non-diagonal entries are zero.
+ * A diagonal entry is an (i,j)-entry where i = j.
+ * @param m The argument matrix.
+ * @returns True if the argument matrix is a diagonal matrix. False if otherwise.
+ */
+template <size_t R, size_t C>
+bool is_diagonal(const Matrix<R, C>& m) {
+    if (R != C)
+        return false;
+
+    for (size_t row = 0; row < R; row++)
+    for (size_t col = 0; col < C; col++) {
+        if (row == col)
+            continue;
+
+        if (!is_equal(m.entries[row * C + col], 0.0))
+            return false;
+    }
+    return true;
+}
+
+/* A matrix is symmetric if (i,j)-entries equal the matrix's (j,i)-entries for all applicable i and j.
+ * @param m The argument matrix.
+ * @returns True if the argument matrix is symmetric. False if otherwise.
+ */
+template <size_t R, size_t C>
+bool is_symmetric(const Matrix<R, C>& m) {
+    if (R != C)
+        return false;
+
+    for (size_t row = 0; row < R; row++)
+    for (size_t col = row + 1; col < C; col++) {
+        size_t original = row * C + col;
+        size_t symmetric = (R - row - 1) * C + (C - col - 1);
+        if (m.entries[original] != m.entries[symmetric])
+            return false;
+    }
+    return true;
+}
