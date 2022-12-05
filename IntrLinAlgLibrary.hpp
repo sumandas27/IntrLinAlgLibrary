@@ -2,13 +2,12 @@
 #include <iostream>
 #include <iomanip>
 #include <cassert>
+
 #include <cmath>
 #include <string>
 
-//--- Standard Template Library ---//
 #include <algorithm>
 #include <functional>
-#include <initializer_list>
 #include <array>
 
 //------------------------------------------------------------------------------------------//
@@ -741,3 +740,5 @@ Matrix<R, C + 1> solve_homogenous_system(const Matrix<R, C>& coeffMat) {
 
 //------------------------------------------------------------------------------------------//
 //CHAPTER 2 - MATRICES AND LINEAR TRANSFORMATIONS
+
+//TODO: Operator overload Matrix * Matrix
