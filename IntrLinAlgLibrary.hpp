@@ -13,7 +13,7 @@
 
 //TODO: Fix all methods lol
 
-//----------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------//
 //NON-LINEAR ALGEBRA FUNCTIONS:
 
 /* Initializes the IntLinAlg Library.
@@ -40,7 +40,7 @@ constexpr double deg_to_rad(double degrees) {
     return degrees * M_PI / 180;
 }
 
-//----------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------//
 //VECTOR STRUCT AND METHODS:
 
 /* A vector is an array of real numbers.
@@ -111,7 +111,54 @@ std::ostream& operator<<(std::ostream& os, const Vector<X>& v) {
     return os;
 }
 
-//----------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------//
+//VECTORSET STRUCT:
+
+/* A VectorSet holds a set of vectors.
+ * @param D The dimension of the vectors in the set.
+ * @param S The number of vectors or "size" in the set. 
+ */
+template <size_t D, size_t S>
+struct VectorSet {
+    std::array<Vector<D>, S> set;
+
+    template <typename... Ts>
+    VectorSet(Ts... _set);
+
+    Vector<D>&       operator[](size_t index);
+    Vector<D> const& operator[](size_t index) const;
+};
+
+/* Constructs a VectorSet object.
+ * @param _set The list holding the vectors in the set.
+ */
+template <size_t D, size_t S>
+template <typename... Ts>
+VectorSet<D, S>::VectorSet(Ts... _set) : set{_set...} {
+    assert (D != 0);
+}
+
+/* VectorSets are accessed like normal arrays; indexing is 0-based. This overload is primarily intended for the left-hand side of an assignment.
+ * @param index The index of the vector wanted to be accessed.
+ * @returns The vector at the argument index.
+ */
+template <size_t D, size_t S>
+Vector<D>& VectorSet<D, S>::operator[](size_t index) {
+    assert (index >= 0 && index < S);
+    return set[index];
+}
+
+/* VectorSets are accessed like normal arrays; indexing is 0-based. This overload is exclusively intended for the right-hand side of an assingment.
+ * @param index The index of the vector wanted to be accessed.
+ * @returns The vector at the argument index.
+ */
+template <size_t D, size_t S>
+Vector<D> const& VectorSet<D, S>::operator[](size_t index) const {
+    assert (index >= 0 && index < S);
+    return set[index];
+}
+
+//------------------------------------------------------------------------------------------//
 //MATRIX STRUCT AND METHODS:
 
 /* A matrix is an array of arrays of real numbers.
@@ -217,7 +264,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m) {
     return os;
 }
 
-//----------------------------------------------------------------------//
+//------------------------------------------------------------------------------------------//
 //CHAPTER 1 - MATRICES, VECTORS, AND SYSTEMS OF LINEAR EQUATIONS
 
 /* Two vectors are equal if all corresponding components are equal.
@@ -633,13 +680,11 @@ bool is_consistent(const Matrix<R, C>& coeffMat, const Vector<R>& constantVec) {
     return true;
 }
 
-/*template <size_t D, size_t S>
-Matrix<D, S> augment_vector_set(const std::array<Vector<D>, S>& set) {
-    assert (S != 0);
-
+template <size_t D, size_t S>
+Matrix<D, S> augment_vector_set(const VectorSet<D, S>& set) {
     std::array<double, D * S> augmentedVectorSet
     for (size_t col = 0; col < S; col++)
     for (size_t row = 0; row < D; row++) {
-
+        
     }
-}*/
+}
