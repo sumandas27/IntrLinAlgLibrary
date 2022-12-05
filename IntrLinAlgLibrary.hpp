@@ -11,8 +11,6 @@
 #include <initializer_list>
 #include <array>
 
-//TODO: Fix all methods lol
-
 //------------------------------------------------------------------------------------------//
 //NON-LINEAR ALGEBRA FUNCTIONS:
 
@@ -123,7 +121,7 @@ struct VectorSet {
     std::array<Vector<D>, S> set;
 
     template <typename... Ts>
-    VectorSet(Ts... _set);
+    VectorSet(Ts&&... _set);
 
     Vector<D>&       operator[](size_t index);
     Vector<D> const& operator[](size_t index) const;
@@ -134,8 +132,9 @@ struct VectorSet {
  */
 template <size_t D, size_t S>
 template <typename... Ts>
-VectorSet<D, S>::VectorSet(Ts... _set) : set{_set...} {
+VectorSet<D, S>::VectorSet(Ts&&... _set) : set{_set...} {
     assert (D != 0);
+    assert (sizeof...(_set) == S);
 }
 
 /* VectorSets are accessed like normal arrays; indexing is 0-based. This overload is primarily intended for the left-hand side of an assignment.
@@ -268,7 +267,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m) {
 //CHAPTER 1 - MATRICES, VECTORS, AND SYSTEMS OF LINEAR EQUATIONS
 
 /* Two vectors are equal if all corresponding components are equal.
- * @returns true if the vector arguments v1 and v2 are equal, false if otherwise.
+ * @returns True if the vector arguments v1 and v2 are equal, false if otherwise.
  */
 template <size_t D>
 bool operator==(const Vector<D>& lhs, const Vector<D>& rhs) {
@@ -276,7 +275,7 @@ bool operator==(const Vector<D>& lhs, const Vector<D>& rhs) {
 }
 
 /* Two matrices are equal if all corresponding entries are equal.
- * @returns true if the matrix arguments m1 and m2 are equal, false if otherwise.
+ * @returns True if the matrix arguments m1 and m2 are equal, false if otherwise.
  */
 template <size_t R, size_t C>
 bool operator==(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
@@ -659,7 +658,7 @@ Matrix<R, C + 1> solve(const Matrix<R, C>& coeffMat, const Vector<R>& constantVe
  *
  *    x1 x2      xn b
  * [  0  0  ...  0  c ] where c is a nonzero scalar
- * This is synonymous to 0x1 + 0x2 + ... + 0xn = c --> 0 = c. 0 cannot equal a nonzero number. Therefore, no solution exists for x and the system is inconsistent.
+ * This is synonymous to 0x1 + 0x2 + ... + 0xn = c --> 0 = c. 0 cannot equal a nonzero number, so no solution exists for x and the system is inconsistent.
  * 
  * @param coeffMat The argument coefficient matrix (A).
  * @param constantVec The argument constant vector (b).
@@ -680,11 +679,34 @@ bool is_consistent(const Matrix<R, C>& coeffMat, const Vector<R>& constantVec) {
     return true;
 }
 
+/* Augmenting a set of vectors merges all of the vectors to produce a matrix.
+ * The nth column of the result augmented matrix corresponds to the nth vector in the set.
+ * @param set The argument vector set.
+ * @returns An augmented matrix of the set of vectors.
+ */
 template <size_t D, size_t S>
 Matrix<D, S> augment_vector_set(const VectorSet<D, S>& set) {
-    std::array<double, D * S> augmentedVectorSet
+    Matrix<D, S> augmentedVectorSet{};
     for (size_t col = 0; col < S; col++)
-    for (size_t row = 0; row < D; row++) {
-        
-    }
+    for (size_t row = 0; row < D; row++)
+        augmentedVectorSet.entries[row * S + col] = set.set[col].components[row];
+    return augmentedVectorSet;
 }
+
+/* A vector is in the span of a set of vectors if the vector can be written as a linear combination of the other vectors.
+ * @param vec The argument vector.
+ * @param set The argument set of vectors.
+ * @returns True if the argument vector is in the span of the argument set of vectors. False if otherwise.
+ */
+template <unsigned int D, unsigned int S>
+bool is_vector_in_span(const Vector<D>& vec, const VectorSet<D, S>& set) {
+    Matrix<D, S> augmentedSet = augment_vector_set(set);
+    return is_consistent(augmentedSet, vec);
+}
+
+//TODO: is_set_linearly_dependent()
+//TODO: is_set_linearly_independent()
+//TODO: solve_homogenous_system()
+
+//------------------------------------------------------------------------------------------//
+//CHAPTER 2 - MATRICES AND LINEAR TRANSFORMATIONS
