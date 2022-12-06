@@ -796,9 +796,62 @@ bool is_symmetric(const Matrix<R, C>& m) {
     return true;
 }
 
-//TODO: EM_row_swap()
-//TODO: EM_scalar_multiplication()
-//TODO: EM_row_sum()
+/* An elementary matrix has the same effect as an elementary row operation.
+ * An elementary row operation applied to a matrix "A" yields the same result as EA where "E" is the corresponding elementary matrix.
+ * An elementary matrix is found by applying the elementary row operation on the identity matrix.
+ * @param S The size (number of rows and columns) of the elementary matrix.
+ * @param row1 The first row to be exchanged.
+ * @param row2 The second row to be exchanged.
+ * @returns The corresponding elementary matrix.
+ */
+template <size_t S>
+Matrix<S, S> EM_row_swap(size_t row1, size_t row2) {
+    Matrix<S, S> elementaryMatrix = identity_matrix<S>();
+    ERO_row_swap(elementaryMatrix, row1, row2);
+    return elementaryMatrix;
+}
 
-//TODO: is_invertible()
+/* An elementary matrix has the same effect as an elementary row operation.
+ * An elementary row operation applied to a matrix "A" yields the same result as EA where "E" is the corresponding elementary matrix.
+ * An elementary matrix is found by applying the elementary row operation on the identity matrix.
+ * @param S The size (number of rows and columns) of the elementary matrix.
+ * @param scalar The scalar to multiply the row by.
+ * @param row The row to be multiplied.
+ * @returns The corresponding elementary matrix.
+ */
+template <size_t S>
+Matrix<S, S> EM_scalar_multiplication(double scalar, size_t row) {
+    Matrix<S, S> elementaryMatrix = identity_matrix<S>();
+    ERO_scalar_multiplication(elementaryMatrix, scalar, row);
+    return elementaryMatrix;
+}
+
+/* An elementary matrix has the same effect as an elementary row operation.
+ * An elementary row operation applied to a matrix "A" yields the same result as EA where "E" is the corresponding elementary matrix.
+ * An elementary matrix is found by applying the elementary row operation on the identity matrix.
+ * @param S The size (number of rows and columns) of the elementary matrix.
+ * @param scalar The scalar to multiply the scaled row by.
+ * @param scaledRow The row to be scaled by.
+ * @param outputRow The output row to add and to copy the results into.
+ * @returns The corresponding elementary matrix.
+ */
+template <size_t S>
+Matrix<S, S> EM_row_sum(double scalar, size_t rowToScale, size_t outputRow) {
+    Matrix<S, S> elementaryMatrix = identity_matrix<S>();
+    ERO_row_sum(elementaryMatrix, scalar, rowToScale, outputRow);
+    return elementaryMatrix;
+}
+
+/* An nxn matrix "A" is invertible if there exists a matrix "P" such that PA = AP = I (identity matrix).
+ * @param m The argument matrix.
+ * @returns True if the argument matrix is invertible. False if otherwise.
+ */
+template <size_t S>
+bool is_invertible(const Matrix<S, S>& m) {
+    return rref(m) == identity_matrix<S>();
+}
+
+/*
+ */
+
 //TODO: inverse()

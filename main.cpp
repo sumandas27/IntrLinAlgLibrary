@@ -4,12 +4,7 @@ int main(int argc, char** argv) {
     
     IntrLinAlgLibrary_init();
 
-    Matrix<2, 2> mat(
-        0.0, 1.0,
-        1.0, 1.0
-    );
-
-    std::cout << is_symmetric(mat);
+    std::cout << EM_scalar_multiplication<5>(3.5, 3);
 
     return 0;
 }
