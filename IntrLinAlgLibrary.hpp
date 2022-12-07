@@ -846,12 +846,28 @@ Matrix<S, S> EM_row_sum(double scalar, size_t rowToScale, size_t outputRow) {
  * @param m The argument matrix.
  * @returns True if the argument matrix is invertible. False if otherwise.
  */
-template <size_t S>
-bool is_invertible(const Matrix<S, S>& m) {
-    return rref(m) == identity_matrix<S>();
+template <size_t R, size_t C>
+bool is_invertible(const Matrix<R, C>& m) {
+    if (R != C)
+        return false;
+
+    return rref(m) == identity_matrix<R>();
 }
 
-/*
+/* Given a matrix "A" its inverse is "A^-1" where A*A^-1 = A^-1*A = I (identity matrix).
+ * @param m The argument matrix.
+ * @returns The inverse of the argument matrix if it is invertible.
  */
+template <size_t S>
+Matrix<S, S> inverse(const Matrix<S, S>& m) {
+    assert (is_invertible(m));
 
-//TODO: inverse()
+    Matrix<S, 2 * S> rrefAugmented = rref(augment(m, identity_matrix<S>()));
+    Matrix<S, S> inverse{};
+    for (size_t row = 0; row < S; row++) {
+        size_t beg = row * (2 * S) + S;
+        size_t end = row * (2 * S) + (2 * S);
+        std::copy(rrefAugmented.entries.begin() + beg, rrefAugmented.entries.begin() + end, inverse.entries.begin() + row * S);
+    }
+    return inverse;
+}

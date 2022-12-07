@@ -4,7 +4,12 @@ int main(int argc, char** argv) {
     
     IntrLinAlgLibrary_init();
 
-    std::cout << EM_scalar_multiplication<5>(3.5, 3);
+    Matrix<2, 2> mat(
+        1, 2,
+        1, 2
+    );
+
+    std::cout << inverse(mat);
 
     return 0;
 }
