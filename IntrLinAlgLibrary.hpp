@@ -45,7 +45,8 @@ constexpr double deg_to_rad(double degrees) {
  * @param D The dimension of the vector.
  */
 template <size_t D>
-struct Vector {
+class Vector {
+public:
     std::array<double, D> components;
 
     template <typename... Ts>
@@ -116,7 +117,8 @@ std::ostream& operator<<(std::ostream& os, const Vector<X>& v) {
  * @param S The number of vectors or "size" in the set. 
  */
 template <size_t D, size_t S>
-struct VectorSet {
+class VectorSet {
+public:
     std::array<Vector<D>, S> set;
 
     template <typename... Ts>
@@ -169,7 +171,8 @@ Vector<D> const& VectorSet<D, S>::operator[](size_t index) const {
  * @param C The number of columns in the matrix.
  */
 template <size_t R, size_t C>
-struct Matrix {
+class Matrix {
+public:
     std::array<double, R * C> entries;
     
     template <typename... Ts>
@@ -871,3 +874,8 @@ Matrix<S, S> inverse(const Matrix<S, S>& m) {
     }
     return inverse;
 }
+
+/* CHAPTER 5:
+ * Eigenvalue given square matrix and vector
+ * Eigenvector space given square matrix and eigenvalue
+ */
