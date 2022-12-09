@@ -180,10 +180,8 @@ public:
     Matrix();
 
     class Proxy {
-
     public:
         Proxy(double* _rowPtr) : rowPtr(_rowPtr) { };
-
         double operator[](size_t col);
 
     private:
@@ -875,7 +873,21 @@ Matrix<S, S> inverse(const Matrix<S, S>& m) {
     return inverse;
 }
 
+//------------------------------------------------------------------------------------------//
+//CHAPTER 3 - DETERMINANTS
+
+/* The determinant of a square matrix is a number that characterizes some properties of the matrix.
+ * The determinant of a square matrix is 0 if and only if it is NOT invertible.
+ * @param m The argument square matrix.
+ * @returns The determinant of the argument square matrix.
+ */
+template <size_t S>
+double det(const Matrix<S, S>& m) {
+    return 0.0; //temp
+}
+
 /* CHAPTER 5:
  * Eigenvalue given square matrix and vector
- * Eigenvector space given square matrix and eigenvalue
+ * Eigenspace basis given square matrix and eigenvalue
+ * All eigenvalues of a matrix.
  */
