@@ -460,9 +460,6 @@ void ERO_row_swap(Matrix<R, C>& m, size_t row1, size_t row2) {
     assert (row1 >= 1 && row1 <= R);
     assert (row2 >= 1 && row2 <= R);
 
-    if (row1 == row2)
-        return;
-
     for (size_t col = 0; col < C; col++)
         std::swap(m.entries[(row1 - 1) * C + col], m.entries[(row2 - 1) * C + col]);
 }
@@ -506,11 +503,14 @@ void ERO_row_sum(Matrix<R, C>& m, double scalar, size_t rowToScale, size_t outpu
  * This function should only be read for implementation details and *SHOULD NOT* be used outside this file.
  * Instead, use the function "ref(Matrix)" to get the row-echelon form of a matrix.
  * @param m The argument matrix to be changed to its row-echelon form.
- * @param rank This pointer will be populated with the rank of the matrix. Pass in 'nullptr' if the rank isn't wanted.
+ * @returns The first value of the returned pair returns the rank of the argument matrix. This is used in rank calculation.
+ * @returns The second value of the returned pair returns the number of row swaps. This is used for calculating the determinant of a matrix.
  */
 template <size_t R, size_t C>
-void ref_by_reference(Matrix<R, C>& m, unsigned int* rank) {
+std::pair<unsigned int, unsigned int> ref_by_reference(Matrix<R, C>& m) {
     size_t pivotRow = 0;
+    unsigned int rowSwaps = 0;
+
     for (size_t col = 0; col < C; col++) {
         if (pivotRow > R - 1)
             break;
@@ -520,20 +520,23 @@ void ref_by_reference(Matrix<R, C>& m, unsigned int* rank) {
             if (is_equal(m.entries[row * C + col], 0.0))
                 continue;
 
-            if (nonzeroFound == 0.0) {
-                nonzeroFound = m.entries[row * C + col];
-                ERO_row_swap(m, pivotRow + 1, row + 1);
-                pivotRow++;
-            }
-            else {
+            if (nonzeroFound != 0.0) {
                 double scalar = -m.entries[row * C + col] / nonzeroFound;
                 ERO_row_sum(m, scalar, pivotRow, row + 1);
+                continue;
             }
+
+            nonzeroFound = m.entries[row * C + col]; /* First nonzero of the row found */
+            if (pivotRow != row) {
+                ERO_row_swap(m, pivotRow + 1, row + 1);
+                rowSwaps++;
+            }
+            pivotRow++;
         }
     }
 
-    if (rank != nullptr)
-        *rank = pivotRow;
+    unsigned int rank = pivotRow;
+    return std::make_pair(rank, rowSwaps);
 }
 
 /* The row-echelon form (ref) of a matrix is a matrix with the same solution set that follows 2 restrictions:
@@ -547,7 +550,7 @@ void ref_by_reference(Matrix<R, C>& m, unsigned int* rank) {
  */
 template <size_t R, size_t C>
 Matrix<R, C> ref(Matrix<R, C> m) {
-    ref_by_reference(m, nullptr);
+    ref_by_reference(m);
     return m;
 }
 
@@ -561,7 +564,7 @@ Matrix<R, C> ref(Matrix<R, C> m) {
  */
 template <size_t R, size_t C>
 Matrix<R, C> rref(Matrix<R, C> m) {
-    ref_by_reference(m, nullptr);
+    ref_by_reference(m);
     size_t pivotRow = 0;
     for (size_t col = 0; col < C; col++) {
         if (pivotRow > R - 1)
@@ -593,10 +596,9 @@ Matrix<R, C> rref(Matrix<R, C> m) {
  */
 template <size_t R, size_t C>
 unsigned int rank(const Matrix<R, C>& m) {
-    unsigned int rank = 0;
     Matrix<R, C> copy = m;
-    ref_by_reference(copy, &rank);
-    return rank;
+    unsigned int matRank = ref_by_reference(copy).first;
+    return matRank;
 }
 
 /* The nullity of a matrix is the dimension of the matrix's null space.
@@ -883,11 +885,32 @@ Matrix<S, S> inverse(const Matrix<S, S>& m) {
  */
 template <size_t S>
 double det(const Matrix<S, S>& m) {
-    return 0.0; //temp
+    Matrix<S, S> copy = m;
+    unsigned int rowSwaps = ref_by_reference(copy).second;
+
+    double determinant = 1;
+    for (int i = 0; i < S; i++)
+        determinant *= copy.entries[i * S + i];
+    if (rowSwaps % 2 == 1)
+        determinant *= -1;
+
+    return (is_equal(determinant, 0.0)) ? 0.0 : determinant; /* Prevent printing -0.0 */
 }
+
+//TODO: Test determinant properties
+
+/* CHAPTER 4:
+ * Row Space
+ * Column Space
+ * Null Space
+ * Dimension of Space??
+ * Are two matrices similar
+ */
 
 /* CHAPTER 5:
  * Eigenvalue given square matrix and vector
  * Eigenspace basis given square matrix and eigenvalue
  * All eigenvalues of a matrix.
+ * Is matrix diagonalizeable
+ * If diagonalizeable, find invertible matrix P and diagonal matrix D
  */

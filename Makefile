@@ -1,5 +1,5 @@
 main:
-	g++ -std=c++14 *.cpp
+	g++ -std=c++17 *.cpp
 	./a.out
 
 git:
