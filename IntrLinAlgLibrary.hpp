@@ -56,9 +56,6 @@ public:
     double operator[](size_t index);
 
     void print() const;
-
-    template <size_t X>
-    friend std::ostream& operator<<(std::ostream& os, const Vector<X>& v);
 };
 
 /* Constructs a vector with a list of arguments. Example Vector object creation: 
@@ -68,7 +65,9 @@ public:
  */
 template <size_t D>
 template <typename... Ts>
-Vector<D>::Vector(Ts... _components) : components{ (double)_components... } {
+Vector<D>::Vector(Ts... _components) 
+    : components{ (double)std::forward<Ts>(_components)... } 
+{
     assert (D != 0);
     assert (sizeof...(_components) == D);
 }
@@ -88,15 +87,6 @@ double Vector<D>::operator[](size_t index) {
     return components[index - 1];
 }
 
-/* Prints the vector to the terminal. Each component is rounded to the nearest thousandth.
- */
-template <size_t D>
-void Vector<D>::print() const {
-    for (double component : components)
-        std::cout << "{\t" << (abs(component) < epsilon() ? 0 : component) << "\t}\n";
-    std::cout << "\n";
-}
-
 /* Alternative to the print() function, allows the vector to be printed directly to the standard output.
  * Given a vector "v": "std::cout << v;"
  * @param v The vector to be printed to the standard output.
@@ -109,8 +99,17 @@ std::ostream& operator<<(std::ostream& os, const Vector<X>& v) {
     return os;
 }
 
+/* Prints the vector to the terminal. Each component is rounded to the nearest thousandth.
+ */
+template <size_t D>
+void Vector<D>::print() const {
+    std::cout << *this;
+}
+
 //------------------------------------------------------------------------------------------//
 //VECTORSET STRUCT:
+
+//TODO: Remove/rework this
 
 /* A VectorSet holds a set of vectors.
  * @param D The dimension of the vectors in the set.
@@ -166,6 +165,8 @@ Vector<D> const& VectorSet<D, S>::operator[](size_t index) const {
 //------------------------------------------------------------------------------------------//
 //MATRIX STRUCT AND METHODS:
 
+//TODO: Change this to an array of arrays.
+
 /* A matrix is an array of arrays of real numbers.
  * @param R The number of rows in the matrix.
  * @param C The number of columns in the matrix.
@@ -174,7 +175,7 @@ template <size_t R, size_t C>
 class Matrix {
 public:
     std::array<double, R * C> entries;
-    
+
     template <typename... Ts>
     Matrix(Ts... _entries);
     Matrix();
@@ -191,9 +192,6 @@ public:
     Proxy operator[](size_t row);
 
     void print() const;
-
-    template <size_t X, size_t Y>
-    friend std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m);
 };
 
 /* Constructs a matrix. Example Matrix object creation:
@@ -206,7 +204,9 @@ public:
  */
 template <size_t R, size_t C>
 template <typename... Ts>
-Matrix<R, C>::Matrix(Ts... _entries) : entries{ (double)_entries... } {
+Matrix<R, C>::Matrix(Ts... _entries) 
+    : entries{ (double)std::forward<Ts>(_entries)... } 
+{
     assert (R != 0 && C != 0);
     assert (sizeof...(_entries) == R * C);
 }
@@ -238,19 +238,6 @@ typename Matrix<R, C>::Proxy Matrix<R, C>::operator[](size_t row) {
     return Proxy(&entries[(row - 1) * C]);
 }
 
-/* Prints the matrix to the terminal. Each entry is rouded to the nearest thousandths.
- */
-template <size_t R, size_t C>
-void Matrix<R, C>::print() const {
-    for (int i = 0; i < R; i++) {
-        std::cout << "{\t";
-        for (int j = 0; j < C; j++)
-            std::cout << (abs(entries[i * C + j]) < epsilon() ? 0 : entries[i * C + j]) << "\t";
-        std::cout << "}\n";
-    }
-    std::cout << "\n";
-}
-
 /* Alternative to the print() function, allows the matrix to be printed directly to the standard output.
  * Given a matrix "m": "std::cout << m;"
  * @param m The matrix to be printed to the standard output.
@@ -265,6 +252,13 @@ std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m) {
     }
     os << "\n";
     return os;
+}
+
+/* Prints the matrix to the terminal. Each entry is rouded to the nearest thousandths.
+ */
+template <size_t R, size_t C>
+void Matrix<R, C>::print() const {
+    std::cout << *this;
 }
 
 //------------------------------------------------------------------------------------------//
@@ -894,10 +888,13 @@ double det(const Matrix<S, S>& m) {
     if (rowSwaps % 2 == 1)
         determinant *= -1;
 
-    return (is_equal(determinant, 0.0)) ? 0.0 : determinant; /* Prevent printing -0.0 */
+    return determinant;
 }
 
-//TODO: Test determinant properties
+//------------------------------------------------------------------------------------------//
+//CHAPTER 4 - SUBSPACES AND THEIR PROPERTIES
+
+//TODO (after refactoring):
 
 /* CHAPTER 4:
  * Row Space
