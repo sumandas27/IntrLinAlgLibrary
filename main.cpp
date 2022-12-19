@@ -4,14 +4,13 @@ int main(int argc, char** argv) {
     
     IntrLinAlgLibrary_init();
 
-    Vector<9> m
+    Matrix<2, 5> a
     (
-        1.0, 2.0, 3.0,
-        4.0, 5.0, 6.0,
-        7.0, 8.0, 9.0
+        1, 2, 3, 4, 5,
+        6, 7, 8, 9, 10
     );
 
-    m.print();
+    a.column_vector(2).print();
 
     return 0;
 }
