@@ -106,6 +106,7 @@ public:
 
 /* Constructs a vector with a list of arguments. Example Vector object creation: 
  * Vector<5> vec(1.0, 2.0, 3.0, 4.0, 5.0);
+ * 
  * @param _components The list of scalar arguments containing the components of the vector.
  */
 template <size_t D>
