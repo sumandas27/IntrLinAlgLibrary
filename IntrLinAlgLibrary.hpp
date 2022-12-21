@@ -11,8 +11,7 @@
 #include <array>
 #include <vector>
 
-/*
- * README
+/* README
  * ------------------------------------------------------------------------------------------------------------------
  * Write 'using ila::Vector, ila::Matrix;' to type 'Vector' and 'Matrix' instead of 'ila::Vector' and 'ila::Matrix'.
  * 
@@ -59,7 +58,6 @@ std::streamsize precision = 3;
 /* Sets the precision of vector components and matrix entries when printed.
  * Maximum precision allowed is 6.
  * @param _precision Sets printing all components and entries to the first '_precision' digits.
- * 
  */
 void set_precision(std::streamsize _precision) {
     assert (_precision >= 0 && _precision <= 6);
@@ -992,4 +990,4 @@ std::vector<Vector<C>> row(const Matrix<R, C>& m) {
  * If diagonalizeable, find invertible matrix P and diagonal matrix D
  */
 
-}
+} // namespace ila
