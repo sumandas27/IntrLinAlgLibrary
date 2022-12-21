@@ -1,16 +1,24 @@
 #include "IntrLinAlgLibrary.hpp"
+#include <memory>
+
+void divide() {
+
+    std::unique_ptr<int> yo1 = std::make_unique<int>(10);
+    std::unique_ptr<int> yo2 = std::make_unique<int>(5);
+
+    if (*yo1 > 100 || *yo2 > 100)
+        return;
+
+    if (*yo1 > 100 || *yo2 > 100)
+        return;
+
+    if (*yo1 > 100 || *yo2 > 100)
+        return;
+
+    std::cout << *yo1 / *yo2;
+}
 
 int main(int argc, char** argv) {
-    
-    IntrLinAlgLibrary_init();
-
-    Matrix<2, 5> a
-    (
-        1, 2, 3, 4, 5,
-        6, 7, 8, 9, 10
-    );
-
-    a.column_vector(2).print();
-
+    divide();
     return 0;
 }

@@ -11,13 +11,59 @@
 #include <array>
 #include <vector>
 
+/*
+ * README
+ * ------------------------------------------------------------------------------------------------------------------
+ * Write 'using ila::Vector, ila::Matrix;' to type 'Vector' and 'Matrix' instead of 'ila::Vector' and 'ila::Matrix'.
+ * 
+ * This library uses templates for rows and columns, so all matrix and vector sizes must be known at compile time.
+ * Matrix and vector sizes cannot change after being initialized.
+ * 
+ * Creating a vector:
+ * ila::Vector<4> myVector(1.0, 4.0, 3.0, 11.4);
+ * 
+ * Creating a matrix (line breaks for readability, but are optional):
+ * ila::Matrix<2, 2> myMatrix
+ * (
+ *     1.0, 2.0,
+ *     3.0, 4.0
+ * ); 
+ * 
+ * Creating a user-defined set of vectors (line breaks for readability, but are optional):
+ * std::array<ila::Vector<3>, 2> mySet = // A set of 2 vectors in R3
+ * {
+ *     Vector<3>(1.0, 2.0, 3.0),
+ *     Vector<3>(4.0, 5.0, 6.0)
+ * };
+ * 
+ * NOTE FOR SETS OF VECTORS:
+ * 
+ *  - This library handles sets of vectors using std::arrays, so use std::arrays for user-defined vector sets.
+ * 
+ *  - However, dimensions of bases for row, column, and null spaces cannot be calculated at compile time and so are
+ *    returned via an std::vector. Manually hardcode the std::vector contents** into new std::arrays and recompile
+ *    to be compatible with this library's functions.
+ *      
+ *    ** Use the print overload for std::vector of Vectors to view their contents as an augmented matrix easily.
+ */
+
+namespace ila { // Intro Linear Algebra
+
 //------------------------------------------------------------------------------------------//
 //NON-LINEAR ALGEBRA FUNCTIONS:
 
-/* Initializes the IntLinAlg Library.
+/* Precision of vector components and matrix entries when printed. Default set to 3.
  */
-void IntrLinAlgLibrary_init() {
-    std::cout << std::setprecision(3);
+std::streamsize precision = 3;
+
+/* Sets the precision of vector components and matrix entries when printed.
+ * Maximum precision allowed is 6.
+ * @param _precision Sets printing all components and entries to the first '_precision' digits.
+ * 
+ */
+void set_precision(std::streamsize _precision) {
+    assert (_precision >= 0 && _precision <= 6);
+    precision = _precision;
 }
 
 /* The range of tolerance for double equality.
@@ -55,8 +101,6 @@ public:
     Vector(std::array<double, D> _components);
     Vector();
 
-    void print() const;
-
     double operator[](size_t index);
 };
 
@@ -68,7 +112,7 @@ public:
 template <size_t D>
 template <typename... Ts>
 Vector<D>::Vector(Ts... _components) 
-    : components{ (double)std::forward<Ts>(_components)... } 
+    : components{ static_cast<double>(std::forward<Ts>(_components))... } 
 {
     assert (D != 0);
     assert (sizeof...(_components) == D);
@@ -85,25 +129,6 @@ Vector<D>::Vector(std::array<double, D> _components)
  */
 template <size_t D>
 Vector<D>::Vector() : components{} { }
-
-/* Alternative to the print() function, allows the vector to be printed directly to the standard output.
- * Given a vector "v": "std::cout << v;"
- * @param v The vector to be printed to the standard output.
- */
-template <size_t X>
-std::ostream& operator<<(std::ostream& os, const Vector<X>& v) {
-    for (double component : v.components)
-        os << "{\t" << (abs(component) < epsilon() ? 0 : component) << "\t}\n";
-    os << "\n";
-    return os;
-}
-
-/* Prints the vector to the terminal. Each component is rounded to the nearest thousandth.
- */
-template <size_t D>
-void Vector<D>::print() const {
-    std::cout << *this;
-}
 
 /* Vector indexing is 1-based.
  * @param index The index of the vector wanted to be changed/accessed.
@@ -135,8 +160,6 @@ public:
     Vector<C> row_vector(size_t row) const;
     Vector<R> column_vector(size_t col) const;
 
-    void print() const;
-
     class Proxy {
     public:
         Proxy(std::array<double, C> _row) : row(_row) { };
@@ -150,7 +173,8 @@ public:
 };
 
 /* Constructs a matrix. Example Matrix object creation:
- * Matrix<2, 3> mat(
+ * Matrix<2, 3> mat
+ * (
  *     1.0, 2.0, 3.0,
  *     4.0, 5.0, 6.0
  * );
@@ -165,7 +189,7 @@ Matrix<R, C>::Matrix(Ts... _entries)
     assert (R != 0 && C != 0);
     assert (sizeof...(_entries) == R * C);
 
-    std::array<double, R * C> temp{ (double)std::forward<Ts>(_entries)... };
+    std::array<double, R * C> temp{ static_cast<double>(std::forward<Ts>(_entries))... };
     for (size_t row = 0; row < R; row++) {
         size_t beg = row * C;
         size_t end = row * C + C;
@@ -208,28 +232,6 @@ Vector<R> Matrix<R, C>::column_vector(size_t col) const {
     return Vector<R>(column);
 }
 
-/* Alternative to the print() function, allows the matrix to be printed directly to the standard output.
- * Given a matrix "m": "std::cout << m;"
- * @param m The matrix to be printed to the standard output.
- */
-template <size_t X, size_t Y>
-std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m) {
-    for (size_t row = 0; row < X; row++) {
-        os << "{\t";
-        for (double entry : m.entries[row])
-            os << (abs(entry) < epsilon() ? 0 : entry) << "\t";
-        os << "}\n";
-    }
-    return os;
-}
-
-/* Prints the matrix to the terminal. Each entry is rouded to the nearest thousandths.
- */
-template <size_t R, size_t C>
-void Matrix<R, C>::print() const {
-    std::cout << *this;
-}
-
 /* Accesses the argument column of the proxy's row.
  * This overload is intended for the left hand side of an assignment.
  * @param col The column index of the proxy row wanted to be changed/accessed.
@@ -250,6 +252,86 @@ template <size_t R, size_t C>
 typename Matrix<R, C>::Proxy Matrix<R, C>::operator[](size_t row) {
     assert (row >= 1 && row <= R);
     return Proxy(entries[row - 1]);
+}
+
+//------------------------------------------------------------------------------------------//
+//PRINT FUNCTION OVERLOADS
+
+/* Alternative to the print() function, allows the vector to be printed directly to the standard output.
+ * Given a vector "v": "std::cout << v;"
+ * @param v The vector to be printed to the standard output.
+ */
+template <size_t X>
+std::ostream& operator<<(std::ostream& os, const Vector<X>& v) {
+    std::streamsize original = os.precision();
+    os << std::setprecision(precision);
+    for (double component : v.components)
+        os << "{\t" << (abs(component) < epsilon() ? 0 : component) << "\t}\n";
+    os << "\n";
+    os << std::setprecision(original);
+    return os;
+}
+
+/* Prints a vector to the terminal. Each component is rounded to the nearest thousandth.
+ * @param v The argument vector to be printed.
+ */
+template <size_t D>
+void print(const Vector<D>& v) {
+    std::cout << v;
+}
+
+/* Alternative to the print() function, allows the matrix to be printed directly to the standard output.
+ * Given a matrix "m": "std::cout << m;"
+ * @param m The matrix to be printed to the standard output.
+ */
+template <size_t X, size_t Y>
+std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m) {
+    std::streamsize original = os.precision();
+    os << std::setprecision(precision);
+    for (size_t row = 0; row < X; row++) {
+        os << "{\t";
+        for (double entry : m.entries[row])
+            os << (abs(entry) < epsilon() ? 0 : entry) << "\t";
+        os << "}\n";
+    }
+    os << std::setprecision(original);
+    return os;
+}
+
+/* Prints the matrix to the terminal. Each entry is rouded to the nearest thousandths.
+ * @param m The argument matrix to be printed.
+ */
+template <size_t R, size_t C>
+void print(const Matrix<R, C>& m) {
+    std::cout << m;
+}
+
+/* Prints a set of vectors (std::array of vectors) as its augmented matrix.
+ * @param set The argument std::array of vectors to be printed.
+ */
+template <size_t D, size_t S>
+void print(const std::array<Vector<D>, S>& set) {
+    print(augment_vector_set(set));
+}
+
+/* Prints a set of vectors (std::vector of vectors) as its augmented matrix.
+ * This function prints something that resembles the set's augmented matrix, but no augmenting actually occurs
+ * (because vector sizes are not constant, so they cannot be used in matrix template arguments).
+ * @param set The argument std::vector of vectors to be printed.
+ */
+template <size_t D>
+void print(const std::vector<Vector<D>>& set) {
+    std::streamsize original = std::cout.precision();
+    std::cout << std::setprecision(precision);
+    for (size_t row = 0; row < D; row++) {
+        std::cout << "{\t";
+        for (size_t col = 0; col < set.size(); col++) {
+            double component = set.at(col).components[row];
+            std::cout << (abs(component) < epsilon() ? 0 : component) << "\t";
+        }
+        std::cout << "}\n";
+    }
+    std::cout << std::setprecision(original);
 }
 
 //------------------------------------------------------------------------------------------//
@@ -579,7 +661,7 @@ Matrix<R, C> rref(Matrix<R, C> m) {
  * @returns The rank of the argument matrix.
  */
 template <size_t R, size_t C>
-unsigned int rank(const Matrix<R, C>& m) {
+constexpr unsigned int rank(const Matrix<R, C>& m) {
     Matrix<R, C> copy = m;
     unsigned int matRank = ref_by_reference(copy).first;
     return matRank;
@@ -672,7 +754,7 @@ bool is_consistent(const Matrix<R, C>& coeffMat, const Vector<R>& constantVec) {
  * @returns An augmented matrix of the set of vectors.
  */
 template <size_t D, size_t S>
-Matrix<D, S> augment_vector_set(const std::vector<Vector<D>>& set) {
+Matrix<D, S> augment_vector_set(const std::array<Vector<D>, S>& set) {
     Matrix<D, S> augmentedVectorSet{};
     for (size_t col = 0; col < S; col++)
     for (size_t row = 0; row < D; row++)
@@ -686,7 +768,7 @@ Matrix<D, S> augment_vector_set(const std::vector<Vector<D>>& set) {
  * @returns True if the argument vector is in the span of the argument set of vectors. False if otherwise.
  */
 template <size_t D, size_t S>
-bool is_in_span(const Vector<D>& vec, const std::vector<Vector<D>>& set) {
+bool is_in_span(const Vector<D>& vec, const std::array<Vector<D>, S>& set) {
     Matrix<D, S> augmentedSet = augment_vector_set(set);
     return is_consistent(augmentedSet, vec);
 }
@@ -696,7 +778,7 @@ bool is_in_span(const Vector<D>& vec, const std::vector<Vector<D>>& set) {
  * @returns True if the argument set of vectors is linearly independent. False if otherwise.
  */
 template <size_t D, size_t S>
-bool is_linearly_independent(const std::vector<Vector<D>>& set) {
+bool is_linearly_independent(const std::array<Vector<D>, S>& set) {
     return rank(augment_vector_set(set)) == S;
 }
 
@@ -705,7 +787,7 @@ bool is_linearly_independent(const std::vector<Vector<D>>& set) {
  * @returns True if the argument set of vectors is linearly dependent. False if otherwise.
  */
 template <size_t D, size_t S>
-bool is_linearly_dependent(const std::vector<Vector<D>>& set) {
+bool is_linearly_dependent(const std::array<Vector<D>, S>& set) {
     return !is_linearly_independent(set);
 }
 
@@ -909,3 +991,5 @@ std::vector<Vector<C>> row(const Matrix<R, C>& m) {
  * Is matrix diagonalizeable
  * If diagonalizeable, find invertible matrix P and diagonal matrix D
  */
+
+}
