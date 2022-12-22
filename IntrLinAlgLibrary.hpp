@@ -104,7 +104,7 @@ public:
     Vector(std::array<double, D> _components);
     Vector();
 
-    double operator[](size_t index);
+    double& operator[](size_t index);
 };
 
 /* Constructs a vector with a list of arguments. Example Vector object creation: 
@@ -138,7 +138,7 @@ Vector<D>::Vector() : components{} { }
  * @returns The component at the argument index.
  */
 template <size_t D>
-double Vector<D>::operator[](size_t index) {
+double& Vector<D>::operator[](size_t index) {
     assert (index >= 1 && index <= D);
     return components[index - 1];
 }
@@ -166,7 +166,7 @@ public:
     class Proxy {
     public:
         Proxy(std::array<double, C> _row) : row(_row) { };
-        double operator[](size_t col);
+        double& operator[](size_t col);
 
     private:
         std::array<double, C> row;
@@ -241,7 +241,7 @@ Vector<R> Matrix<R, C>::column_vector(size_t col) const {
  * @returns The entry at the argument column of the proxy row.
  */
 template <size_t R, size_t C>
-double Matrix<R, C>::Proxy::operator[](size_t col) {
+double& Matrix<R, C>::Proxy::operator[](size_t col) {
     assert (col >= 1 && col <= C);
     return row[col - 1];
 }
@@ -978,7 +978,7 @@ double det(const Matrix<S, S>& m) {
 //CHAPTER 4 - SUBSPACES AND THEIR PROPERTIES
 
 /* The dimension of a subspace is the number of vectors in its basis.
- * This function is only compatible with row(), col(), and null(), which already outputs its basis.
+ * This function is only compatible with basis(), row(), col(), and null(), which already outputs its basis.
  * @param set The argument std::vector set.
  * @returns The size of the vector / dimension of given basis.
  */
@@ -989,8 +989,8 @@ unsigned int dim(const std::vector<Vector<D>>& set) {
 
 /* The row space of a matrix A is the span of its row vectors and is denoted as Row A.
  * A basis is the minimal set that spans the same space.
- * @param m The argument matrix
- * @returns The basis of the argument matrix's row space.
+ * @param m The argument matrix.
+ * @returns The basis of the argument matrix's row space as an std::vector.
  */
 template <size_t R, size_t C>
 std::vector<Vector<C>> row(const Matrix<R, C>& m) {
@@ -1006,10 +1006,69 @@ std::vector<Vector<C>> row(const Matrix<R, C>& m) {
     return rowBasis;
 }
 
+/* The column space of matrix A is the span of its column vectors and is denoted as Col A.
+ * A basis is the minimal set that spans the same space.
+ * @param m The argument matrix.
+ * @returns The basis of the argument matrix's column space as an std::vector.
+ */
+template <size_t R, size_t C>
+std::vector<Vector<R>> col(const Matrix<R, C>& m) {
+    Matrix<R, C> refM = ref(m);
+    std::vector<Vector<R>> columnBasis{};
+
+    size_t pivotRow = 0;
+    for (size_t col = 0; col < C; col++) {
+        if (pivotRow >= R)
+            break;
+
+        if (is_equal(refM.entries[pivotRow][col], 0.0))
+            continue;
+
+        columnBasis.emplace_back(m.column_vector(col + 1));
+        pivotRow++;
+    }
+    return columnBasis;
+}
+
+/* The null space of matrix A is the set of all possible x's that satisfy the equation Ax = 0.
+ * A basis is the minimal set that spans the same space.
+ * @param m The argument matrix.
+ * @returns The basis of the argument matrix's null space as an std::vector.
+ */
+template <size_t R, size_t C>
+std::vector<Vector<C>> null(const Matrix<R, C>& m) {
+    Matrix<R, C> rrefM = rref(m);
+    std::vector<Vector<C>> nullBasis{};
+
+    size_t pivotRow = 0;
+    for (size_t col = 0; col < C; col++) {
+        if (is_equal(rrefM.entries[pivotRow][col], 1.0)) {
+            pivotRow++;
+            continue;
+        }
+        
+        Vector<C> vectorInBasis{};
+        for (int i = 0; i < C; i++)
+            vectorInBasis.components[i] = -rrefM.entries[i][col];
+        vectorInBasis.components[col] = 1.0;
+        nullBasis.emplace_back(vectorInBasis);
+    }
+
+    if (nullBasis.empty())
+        nullBasis.emplace_back(Vector<C>()); /* zero vector */
+    return nullBasis;
+}
+
+/* A basis is the minimal set that spans the same space.
+ * @param set A user-defined set given as an std::array.
+ * @returns The basis of the argument set as an std::vector.
+ */
+template <size_t D, size_t S>
+std::vector<Vector<D>> basis(const std::array<Vector<D>, S>& set) {
+    return col(augment_vector_set(set));
+}
+
 /* CHAPTER 4:
- * Column Space
- * Null Space
- * Dimension of Space??
  * Are two matrices similar
  */
 

@@ -6,14 +6,9 @@ int main(int argc, char** argv) {
 
     using namespace ila;
 
-    Matrix<3, 5> m
-    (
-        -3, 6, -1, 1, -7,
-        1, -2, 2, 3, -1,
-        2, -4, 5, 8, -4
-    );
-
-    std::cout << dim(row(m));
+    Vector<3> v(1, 2, 3);
+    v[1] = 4;
+    ila::print(v);
 
     return 0;
 }
