@@ -4,15 +4,16 @@ int main(int argc, char** argv) {
     
     /* TEST CODE */
 
-    using ila::Vector, ila::Matrix;
+    using namespace ila;
 
-    std::vector<Vector<3>> mySet =
-    {
-        Vector<3>(1000, 2, 3),
-        Vector<3>(4, 5, 6)
-    };
+    Matrix<3, 5> m
+    (
+        -3, 6, -1, 1, -7,
+        1, -2, 2, 3, -1,
+        2, -4, 5, 8, -4
+    );
 
-    ila::print(mySet);
+    std::cout << dim(row(m));
 
     return 0;
 }

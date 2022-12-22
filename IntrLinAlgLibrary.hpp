@@ -14,6 +14,7 @@
 /* README
  * ------------------------------------------------------------------------------------------------------------------
  * Write 'using ila::Vector, ila::Matrix;' to type 'Vector' and 'Matrix' instead of 'ila::Vector' and 'ila::Matrix'.
+ * Write 'using namespace ila;' to remove the prefix entirely. There may be potential naming conflicts with other libraries.
  * 
  * This library uses templates for rows and columns, so all matrix and vector sizes must be known at compile time.
  * Matrix and vector sizes cannot change after being initialized.
@@ -27,6 +28,10 @@
  *     1.0, 2.0,
  *     3.0, 4.0
  * ); 
+ * 
+ * Vectors and matrices are 1-indexed (the first row is at index 1 rather than 0):
+ *   - Accessing the 2nd component of a vector: 'myVector[2]'
+ *   - Accessing the (2, 1)-entry of a matrix: 'myMatrix[2][1]'
  * 
  * Creating a user-defined set of vectors (line breaks for readability, but are optional):
  * std::array<ila::Vector<3>, 2> mySet = // A set of 2 vectors in R3
@@ -51,9 +56,9 @@ namespace ila { // Intro Linear Algebra
 //------------------------------------------------------------------------------------------//
 //NON-LINEAR ALGEBRA FUNCTIONS:
 
-/* Precision of vector components and matrix entries when printed. Default set to 3.
+/* Setting that prints the first 'x' digits of every vector component and matrix entry. Default set to 5.
  */
-std::streamsize precision = 3;
+std::streamsize precision = 5;
 
 /* Sets the precision of vector components and matrix entries when printed.
  * Maximum precision allowed is 6.
@@ -343,6 +348,13 @@ bool operator==(const Vector<D>& lhs, const Vector<D>& rhs) {
     return std::equal(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), is_equal);
 }
 
+/* Opposite of vector equality.
+ */
+template <size_t D>
+bool operator!=(const Vector<D>& lhs, const Vector<D>& rhs) {
+    return !(lhs == rhs);
+}
+
 /* Two matrices are equal if all corresponding entries are equal.
  * @returns True if the matrix arguments m1 and m2 are equal. False if otherwise.
  */
@@ -353,6 +365,13 @@ bool operator==(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
             return false;
         
     return true;
+}
+
+/* Opposite of matrix equality.
+ */
+template <size_t R, size_t C>
+bool operator!=(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
+    return !(lhs == rhs);
 }
 
 /* The sum of two vectors is a vector of the same size with corresponding components added.
@@ -495,7 +514,7 @@ Matrix<S, S> identity_matrix() {
     Matrix<S, S> identityMatrix{};
     for (size_t i = 0; i < S; i++)
         identityMatrix.entries[i][i] = 1.0;
-    return Matrix<S, S>(identityMatrix);
+    return identityMatrix;
 }
 
 /* A rotation matrix is a 2x2 matrix that rotates an R^2 vector by some amount of degrees counter-clockwise.
@@ -958,24 +977,36 @@ double det(const Matrix<S, S>& m) {
 //------------------------------------------------------------------------------------------//
 //CHAPTER 4 - SUBSPACES AND THEIR PROPERTIES
 
-//TODO: Change
+/* The dimension of a subspace is the number of vectors in its basis.
+ * This function is only compatible with row(), col(), and null(), which already outputs its basis.
+ * @param set The argument std::vector set.
+ * @returns The size of the vector / dimension of given basis.
+ */
+template <size_t D>
+unsigned int dim(const std::vector<Vector<D>>& set) {
+    return set.size();
+}
 
 /* The row space of a matrix A is the span of its row vectors and is denoted as Row A.
+ * A basis is the minimal set that spans the same space.
  * @param m The argument matrix
- * @returns The set of vectors that generate 
+ * @returns The basis of the argument matrix's row space.
  */
 template <size_t R, size_t C>
 std::vector<Vector<C>> row(const Matrix<R, C>& m) {
-    std::vector<Vector<C>> res{};
-    for (std::array<double, C> row : m.entries)
-        res.emplace_back(row);
-    return res;
+    Matrix<R, C> rrefM = rref(m);
+    Vector<C> zeroVec = zero_vector<C>();
+    std::vector<Vector<C>> rowBasis{};
+
+    for (size_t row = 1; row <= R; row++) {
+        Vector<C> rowVec = rrefM.row_vector(row);
+        if (rowVec != zeroVec)
+            rowBasis.emplace_back(rowVec);
+    }
+    return rowBasis;
 }
 
-//TODO (after refactoring):
-
 /* CHAPTER 4:
- * Row Space
  * Column Space
  * Null Space
  * Dimension of Space??
