@@ -6,7 +6,7 @@ int main(int argc, char** argv) {
 
     using namespace ila;
 
-    Vector<2> w(4, 4);
+    Vector<2> w(-4, -4);
     normalize(w);
     print(w);
 

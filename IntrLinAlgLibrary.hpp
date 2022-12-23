@@ -1198,6 +1198,27 @@ void normalize(Vector<D>& v) {
     v /= norm(v);
 }
 
+/* The distance between two vectors is the norm of their difference.
+ * @param v1 The first argument vector.
+ * @param v2 The second argument vector.
+ * @returns The distance between the two vectors.
+ */
+template <size_t D>
+double distance(const Vector<D>& v1, const Vector<D>& v2) {
+    return norm(v1 - v2);
+}
+
+/* Two vectors are orthogonal if they are perpendicular when geometrically represented.
+ * Two vectors are orthogonal if their dot product is 0.
+ * @param v1 The first argument vector.
+ * @param v2 The second argument vector.
+ * @returns True if the two argument vectors are perpendicular. False if otherwise.
+ */
+template <size_t D>
+bool is_orthogonal(const Vector<D>& v1, const Vector<D>& v2) {
+    return is_equal(dot(v1, v2), 0.0);
+}
+
 /* CHAPTER 5:
  * Eigenvalue given square matrix and vector
  * Eigenspace basis given square matrix and eigenvalue
