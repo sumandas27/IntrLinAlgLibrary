@@ -6,9 +6,9 @@ int main(int argc, char** argv) {
 
     using namespace ila;
 
-    Vector<3> v(1, 2, 3);
-    v[1] = 4;
-    ila::print(v);
+    Vector<2> w(4, 4);
+    normalize(w);
+    print(w);
 
     return 0;
 }

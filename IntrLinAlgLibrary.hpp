@@ -3,8 +3,9 @@
 #include <iomanip>
 #include <cassert>
 
-#include <cmath>
 #include <string>
+#include <cmath>
+#include <numeric>
 
 #include <algorithm>
 #include <functional>
@@ -13,6 +14,9 @@
 
 /* README
  * ------------------------------------------------------------------------------------------------------------------
+ * Link to the Intro to Linear Algebra textbook my course uses:
+ * https://cloudflare-ipfs.com/ipfs/bafykbzaced62pai3pki6og6a5jimvjis3qpwo3yvzinlvj6gvjqzzrcqyhkre?filename=Lawrence%20E.%20Spence%2C%20Arnold%20J.%20Insel%2C%20Stephen%20H.%20Friedberg%20-%20Elementary%20Linear%20Algebra%20%282nd%20Edition%29-Prentice%20Hall%20%282007%29.pdf
+ *
  * Write 'using ila::Vector, ila::Matrix;' to type 'Vector' and 'Matrix' instead of 'ila::Vector' and 'ila::Matrix'.
  * Write 'using namespace ila;' to remove the prefix entirely. There may be potential naming conflicts with other libraries.
  * 
@@ -58,7 +62,7 @@ namespace ila { // Intro Linear Algebra
 
 /* Setting that prints the first 'x' digits of every vector component and matrix entry. Default set to 5.
  */
-std::streamsize precision = 5;
+std::streamsize precision = 4;
 
 /* Sets the precision of vector components and matrix entries when printed.
  * Maximum precision allowed is 6.
@@ -105,6 +109,11 @@ public:
     Vector();
 
     double& operator[](size_t index);
+
+    Vector<D>& operator+=(const Vector<D>& v);
+    Vector<D>& operator-=(const Vector<D>& v);
+    Vector<D>& operator*=(double scalar);
+    Vector<D>& operator/=(double scalar);
 };
 
 /* Constructs a vector with a list of arguments. Example Vector object creation: 
@@ -143,6 +152,38 @@ double& Vector<D>::operator[](size_t index) {
     return components[index - 1];
 }
 
+/* Vector<D> + Vector<D> operator overload is in Chapter 1.
+ */
+template <size_t D>
+Vector<D>& Vector<D>::operator+=(const Vector<D>& v) {
+    *this = *this + v;
+    return *this;
+}
+
+/* Vector<D> - Vector<D> operator overload is in Chapter 1.
+ */
+template <size_t D>
+Vector<D>& Vector<D>::operator-=(const Vector<D>& v) {
+    *this = *this - v;
+    return *this;
+}
+
+/* double * Vector<D> operator overload is in Chapter 1.
+ */
+template <size_t D>
+Vector<D>& Vector<D>::operator*=(double scalar) {
+    *this = scalar * *this;
+    return *this;
+}
+
+/* Vector<D> / double operator overload is in Chapter 1.
+ */
+template <size_t D>
+Vector<D>& Vector<D>::operator/=(double scalar) {
+    *this = *this / scalar;
+    return *this;
+}
+
 //------------------------------------------------------------------------------------------//
 //MATRIX STRUCT AND METHODS:
 
@@ -173,6 +214,11 @@ public:
     };
 
     Proxy operator[](size_t row);
+
+    Matrix<R, C>& operator+=(const Matrix<R, C>& m);
+    Matrix<R, C>& operator-=(const Matrix<R, C>& m);
+    Matrix<R, C>& operator*=(double scalar);
+    Matrix<R, C>& operator/=(double scalar);
 };
 
 /* Constructs a matrix. Example Matrix object creation:
@@ -255,6 +301,38 @@ template <size_t R, size_t C>
 typename Matrix<R, C>::Proxy Matrix<R, C>::operator[](size_t row) {
     assert (row >= 1 && row <= R);
     return Proxy(entries[row - 1]);
+}
+
+/* Matrix<R, C> + Matrix<R, C> operator overload is in Chapter 1.
+ */
+template <size_t R, size_t C>
+Matrix<R, C>& Matrix<R, C>::operator+=(const Matrix<R, C>& m) {
+    *this = *this + m;
+    return *this;
+}
+
+/* Matrix<R, C> - Matrix<R, C> operator overload is in Chapter 1.
+ */
+template <size_t R, size_t C>
+Matrix<R, C>& Matrix<R, C>::operator-=(const Matrix<R, C>& m) {
+    *this = *this - m;
+    return *this;
+}
+
+/* double * Matrix<R, C> operator overload is in Chapter 1.
+ */
+template <size_t R, size_t C>
+Matrix<R, C>& Matrix<R, C>::operator*=(double scalar) {
+    *this = scalar * *this;
+    return *this;
+}
+
+/* Matrix<R, C> / double operator overload is in Chapter 1.
+ */
+template <size_t R, size_t C>
+Matrix<R, C>& Matrix<R, C>::operator/=(double scalar) {
+    *this = *this / scalar;
+    return *this;
 }
 
 //------------------------------------------------------------------------------------------//
@@ -425,7 +503,7 @@ Vector<D> operator*(double scalar, const Vector<D>& v) {
     Vector<D> product{};
     std::transform(v.components.begin(), v.components.end(), product.components.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
     return product;
-}
+}   
 
 /* Scalar-vector multiplication is commutative.
  * @returns A vector that is the product of a vector and a scalar.
@@ -433,6 +511,15 @@ Vector<D> operator*(double scalar, const Vector<D>& v) {
 template <size_t D>
 Vector<D> operator*(const Vector<D>& v, double scalar) {
     return scalar * v;
+}
+
+/* The quotient of a vector and a scalar is a vector of the same size with all its components divided by the scalar.
+ * @returns A vector that is the quotient of a vector and a scalar.
+ */
+template <size_t D>
+Vector<D> operator/(const Vector<D>& v, double scalar) {
+    double invScalar = 1 / scalar;
+    return invScalar * v;
 }
 
 /* The product of a scalar and a matrix is a matrix of the same size with all its entries multiplied by the scalar.
@@ -452,6 +539,15 @@ Matrix<R, C> operator*(double scalar, const Matrix<R, C>& m) {
 template <size_t R, size_t C>
 Matrix<R, C> operator*(const Matrix<R, C>& m, double scalar) {
     return scalar * m;
+}
+
+/* The quotient of a matrix and a scalar is a matrix of the same size with all its entries divided by the scalar.
+ * @returns A matrix that is the quotient of a matrix and a scalar.
+ */
+template <size_t R, size_t C>
+Matrix<R, C> operator/(const Matrix<R, C>& m, double scalar) {
+    double invScalar = 1 / scalar;
+    return invScalar * m;
 }
 
 /* A matrix-vector product is the linear combination of the vector's components and the matrix's column vectors.
@@ -1068,9 +1164,39 @@ std::vector<Vector<D>> basis(const std::array<Vector<D>, S>& set) {
     return col(augment_vector_set(set));
 }
 
-/* CHAPTER 4:
- * Are two matrices similar
+//------------------------------------------------------------------------------------------//
+//CHAPTER 6 - ORTHOGONALITY
+
+/* Many functions from Chapter 5 require functions from Chapter 6.
+ * My Intro to Linear Algebra course covered only up until section 6.2. This chapter will cover that and QR Decomposition.
  */
+
+/* The dot product of two vectors are the sum of squares of corresponding entries.
+ * @param v1 The first argument vector.
+ * @param v2 The second argument vector.
+ * @returns The dot product of the two argument vectors.
+ */
+template <size_t D>
+double dot(const Vector<D>& v1, const Vector<D>& v2) {
+    return std::inner_product(v1.components.begin(), v1.components.end(), v2.components.begin(), 0.0);
+}
+
+/* The norm of a vector is its length. A vector v's norm is denoted as || v ||.
+ * @param v The argument vector.
+ * @returns The norm of the vector.
+ */
+template <size_t D>
+double norm(const Vector<D>& v) {
+    return sqrt(dot(v, v));
+}
+
+/* Normalizing a vector changes its norm/length to 1 (unit vector) while preserving its direction.
+ * @param v The argument vector to be normalized.
+ */
+template <size_t D>
+void normalize(Vector<D>& v) {
+    v /= norm(v);
+}
 
 /* CHAPTER 5:
  * Eigenvalue given square matrix and vector
