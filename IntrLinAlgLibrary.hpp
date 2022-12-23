@@ -553,7 +553,6 @@ Matrix<R, C> operator/(const Matrix<R, C>& m, double scalar) {
 /* A matrix-vector product is the linear combination of the vector's components and the matrix's column vectors.
  * @returns The matrix-vector product of the argument matrix and vector.
  */
-//TODO: Replace with dot product
 template <size_t R, size_t C>
 Vector<R> operator*(const Matrix<R, C>& m, const Vector<C>& v) {
     Vector<R> product{};
@@ -923,7 +922,6 @@ Matrix<R, C + 1> solve_homogenous_system(const Matrix<R, C>& coeffMat) {
  * @param rhs The right hand side argument matrix (of dimension BxC).
  * @returns The product of the two argument matrices (of dimension AxC).
  */
-//TODO: Replace with dot product
 template <size_t A, size_t B, size_t C>
 Matrix<A, C> operator*(const Matrix<A, B>& lhs, const Matrix<B, C>& rhs) {
     Matrix<A, C> product{};
@@ -1151,7 +1149,7 @@ std::vector<Vector<C>> null(const Matrix<R, C>& m) {
     }
 
     if (nullBasis.empty())
-        nullBasis.emplace_back(Vector<C>()); /* zero vector */
+        nullBasis.emplace_back(zero_vector<C>());
     return nullBasis;
 }
 
@@ -1181,6 +1179,14 @@ double dot(const Vector<D>& v1, const Vector<D>& v2) {
     return std::inner_product(v1.components.begin(), v1.components.end(), v2.components.begin(), 0.0);
 }
 
+/* Optional operator overload for getting the dot product between two vectors.
+ * Look at 'double dot(const Vector&, const Vector&)' for documentation.
+ */
+template <size_t D>
+double operator*(const Vector<D>& v1, const Vector<D>& v2) {
+    return dot(v1, v2);
+}
+
 /* The norm of a vector is its length. A vector v's norm is denoted as || v ||.
  * @param v The argument vector.
  * @returns The norm of the vector.
@@ -1188,6 +1194,13 @@ double dot(const Vector<D>& v1, const Vector<D>& v2) {
 template <size_t D>
 double norm(const Vector<D>& v) {
     return sqrt(dot(v, v));
+}
+
+/* A vector's length is its norm. Look at 'double norm(const Vector&)' for documentation.
+ */
+template <size_t D>
+double length(const Vector<D>& v) {
+    return norm(v);
 }
 
 /* Normalizing a vector changes its norm/length to 1 (unit vector) while preserving its direction.
@@ -1218,6 +1231,41 @@ template <size_t D>
 bool is_orthogonal(const Vector<D>& v1, const Vector<D>& v2) {
     return is_equal(dot(v1, v2), 0.0);
 }
+
+/* A set of vectors are orthogonal if every vector is orthogonal to every other vector in the set.
+ * @param The argument set of vectors as an std::array.
+ * @returns True if the set is orthogonal. False if otherwise.
+ */
+template <size_t D, size_t S>
+bool is_orthogonal(const std::array<Vector<D>, S>& set) {
+    if (S > D)
+        return false;
+
+    for (size_t i = 0; i < S; i++)
+    for (size_t j = i + 1; j < S; j++)
+        if (!is_orthogonal(set[i], set[j]))
+            return false;
+
+    return true;
+}
+
+/* Perpendicularity and orthogonality is the same. Look at 'bool is_orthogonal(const Vector&, const Vector&)' for documentation.
+ */
+template <size_t D>
+bool is_perpendicular(const Vector<D>& v1, const Vector<D>& v2) {
+    return is_orthogonal(v1, v2);
+}
+
+/* Perpendicularity and orthogonality is the same. Look at 'bool is_orthogonal(const std::array&)' for documentation.
+ */
+template <size_t D, size_t S>
+bool is_perpendicular(const std::array<Vector<D>, S>& set) {
+    return is_orthogonal(set);
+}
+
+//TODO: orthogonal_projection()
+//TODO: orthonormal_basis()
+//TODO: QR Decomposition
 
 /* CHAPTER 5:
  * Eigenvalue given square matrix and vector
