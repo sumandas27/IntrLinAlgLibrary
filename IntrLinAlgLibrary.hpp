@@ -1249,22 +1249,38 @@ bool is_orthogonal(const std::array<Vector<D>, S>& set) {
     return true;
 }
 
-/* Perpendicularity and orthogonality is the same. Look at 'bool is_orthogonal(const Vector&, const Vector&)' for documentation.
+/* The orthogonal projection of a vector 'u' onto another vector 'v' is v's scalar multiple that is closest to 'u'.
+ * The difference of a vector and its orthogonal projection is orthogonal to the line of the projection.
+ * @param of The argument vector to find the orthogonal projection of.
+ * @param onto The argument vector whose scalar multiple is the orthogonal projection.
  */
 template <size_t D>
-bool is_perpendicular(const Vector<D>& v1, const Vector<D>& v2) {
-    return is_orthogonal(v1, v2);
+Vector<D> orthogonal_projection(const Vector<D>& of, const Vector<D>& from) {
+    double scalar = dot(of, from) / dot(from, from);
+    return scalar * from;
 }
 
-/* Perpendicularity and orthogonality is the same. Look at 'bool is_orthogonal(const std::array&)' for documentation.
+/* A set is vectors orthonormal it is orthogonal and all vectors are of norm/length 1.
+ * This function converts a basis to an orthonormal basis that generates the same space.
+ * @param basis The argument basis as an std::array.
+ * @returns An orthonormal basis that generates the same space.
  */
 template <size_t D, size_t S>
-bool is_perpendicular(const std::array<Vector<D>, S>& set) {
-    return is_orthogonal(set);
+std::array<Vector<D>, S> orthonormal_basis(const std::array<Vector<D>, S>& basis) {
+    assert (is_linearly_independent(basis));
+
+    std::array<Vector<D>, S> orthonormalBasis{};
+    for (int k = 0; k < S; k++) {
+        orthonormalBasis[k] = basis[k];
+        for (int i = 0; i < k; i++) {
+            double scalar = dot(basis[k], orthonormalBasis[i]);
+            orthonormalBasis[k] -= scalar * orthonormalBasis[i];
+        }        
+        normalize(orthonormalBasis[k]);
+    }
+    return orthonormalBasis;
 }
 
-//TODO: orthogonal_projection()
-//TODO: orthonormal_basis()
 //TODO: QR Decomposition
 
 /* CHAPTER 5:
