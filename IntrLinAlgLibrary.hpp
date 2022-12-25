@@ -1331,6 +1331,92 @@ std::pair<Matrix<R, C>, Matrix<C, C>> qr_factorization(const Matrix<R, C>& m) {
 //------------------------------------------------------------------------------------------//
 //CHAPTER 5 - EIGENVALUES, EIGENVECTORS, AND DIAGONALIZATION
 
+/* An Eigenvalue struct contains its value and its multiplicity.
+ * An eigenvalue's multiplicity is the number of times it appears as a root of its characteristic polynomial.
+ */
+struct Eigenvalue {
+    double eigenvalue;
+    unsigned int multiplicity;
+};
+
+/* Checks if a matrix is lower-triangular.
+ * @param m The argument matrix.
+ * @returns True if the argument matrix is lower-triangular. False if otherwise.
+ */
+template <size_t R, size_t C>
+bool is_lower_triangular(const Matrix<R, C>& m) {
+    for (size_t row = 0; row < R; row++)
+    for (size_t col = row + 1; col < R; col++)
+        if (!is_equal(m.entries[row][col], 0.0))
+            return false;
+
+    return true;
+}
+
+/* Checks if a matrix is upper-triangular.
+ * @param m The argument matrix.
+ * @returns True if the argument matrix is upper-triangular. False if otherwise.
+ */
+template <size_t R, size_t C>
+bool is_upper_triangular(const Matrix<R, C>& m) {
+    for (size_t row = 0; row < R; row++)
+    for (size_t col = 0; col < row; col++)
+        if (!is_equal(m.entries[row][col], 0.0))
+            return false;
+    
+    return true;
+}
+
+/* [HELPER FUNCTION] The QR-Algorithm of a matrix returns an upper-truiangular matrix whose diagonal entries are the eigenvalues of the matrix.
+ * NOTE: These eigenvalues are approximations. Getting the eigenvalues themselves require an infinite amount of iterations.
+ * @param m The argument matrix.
+ * @returns The upper-triangular matrix whose diagonal entries are the eigenvalues of the argument matrix.
+ */
+template <size_t S>
+Matrix<S, S> qr_algorithm(Matrix<S, S> m) {
+    constexpr unsigned int MAX_ITERATIONS = 1000;
+    for (int i = 0; i < MAX_ITERATIONS; i++) {
+        auto [q, r] = qr_factorization(m);
+        m = r * q;
+        if (is_upper_triangular(m))
+            break;
+    }
+    return m;
+}
+
+/* An eigenvalue λ of a matrix A is a value such that there exists a vector (eigenvector) v such that Av = λv.
+ * @param m The argument matrix.
+ * @returns All of the matrix's eigenvalues and their corresponding multiplicities as an std::vector.
+ */
+template <size_t S>
+std::vector<Eigenvalue> generate_eigenvalues(const Matrix<S, S>& m) {
+    std::vector<Eigenvalue> eigenvalues{};
+    Matrix<S, S> qrAlgorithm = qr_algorithm(m);
+    for (size_t i = 0; i < S; i++) {
+        double raw = qrAlgorithm.entries[i][i];
+        double eigenvalue = std::floor(10000 * raw + 0.5) / 10000; /* rounded to the nearest ten thousandths */
+        auto it = std::find_if(eigenvalues.begin(), eigenvalues.end(), [eigenvalue](const Eigenvalue& element) { return element.eigenvalue == eigenvalue; });
+        if (it != eigenvalues.end())
+            it->multiplicity++;
+        else {
+            Eigenvalue newEigenvalue = { eigenvalue, 1 };
+            eigenvalues.emplace_back(newEigenvalue);
+        }
+    }
+    return eigenvalues;
+}
+
+/* Finds an eigenvalue of a matrix given a valid eigenvector.
+ * @param m The argument matrix.
+ * @param eigenvalue The argument eigenvector.
+ * @returns The corresponding eigenvalue.
+ */
+template <size_t S>
+double get_eigenvalue(const Matrix<S, S>& m, const Vector<S>& eigenvector) {
+    assert (eigenvector != zero_vector<S>());
+    Vector<S> product = m * eigenvector;
+}
+
 /* CHAPTER 5:
  * Eigenvalue given square matrix and vector
  * Eigenspace basis given square matrix and eigenvalue
