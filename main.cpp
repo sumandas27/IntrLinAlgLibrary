@@ -6,16 +6,17 @@ int main(int argc, char** argv) {
 
     using namespace ila;
 
-    std::array<Vector<4>, 3> basis =
-    {
-        Vector<4>(1, -1, 0, 2),
-        Vector<4>(1, 1, 1, 3),
-        Vector<4>(3, 1, 1, 5)
-    };
-    
-    ila::print(basis);
+    Matrix<3, 2> m
+    (
+        1, 2,
+        1, 2,
+        1, 2
+    );
+
+    auto [q, r] = qr_factorization(m);
+    ila::print(q);
     std::cout << "\n";
-    ila::print(orthonormal_basis(basis));
+    ila::print(r);
 
     return 0;
 }

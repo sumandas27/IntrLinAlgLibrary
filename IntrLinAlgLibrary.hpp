@@ -1,16 +1,12 @@
 #pragma once
 #include <iostream>
 #include <iomanip>
-#include <cassert>
 
-#include <string>
-#include <cmath>
 #include <numeric>
-
-#include <algorithm>
-#include <functional>
 #include <array>
 #include <vector>
+#include <algorithm>
+#include <functional>
 
 /* README
  * ------------------------------------------------------------------------------------------------------------------
@@ -82,7 +78,7 @@ constexpr double epsilon() {
 /* Checks equality between two doubles if their difference lies within a tolerance range.
  */
 bool is_equal(double val1, double val2) {
-    return abs(val1 - val2) < epsilon();
+    return std::abs(val1 - val2) < epsilon();
 }
 
 /* Converts an angle from degrees to radians.
@@ -347,7 +343,7 @@ std::ostream& operator<<(std::ostream& os, const Vector<X>& v) {
     std::streamsize original = os.precision();
     os << std::setprecision(precision);
     for (double component : v.components)
-        os << "{\t" << (abs(component) < epsilon() ? 0 : component) << "\t}\n";
+        os << "{\t" << (std::abs(component) < epsilon() ? 0 : component) << "\t}\n";
     os << "\n";
     os << std::setprecision(original);
     return os;
@@ -372,7 +368,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m) {
     for (size_t row = 0; row < X; row++) {
         os << "{\t";
         for (double entry : m.entries[row])
-            os << (abs(entry) < epsilon() ? 0 : entry) << "\t";
+            os << (std::abs(entry) < epsilon() ? 0 : entry) << "\t";
         os << "}\n";
     }
     os << std::setprecision(original);
@@ -408,7 +404,7 @@ void print(const std::vector<Vector<D>>& set) {
         std::cout << "{\t";
         for (size_t col = 0; col < set.size(); col++) {
             double component = set.at(col).components[row];
-            std::cout << (abs(component) < epsilon() ? 0 : component) << "\t";
+            std::cout << (std::abs(component) < epsilon() ? 0 : component) << "\t";
         }
         std::cout << "}\n";
     }
@@ -674,12 +670,10 @@ void ERO_row_sum(Matrix<R, C>& m, double scalar, size_t rowToScale, size_t outpu
 
     std::array<double, C> scaledRow{};
     std::transform(m.entries[rowToScale - 1].begin(), m.entries[rowToScale - 1].end(), scaledRow.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
-    std::transform(m.entries[outputRow - 1].begin(), m.entries[outputRow - 1].end(), scaledRow.begin(), m.entries[outputRow - 1].begin(), std::plus<double>());
+    std::transform(m.entries[outputRow  - 1].begin(), m.entries[outputRow  - 1].end(), scaledRow.begin(), m.entries[outputRow - 1].begin(), std::plus<double>());
 }
 
-/* This function transforms the matrix argument itself to reduced-row echelon form, avoiding an unnecessary copy.
- * This function should only be read for implementation details and *SHOULD NOT* be used outside this file.
- * Instead, use the function "ref(Matrix)" to get the row-echelon form of a matrix.
+/* [HELPER FUNCTION] This function transforms the matrix argument itself to reduced-row echelon form, avoiding an unnecessary copy.
  * @param m The argument matrix to be changed to its row-echelon form.
  * @returns The first value of the returned pair returns the rank of the argument matrix. This is used in rank calculation.
  * @returns The second value of the returned pair returns the number of row swaps. This is used for calculating the determinant of a matrix.
@@ -1193,7 +1187,7 @@ double operator*(const Vector<D>& v1, const Vector<D>& v2) {
  */
 template <size_t D>
 double norm(const Vector<D>& v) {
-    return sqrt(dot(v, v));
+    return std::sqrt(dot(v, v));
 }
 
 /* A vector's length is its norm. Look at 'double norm(const Vector&)' for documentation.
@@ -1260,10 +1254,11 @@ Vector<D> orthogonal_projection(const Vector<D>& of, const Vector<D>& from) {
     return scalar * from;
 }
 
+
 /* A set is vectors orthonormal it is orthogonal and all vectors are of norm/length 1.
  * This function converts a basis to an orthonormal basis that generates the same space.
  * @param basis The argument basis as an std::array.
- * @returns An orthonormal basis that generates the same space.
+ * @returns An orthonormal basis that generates the same space (as an std::array).
  */
 template <size_t D, size_t S>
 std::array<Vector<D>, S> orthonormal_basis(const std::array<Vector<D>, S>& basis) {
@@ -1281,7 +1276,60 @@ std::array<Vector<D>, S> orthonormal_basis(const std::array<Vector<D>, S>& basis
     return orthonormalBasis;
 }
 
-//TODO: QR Decomposition
+/* [HELPER FUNCTION] Orthonormal basis overload for std::vector arguments.
+ * @param basis The argument basis as an std::vector (this must be a valid basis to work).
+ * @returns An orthonormal basis that generates the same space (as an std::vector).
+ */
+template <size_t D>
+std::vector<Vector<D>> orthonormal_basis(const std::vector<Vector<D>>& basis) {
+    std::vector<Vector<D>> orthonormalBasis(basis.size());
+    for (int k = 0; k < basis.size(); k++) {
+        orthonormalBasis.at(k) = basis.at(k);
+        for (int i = 0; i < k; i++) {
+            double scalar = dot(basis.at(k), orthonormalBasis.at(i));
+            orthonormalBasis.at(k) -= scalar * orthonormalBasis.at(i);
+        }
+        normalize(orthonormalBasis.at(k));
+    }
+    return orthonormalBasis;
+}
+
+/* The QR factorization of a matrix A returns two matrices Q, an orthogonal (or semi-orthogonal) matrix and R, an upper-triangular
+ * matrix such that A = QR.
+ * A matrix is orthogonal if its column vectors form an orthogonal basis.
+ * @param m The argument matrix.
+ * @returns The first element of the pair is the (semi)orthogonal R x C matrix Q.
+ * @returns The second element of the pair is the upper-triangular C x C matrix R.
+ */
+template <size_t R, size_t C>
+std::pair<Matrix<R, C>, Matrix<C, C>> qr_factorization(const Matrix<R, C>& m) {
+    std::vector<Vector<R>> colBasis = col(m);
+    std::vector<Vector<R>> orthonormalBasis = orthonormal_basis(colBasis);
+    while (orthonormalBasis.size() < C) {
+        Matrix<C, R> qTransposeTemp{};
+        for (size_t row = 0; row < orthonormalBasis.size(); row++) {
+            auto obBegin = orthonormalBasis.at(row).components.begin();
+            auto obEnd   = orthonormalBasis.at(row).components.end();
+            auto qtBegin = qTransposeTemp.entries[row].begin();
+            std::copy(obBegin, obEnd, qtBegin);
+        }
+        std::vector<Vector<R>> nullBasis = null(qTransposeTemp);
+        Vector<R> vecToAppend = nullBasis.at(0);
+        normalize(vecToAppend);
+        orthonormalBasis.emplace_back(vecToAppend);
+    }
+
+    Matrix<R, C> q{};
+    for (size_t row = 0; row < R; row++)
+        for (size_t col = 0; col < C; col++)
+            q.entries[row][col] = orthonormalBasis.at(col).components[row];
+
+    Matrix<C, C> r = transpose(q) * m;
+    return std::make_pair(q, r);
+}
+
+//------------------------------------------------------------------------------------------//
+//CHAPTER 5 - EIGENVALUES, EIGENVECTORS, AND DIAGONALIZATION
 
 /* CHAPTER 5:
  * Eigenvalue given square matrix and vector
