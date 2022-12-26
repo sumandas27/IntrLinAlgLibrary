@@ -1385,6 +1385,13 @@ Matrix<S, S> qr_algorithm(Matrix<S, S> m) {
 }
 
 /* An eigenvalue λ of a matrix A is a value such that there exists a vector (eigenvector) v such that Av = λv.
+ *
+ * An eigenvalue is stored as an Eigenvalue struct that has two attributes: 'eigenvalue' and 'multiplicity'
+ * This function returns an std::vector of Eigenvalue structs.
+ * 
+ * A print overload for std::vector<Eigenvalue> is given. To print all of a matrix's eigenvalues (where 'myMat' is your matrix), type:
+ * ila::print(ila::generate_eigenvalues(myMat));
+ * 
  * @param m The argument matrix.
  * @returns All of the matrix's eigenvalues and their corresponding multiplicities as an std::vector.
  */
@@ -1406,7 +1413,17 @@ std::vector<Eigenvalue> generate_eigenvalues(const Matrix<S, S>& m) {
     return eigenvalues;
 }
 
-/* Finds an eigenvalue of a matrix given a valid eigenvector.
+/* Print overload for an std::vector of Eigenvalue structs. To print all of a matrix's eigenvalues (where 'myMat' is your matrix), type:
+ * ila::print(ila::generate_eigenvalues(myMat));
+ * @param eigenvalues The set of Eigenvalue structs as an std::vector.
+ */
+void print(const std::vector<Eigenvalue>& eigenvalues) {
+    for (const Eigenvalue& eigenvalue : eigenvalues)
+        std::cout << "Eigenvalue: " << eigenvalue.eigenvalue << "\tMultiplicity: " << eigenvalue.multiplicity << "\n";
+}
+
+/* An eigenvector v of a matrix A is a vector such that there exists a scalar eigenvalue λ such that Av = λv.
+ * Finds an eigenvalue of a matrix given a valid eigenvector.
  * @param m The argument matrix.
  * @param eigenvalue The argument eigenvector.
  * @returns The corresponding eigenvalue.
@@ -1415,12 +1432,48 @@ template <size_t S>
 double get_eigenvalue(const Matrix<S, S>& m, const Vector<S>& eigenvector) {
     assert (eigenvector != zero_vector<S>());
     Vector<S> product = m * eigenvector;
+
+    bool isValid = true;
+    double eigenvalue = std::numeric_limits<double>::quiet_NaN(); /* 'not set' flag */
+    for (size_t i = 0; i < S; i++) {
+        if (eigenvector.components[i] == 0.0) {
+            if (product.components[i] != 0.0) {
+                isValid = false;
+                break;
+            }
+            continue;
+        }
+        
+        double componentEigenvalue = product.components[i] / eigenvector.components[i];
+        if (std::isnan(eigenvalue)) {
+            eigenvalue = componentEigenvalue;
+            continue;
+        }
+
+        if (componentEigenvalue != eigenvalue) {
+            isValid = false;
+            break;
+        }
+    }
+
+    assert(isValid && !std::isnan(eigenvalue));
+    return eigenvalue;
+}
+
+/* Finds the corresponding eigenspace basis of a given eigenvalue.
+ * The eigenspace of an eigenvalue is the set of all its corresponding eigenvectors.
+ * The eigenspace is equivalent to the null space of 'A - λI' where A is the argument matrix, λ is the eigenvalue, and I is the
+ * identity matrix of corresponding size.
+ * @param m The argument matrix.
+ * @param eigenvalue The argument eigenvalue.
+ * @returns The basis of the eigen
+ */
+template <size_t S>
+std::vector<Vector<S>> get_eigenspace_basis(const Matrix<S, S>& m, double eigenvalue) {
+    return null(m - eigenvalue * identity_matrix<S>());
 }
 
 /* CHAPTER 5:
- * Eigenvalue given square matrix and vector
- * Eigenspace basis given square matrix and eigenvalue
- * All eigenvalues of a matrix.
  * Is matrix diagonalizeable
  * If diagonalizeable, find invertible matrix P and diagonal matrix D
  */

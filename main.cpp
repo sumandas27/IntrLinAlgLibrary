@@ -9,20 +9,15 @@ int main(int argc, char** argv) {
 
     using namespace ila;
 
-    Matrix<3, 3> m
+    Matrix<4, 4> A
     (
-        5, -10, -5,
-        2, 14, 2,
-        -4, -8, 6
+        -3, 2, 0, 0,
+        -3, 4, 0, 0,
+        0, 0, -5, -4,
+        0, 0, -2, 2
     );
 
-    std::vector<Eigenvalue> eigenvalues = generate_eigenvalues(m);
-    for (const auto& [eigenvalue, multiplicity] : eigenvalues)
-        std::cout << eigenvalue << "\tMultiplicity: " << multiplicity << "\n";
-
-    auto end = std::chrono::steady_clock::now();
-    auto diff = end - start;
-    std::cout << std::chrono::duration<double, std::milli> (diff).count() << " ms\n";
+    print(generate_eigenvalues(A));
 
     return 0;
 }
