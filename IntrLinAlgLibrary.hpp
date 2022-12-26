@@ -49,6 +49,8 @@
  *    to be compatible with this library's functions.
  *      
  *    ** Use the print overload for std::vector of Vectors to view their contents as an augmented matrix easily.
+ * 
+ * This library can only handle real eigenvalues. Complex eigenvalues are not supported.
  */
 
 namespace ila { // Intro Linear Algebra
@@ -1331,6 +1333,9 @@ std::pair<Matrix<R, C>, Matrix<C, C>> qr_factorization(const Matrix<R, C>& m) {
 //------------------------------------------------------------------------------------------//
 //CHAPTER 5 - EIGENVALUES, EIGENVECTORS, AND DIAGONALIZATION
 
+/* NOTE: This library can only handle real eigenvalues. Complex eigenvalues are not supported.
+ */
+
 /* An Eigenvalue struct contains its value and its multiplicity.
  * An eigenvalue's multiplicity is the number of times it appears as a root of its characteristic polynomial.
  */
@@ -1367,7 +1372,7 @@ bool is_upper_triangular(const Matrix<R, C>& m) {
     return true;
 }
 
-/* [HELPER FUNCTION] The QR-Algorithm of a matrix returns an upper-truiangular matrix whose diagonal entries are the eigenvalues of the matrix.
+/* [HELPER FUNCTION] The QR-Algorithm of a matrix returns an upper-triangular matrix whose diagonal entries are the eigenvalues of the matrix.
  * NOTE: These eigenvalues are approximations. Getting the eigenvalues themselves require an infinite amount of iterations.
  * @param m The argument matrix.
  * @returns The upper-triangular matrix whose diagonal entries are the eigenvalues of the argument matrix.
@@ -1382,6 +1387,21 @@ Matrix<S, S> qr_algorithm(Matrix<S, S> m) {
             break;
     }
     return m;
+}
+
+/* [HELPER FUNCTION] Checks if an eigenvector is valid. The QR-Algorithm will output real eigenvalues when they are complex. 
+ * If a generated eigenvalue's eigenspace is just the zero vector, it is not a valid eigenvalue.
+ * @param m The argument matrix.
+ * @param eigenvalue The argument eigenvalue.
+ * @returns The first element of the returned pair if the eigenspace of the corresponding eigenvalue.
+ * NOTE: This may return just the zero vector which is *NOT A VALID EIGENSPACE*
+ * @returns The second element of the returned pair is true if the argument eigenvalue is valid. False if otherwise.
+ */
+template <size_t S>
+std::pair<std::vector<Vector<S>>, bool> eigenspace_info(const Matrix<S, S>& m, double eigenvalue) {
+    std::vector<Vector<S>> eigenspaceBasis = null(m - eigenvalue * identity_matrix<S>());
+    bool valid = eigenspaceBasis.at(0) != zero_vector<S>(); /* eigenvectors cannot be the zero vector */
+    return std::make_pair(eigenspaceBasis, valid); 
 }
 
 /* An eigenvalue λ of a matrix A is a value such that there exists a vector (eigenvector) v such that Av = λv.
@@ -1402,6 +1422,11 @@ std::vector<Eigenvalue> generate_eigenvalues(const Matrix<S, S>& m) {
     for (size_t i = 0; i < S; i++) {
         double raw = qrAlgorithm.entries[i][i];
         double eigenvalue = std::floor(10000 * raw + 0.5) / 10000; /* rounded to the nearest ten thousandths */
+
+        bool isEigenvalueValid = eigenspace_info(m, eigenvalue).second;
+        if (!isEigenvalueValid)
+            continue;
+
         auto it = std::find_if(eigenvalues.begin(), eigenvalues.end(), [eigenvalue](const Eigenvalue& element) { return element.eigenvalue == eigenvalue; });
         if (it != eigenvalues.end())
             it->multiplicity++;
@@ -1418,6 +1443,11 @@ std::vector<Eigenvalue> generate_eigenvalues(const Matrix<S, S>& m) {
  * @param eigenvalues The set of Eigenvalue structs as an std::vector.
  */
 void print(const std::vector<Eigenvalue>& eigenvalues) {
+    if (eigenvalues.empty()) {
+        std::cout << "This matrix has no real eigenvalues.\n";
+        return;
+    }
+
     for (const Eigenvalue& eigenvalue : eigenvalues)
         std::cout << "Eigenvalue: " << eigenvalue.eigenvalue << "\tMultiplicity: " << eigenvalue.multiplicity << "\n";
 }
@@ -1466,11 +1496,13 @@ double get_eigenvalue(const Matrix<S, S>& m, const Vector<S>& eigenvector) {
  * identity matrix of corresponding size.
  * @param m The argument matrix.
  * @param eigenvalue The argument eigenvalue.
- * @returns The basis of the eigen
+ * @returns The basis of the eigenvalue's corresponding eigenspace.
  */
 template <size_t S>
 std::vector<Vector<S>> get_eigenspace_basis(const Matrix<S, S>& m, double eigenvalue) {
-    return null(m - eigenvalue * identity_matrix<S>());
+    auto [eigenspaceBasis, valid] = eigenspace_info(m, eigenvalue);
+    assert (valid);
+    return eigenspaceBasis;
 }
 
 /* CHAPTER 5:

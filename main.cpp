@@ -2,22 +2,19 @@
 #include <chrono>
 
 int main(int argc, char** argv) {
-    
-    auto start = std::chrono::steady_clock::now();
 
     /* TEST CODE */
 
     using namespace ila;
 
-    Matrix<4, 4> A
+    Matrix<3, 3> A
     (
-        -3, 2, 0, 0,
-        -3, 4, 0, 0,
-        0, 0, -5, -4,
-        0, 0, -2, 2
+        1, 0, 2,
+        0, 3, 0,
+        2, 0, 1
     );
 
-    print(generate_eigenvalues(A));
+    print(get_eigenspace_basis(A, 3));
 
     return 0;
 }
