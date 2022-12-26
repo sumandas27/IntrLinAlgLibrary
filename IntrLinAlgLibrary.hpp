@@ -437,7 +437,7 @@ bool operator!=(const Vector<D>& lhs, const Vector<D>& rhs) {
 template <size_t R, size_t C>
 bool operator==(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
     for (size_t row = 0; row < R; row++)
-        if (!std::equal(lhs.entries[row].begin(), lhs.entries[row].end(), rhs.entries[row].begin()))
+        if (!std::equal(lhs.entries[row].begin(), lhs.entries[row].end(), rhs.entries[row].begin(), is_equal))
             return false;
         
     return true;
@@ -670,7 +670,7 @@ void ERO_row_sum(Matrix<R, C>& m, double scalar, size_t rowToScale, size_t outpu
     assert (rowToScale >= 1 && rowToScale <= R);
     assert (outputRow >= 1 && outputRow <= R);
 
-    std::array<double, C> scaledRow{};
+    std::array<double, C> scaledRow{}; //TODO: maybe fix
     std::transform(m.entries[rowToScale - 1].begin(), m.entries[rowToScale - 1].end(), scaledRow.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
     std::transform(m.entries[outputRow  - 1].begin(), m.entries[outputRow  - 1].end(), scaledRow.begin(), m.entries[outputRow - 1].begin(), std::plus<double>());
 }
@@ -681,7 +681,7 @@ void ERO_row_sum(Matrix<R, C>& m, double scalar, size_t rowToScale, size_t outpu
  * @returns The second value of the returned pair returns the number of row swaps. This is used for calculating the determinant of a matrix.
  */
 template <size_t R, size_t C>
-std::pair<unsigned int, unsigned int> ref_by_reference(Matrix<R, C>& m) {
+std::pair<unsigned int, unsigned int> HELPER_ref_by_reference(Matrix<R, C>& m) {
     size_t pivotRow = 0;
     unsigned int rowSwaps = 0;
 
@@ -724,7 +724,7 @@ std::pair<unsigned int, unsigned int> ref_by_reference(Matrix<R, C>& m) {
  */
 template <size_t R, size_t C>
 Matrix<R, C> ref(Matrix<R, C> m) {
-    ref_by_reference(m);
+    HELPER_ref_by_reference(m);
     return m;
 }
 
@@ -738,7 +738,7 @@ Matrix<R, C> ref(Matrix<R, C> m) {
  */
 template <size_t R, size_t C>
 Matrix<R, C> rref(Matrix<R, C> m) {
-    ref_by_reference(m);
+    HELPER_ref_by_reference(m);
     size_t pivotRow = 0;
     for (size_t col = 0; col < C; col++) {
         if (pivotRow > R - 1)
@@ -771,7 +771,7 @@ Matrix<R, C> rref(Matrix<R, C> m) {
 template <size_t R, size_t C>
 constexpr unsigned int rank(const Matrix<R, C>& m) {
     Matrix<R, C> copy = m;
-    unsigned int matRank = ref_by_reference(copy).first;
+    unsigned int matRank = HELPER_ref_by_reference(copy).first;
     return matRank;
 }
 
@@ -850,7 +850,7 @@ bool is_consistent(const Matrix<R, C>& coeffMat, const Vector<R>& constantVec) {
         if (rrefAugment.entries[row][C] == 0.0)
             continue;
 
-        if (std::all_of(rrefAugment.entries[row].begin(), rrefAugment.entries[row].end() - 1, [](double entry){ return entry == 0.0; }))
+        if (std::all_of(rrefAugment.entries[row].begin(), rrefAugment.entries[row].end() - 1, [](double entry){ return entry == 0.0; })) //TODO: fix
             return false;
     }
     return true;
@@ -1038,7 +1038,7 @@ Matrix<S, S> inverse(const Matrix<S, S>& m) {
     Matrix<S, 2 * S> rrefAugmented = rref(augment(m, identity_matrix<S>()));
     Matrix<S, S> inverse{};
     for (size_t row = 0; row < S; row++)
-        std::copy(rrefAugmented.entries[row].begin() + S, rrefAugmented.entries[row].begin() + 2 * S, inverse.entries[row].begin());
+        std::copy(rrefAugmented.entries[row].begin() + S, rrefAugmented.entries[row].begin() + 2 * S, inverse.entries[row].begin()); //TODO: fix
     return inverse;
 }
 
@@ -1053,7 +1053,7 @@ Matrix<S, S> inverse(const Matrix<S, S>& m) {
 template <size_t S>
 double det(const Matrix<S, S>& m) {
     Matrix<S, S> copy = m;
-    unsigned int rowSwaps = ref_by_reference(copy).second;
+    unsigned int rowSwaps = HELPER_ref_by_reference(copy).second;
 
     double determinant = 1;
     for (int i = 0; i < S; i++)
@@ -1283,7 +1283,7 @@ std::array<Vector<D>, S> orthonormal_basis(const std::array<Vector<D>, S>& basis
  * @returns An orthonormal basis that generates the same space (as an std::vector).
  */
 template <size_t D>
-std::vector<Vector<D>> orthonormal_basis(const std::vector<Vector<D>>& basis) {
+std::vector<Vector<D>> HELPER_orthonormal_basis(const std::vector<Vector<D>>& basis) {
     std::vector<Vector<D>> orthonormalBasis(basis.size());
     for (int k = 0; k < basis.size(); k++) {
         orthonormalBasis.at(k) = basis.at(k);
@@ -1297,8 +1297,13 @@ std::vector<Vector<D>> orthonormal_basis(const std::vector<Vector<D>>& basis) {
 }
 
 /* The QR factorization of a matrix A returns two matrices Q, an orthogonal (or semi-orthogonal) matrix and R, an upper-triangular
- * matrix such that A = QR.
- * A matrix is orthogonal if its column vectors form an orthogonal basis.
+ * matrix such that A = QR. A matrix is orthogonal if its column vectors form an orthogonal basis.
+ *
+ * To get Q, type: 'Matrix<R, C> q = qr_factorization(myMat).first;' (replace 'R' and 'C' with the number of rows and columns of 'myMat')
+ * To get R, type: 'Matrix<C, C> r = qr_factorization(myMat).second;' (replace 'R' and 'C' with the number of rows and columns of 'myMat')
+ * To get both Q and R, type: 'auto [q, r] = qr_factorization(myMat);' (Variables 'q' and 'r' can be used as normal matrices)
+ * NOTE: 'myMat' is a placeholder name; use the name of your argument matrix.
+ * 
  * @param m The argument matrix.
  * @returns The first element of the pair is the (semi)orthogonal R x C matrix Q.
  * @returns The second element of the pair is the upper-triangular C x C matrix R.
@@ -1306,7 +1311,7 @@ std::vector<Vector<D>> orthonormal_basis(const std::vector<Vector<D>>& basis) {
 template <size_t R, size_t C>
 std::pair<Matrix<R, C>, Matrix<C, C>> qr_factorization(const Matrix<R, C>& m) {
     std::vector<Vector<R>> colBasis = col(m);
-    std::vector<Vector<R>> orthonormalBasis = orthonormal_basis(colBasis);
+    std::vector<Vector<R>> orthonormalBasis = HELPER_orthonormal_basis(colBasis);
     while (orthonormalBasis.size() < C) {
         Matrix<C, R> qTransposeTemp{};
         for (size_t row = 0; row < orthonormalBasis.size(); row++) {
@@ -1316,7 +1321,7 @@ std::pair<Matrix<R, C>, Matrix<C, C>> qr_factorization(const Matrix<R, C>& m) {
             std::copy(obBegin, obEnd, qtBegin);
         }
         std::vector<Vector<R>> nullBasis = null(qTransposeTemp);
-        Vector<R> vecToAppend = nullBasis.at(0);
+        Vector<R> vecToAppend = nullBasis.front();
         normalize(vecToAppend);
         orthonormalBasis.emplace_back(vecToAppend);
     }
@@ -1378,7 +1383,7 @@ bool is_upper_triangular(const Matrix<R, C>& m) {
  * @returns The upper-triangular matrix whose diagonal entries are the eigenvalues of the argument matrix.
  */
 template <size_t S>
-Matrix<S, S> qr_algorithm(Matrix<S, S> m) {
+Matrix<S, S> HELPER_qr_algorithm(Matrix<S, S> m) {
     constexpr unsigned int MAX_ITERATIONS = 1000;
     for (int i = 0; i < MAX_ITERATIONS; i++) {
         auto [q, r] = qr_factorization(m);
@@ -1398,9 +1403,9 @@ Matrix<S, S> qr_algorithm(Matrix<S, S> m) {
  * @returns The second element of the returned pair is true if the argument eigenvalue is valid. False if otherwise.
  */
 template <size_t S>
-std::pair<std::vector<Vector<S>>, bool> eigenspace_info(const Matrix<S, S>& m, double eigenvalue) {
+std::pair<std::vector<Vector<S>>, bool> HELPER_eigenspace_info(const Matrix<S, S>& m, double eigenvalue) {
     std::vector<Vector<S>> eigenspaceBasis = null(m - eigenvalue * identity_matrix<S>());
-    bool valid = eigenspaceBasis.at(0) != zero_vector<S>(); /* eigenvectors cannot be the zero vector */
+    bool valid = eigenspaceBasis.front() != zero_vector<S>(); /* eigenvectors cannot be the zero vector */
     return std::make_pair(eigenspaceBasis, valid); 
 }
 
@@ -1418,12 +1423,12 @@ std::pair<std::vector<Vector<S>>, bool> eigenspace_info(const Matrix<S, S>& m, d
 template <size_t S>
 std::vector<Eigenvalue> generate_eigenvalues(const Matrix<S, S>& m) {
     std::vector<Eigenvalue> eigenvalues{};
-    Matrix<S, S> qrAlgorithm = qr_algorithm(m);
+    Matrix<S, S> qrAlgorithm = HELPER_qr_algorithm(m);
     for (size_t i = 0; i < S; i++) {
         double raw = qrAlgorithm.entries[i][i];
         double eigenvalue = std::floor(10000 * raw + 0.5) / 10000; /* rounded to the nearest ten thousandths */
 
-        bool isEigenvalueValid = eigenspace_info(m, eigenvalue).second;
+        bool isEigenvalueValid = HELPER_eigenspace_info(m, eigenvalue).second;
         if (!isEigenvalueValid)
             continue;
 
@@ -1500,14 +1505,86 @@ double get_eigenvalue(const Matrix<S, S>& m, const Vector<S>& eigenvector) {
  */
 template <size_t S>
 std::vector<Vector<S>> get_eigenspace_basis(const Matrix<S, S>& m, double eigenvalue) {
-    auto [eigenspaceBasis, valid] = eigenspace_info(m, eigenvalue);
+    auto [eigenspaceBasis, valid] = HELPER_eigenspace_info(m, eigenvalue);
     assert (valid);
     return eigenspaceBasis;
 }
 
-/* CHAPTER 5:
- * Is matrix diagonalizeable
- * If diagonalizeable, find invertible matrix P and diagonal matrix D
+/* [HELPER FUNCTION] Determines whether a matrix A is diagonalizable, and returns inverse matrix P and diagonal matrix D if it is
+ * (where A = PDP^-1).
+ * @param m The argument matrix.
+ * @returns The first element of the returned pair is true if the argument matrix is diagonalizable. False if otherwise.
+ * @returns The second element of the returned pair is the invertible matrix P and the diagonal matrix D (as a pair) if
+ * the argument matrix is diagonalizable.
  */
+template <size_t S>
+std::pair<bool, std::pair<Matrix<S, S>, Matrix<S, S>>> HELPER_diagonalize_info(const Matrix<S, S>& m) {
+    std::vector<Vector<S>> eigenspaceBasesVectors{};
+    eigenspaceBasesVectors.reserve(S);
+
+    Matrix<S, S> d = zero_matrix<S, S>();
+    size_t dPos = 0;
+
+    std::vector<Eigenvalue> eigenvalues = generate_eigenvalues(m);
+    for (Eigenvalue& eigenvalue : eigenvalues) {
+        std::vector<Vector<S>> eigenspaceBasis = get_eigenspace_basis(m, eigenvalue.eigenvalue);
+
+        if (eigenvalue.multiplicity == 1) {
+            eigenspaceBasesVectors.emplace_back(eigenspaceBasis.front());
+            continue;
+        }
+
+        if (eigenspaceBasis.size() != eigenvalue.multiplicity)
+            break;
+
+        std::copy(eigenspaceBasis.begin(), eigenspaceBasis.end(), eigenspaceBasesVectors.end());
+        for (int i = 0; i < eigenvalue.multiplicity; i++) {
+            d.entries[dPos][dPos] = eigenvalue.eigenvalue;
+            dPos++;
+        }
+    }
+
+    if (eigenspaceBasesVectors.size() != S) {
+        auto invalidMatrices = std::make_pair(zero_matrix<S, S>(), zero_matrix<S, S>());
+        return std::make_pair(false, invalidMatrices);
+    }
+
+    Matrix<S, S> p{};
+    for (size_t row = 0; row < S; row++)
+    for (size_t col = 0; col < S; col++)
+        p.entries[row][col] = eigenspaceBasesVectors.at(col).components[row];
+
+    auto pd = std::make_pair(p, d);
+    return std::make_pair(true, pd);
+}
+
+/* A matrix A is diagonalizable if it can be written as A = PDP^-1 where P is an invertible matrix and D is a diagonal matrix.
+ * A matrix A is diagonalizable if the number of vectors in all of its eigenspace bases is equal to its number of columns.
+ * @param m The argument matrix.
+ * @returns True if the argument matrix is diagonalizable. False if otherwise.
+ */
+template <size_t S>
+bool is_diagonalizable(const Matrix<S, S>& m) {
+    bool isDiagonalizable = HELPER_diagonalize_info(m).first;
+    return isDiagonalizable;
+}
+
+/* Diagonalizing matrix A breaks it down to an invertible matrix P and a diagonal matrix D such that A = PDP^-1.
+ *
+ * To get P, type: 'Matrix<S, S> p = ila::diagonalize(myMat).first;' (replace 'S' with the size of 'myMat')
+ * To get D, type: 'Matrix<S, S> d = ila::diagonalize(myMat).second;' (replace 'S' with the size of 'myMat')
+ * To get both P and D, type 'auto [p, d] = ila::diagonalize(myMat);' (Variables 'p' and 'd' can be used as normal matrices)
+ * NOTE: 'myMat' is a placeholder name; use the name of your argument matrix.
+ *
+ * @param m The argument matrix.
+ * @returns The first element of the returned pair is the invertible matrix P.
+ * @returns The second element of the returned pair is the diagonal matrix D.
+ */
+template <size_t S>
+std::pair<Matrix<S, S>, Matrix<S, S>> diagonalize(const Matrix<S, S>& m) {
+    auto [isDiagonalizable, pd] = HELPER_diagonalize_info(m);
+    assert (isDiagonalizable);
+    return pd;
+}
 
 } // namespace ila

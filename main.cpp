@@ -7,14 +7,10 @@ int main(int argc, char** argv) {
 
     using namespace ila;
 
-    Matrix<3, 3> A
-    (
-        1, 0, 2,
-        0, 3, 0,
-        2, 0, 1
-    );
-
-    print(get_eigenspace_basis(A, 3));
+    std::vector<int> yo{};
+    yo.reserve(4);
+    yo.emplace_back(3);
+    std::cout << yo.size();
 
     return 0;
 }
