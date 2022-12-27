@@ -862,8 +862,8 @@ Matrix<R, C + 1> solve(const Matrix<R, C>& coeffMat, const Vector<R>& constantVe
 /* A system is consistent if given a coefficient matrix A and a constant vector b, a solution x exists for Ax = b.
  * Given the reduced row-echelon form of the augmented matrix of A and b, the system is not consistent if a row as follows exists:
  *
- *    x1 x2      xn b
- * [  0  0  ...  0  c ] where c is a nonzero scalar
+ *    x1 x2      xn   b
+ * [  0  0  ...  0  | c ] where c is a nonzero scalar
  * This is synonymous to 0x1 + 0x2 + ... + 0xn = c --> 0 = c. 0 cannot equal a nonzero number, so no solution exists for x and the system is inconsistent.
  * 
  * @param coeffMat The argument coefficient matrix (A).
@@ -877,7 +877,9 @@ bool is_consistent(const Matrix<R, C>& coeffMat, const Vector<R>& constantVec) {
         if (rrefAugment.entries[row][C] == 0.0)
             continue;
 
-        if (std::all_of(rrefAugment.entries[row].begin(), rrefAugment.entries[row].end() - 1, [](double entry){ return entry == 0.0; })) //TODO: fix
+        auto coeffRowBegin = rrefAugment.entries[row].begin();
+        auto coeffRowEnd   = rrefAugment.entries[row].end() - 1;
+        if (std::all_of(coeffRowBegin, coeffRowEnd, [](double entry){ return entry == 0.0; }))
             return false;
     }
     return true;
@@ -1463,9 +1465,9 @@ std::vector<Eigenvalue> generate_eigenvalues(const Matrix<S, S>& m) {
         if (!isEigenvalueValid)
             continue;
 
-        auto it = std::find_if(eigenvalues.begin(), eigenvalues.end(), [eigenvalue](const Eigenvalue& element) { return element.eigenvalue == eigenvalue; });
-        if (it != eigenvalues.end())
-            it->multiplicity++;
+        auto findEigenvalue = std::find_if(eigenvalues.begin(), eigenvalues.end(), [eigenvalue](const Eigenvalue& element) { return element.eigenvalue == eigenvalue; });
+        if (findEigenvalue != eigenvalues.end())
+            findEigenvalue->multiplicity++;
         else {
             Eigenvalue newEigenvalue = { eigenvalue, 1 };
             eigenvalues.emplace_back(newEigenvalue);
