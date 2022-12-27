@@ -436,9 +436,14 @@ bool operator!=(const Vector<D>& lhs, const Vector<D>& rhs) {
  */
 template <size_t R, size_t C>
 bool operator==(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
-    for (size_t row = 0; row < R; row++)
-        if (!std::equal(lhs.entries[row].begin(), lhs.entries[row].end(), rhs.entries[row].begin(), is_equal))
+    for (size_t row = 0; row < R; row++) {
+        auto leftBegin = lhs.entries[row].begin();
+        auto leftEnd   = lhs.entries[row].end();
+        auto rightBegin = rhs.entries[row].begin();
+
+        if (!std::equal(leftBegin, leftEnd, rightBegin, is_equal))
             return false;
+    }
         
     return true;
 }
@@ -466,8 +471,13 @@ Vector<D> operator+(const Vector<D>& lhs, const Vector<D> rhs) {
 template <size_t R, size_t C>
 Matrix<R, C> operator+(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
     Matrix<R, C> sum{};
-    for (size_t row = 0; row < R; row++)
-        std::transform(lhs.entries[row].begin(), lhs.entries[row].end(), rhs.entries[row].begin(), sum.entries[row].begin(), std::plus<double>());
+    for (size_t row = 0; row < R; row++) {
+        auto leftBegin  = lhs.entries[row].begin();
+        auto leftEnd    = lhs.entries[row].end();
+        auto rightBegin = rhs.entries[row].begin();
+        auto diffBegin  = diff.entries[row].begin();
+        std::transform(leftBegin, leftEnd, rightBegin, diffBegin, std::plus<double>());
+    }
     return sum;
 }
 
@@ -488,8 +498,13 @@ Vector<D> operator-(const Vector<D>& lhs, const Vector<D>& rhs) {
 template <size_t R, size_t C>
 Matrix<R, C> operator-(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
     Matrix<R, C> diff{};
-    for (size_t row = 0; row < R; row++)
-        std::transform(lhs.entries[row].begin(), lhs.entries[row].end(), rhs.entries[row].begin(), diff.entries[row].begin(), std::minus<double>());
+    for (size_t row = 0; row < R; row++) {
+        auto leftBegin  = lhs.entries[row].begin();
+        auto leftEnd    = lhs.entries[row].end();
+        auto rightBegin = rhs.entries[row].begin();
+        auto diffBegin  = diff.entries[row].begin();
+        std::transform(leftBegin, leftEnd, rightBegin, diffBegin, std::minus<double>());
+    }
     return diff;
 }
 
@@ -526,8 +541,12 @@ Vector<D> operator/(const Vector<D>& v, double scalar) {
 template <size_t R, size_t C>
 Matrix<R, C> operator*(double scalar, const Matrix<R, C>& m) {
     Matrix<R, C> product{};
-    for (size_t row = 0; row < R; row++)
-        std::transform(m.entries[row].begin(), m.entries[row].end(), product.entries[row].begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+    for (size_t row = 0; row < R; row++) {
+        auto matrixBegin = m.entries[row].begin();
+        auto matrixEnd   = m.entries[row].end();
+        auto productBegin = product.entries[row].begin();
+        std::transform(matrixBegin, matrixEnd, productBegin, std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+    }
     return product;
 }
 
@@ -656,7 +675,10 @@ void ERO_row_swap(Matrix<R, C>& m, size_t row1, size_t row2) {
 template <size_t R, size_t C>
 void ERO_scalar_multiplication(Matrix<R, C>& m, double scalar, size_t row) {
     assert (row >= 1 && row <= R);
-    std::transform(m.entries[row - 1].begin(), m.entries[row - 1].end(), m.entries[row - 1].begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+
+    auto rowBegin = m.entries[row - 1].begin();
+    auto rowEnd   = m.entries[row - 1].end();
+    std::transform(rowBegin, rowEnd, rowBegin, std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
 }
 
 /* An elementary row where a multiple of one row is added to another row in a matrix: scalar * scaledRow + outputRow --> outputRow
@@ -670,9 +692,14 @@ void ERO_row_sum(Matrix<R, C>& m, double scalar, size_t rowToScale, size_t outpu
     assert (rowToScale >= 1 && rowToScale <= R);
     assert (outputRow >= 1 && outputRow <= R);
 
-    std::array<double, C> scaledRow{}; //TODO: maybe fix
-    std::transform(m.entries[rowToScale - 1].begin(), m.entries[rowToScale - 1].end(), scaledRow.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
-    std::transform(m.entries[outputRow  - 1].begin(), m.entries[outputRow  - 1].end(), scaledRow.begin(), m.entries[outputRow - 1].begin(), std::plus<double>());
+    std::array<double, C> scaledRow{};
+    auto rowToScaleBegin = m.entries[rowToScale - 1].begin();
+    auto rowToScaleEnd   = m.entries[rowToScale - 1].end()
+    std::transform(rowToScaleBegin, rowToScaleEnd, scaledRow.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+
+    auto outputRowBegin = m.entries[outputRow  - 1].begin();
+    auto outputRowEnd   = m.entries[outputRow  - 1].end();
+    std::transform(outputRowBegin,outputRowEnd, scaledRow.begin(), outputRowBegin, std::plus<double>());
 }
 
 /* [HELPER FUNCTION] This function transforms the matrix argument itself to reduced-row echelon form, avoiding an unnecessary copy.
@@ -1037,8 +1064,12 @@ Matrix<S, S> inverse(const Matrix<S, S>& m) {
 
     Matrix<S, 2 * S> rrefAugmented = rref(augment(m, identity_matrix<S>()));
     Matrix<S, S> inverse{};
-    for (size_t row = 0; row < S; row++)
-        std::copy(rrefAugmented.entries[row].begin() + S, rrefAugmented.entries[row].begin() + 2 * S, inverse.entries[row].begin()); //TODO: fix
+    for (size_t row = 0; row < S; row++) {
+        auto leftAugmentedBegin = rrefAugmented.entries[row].begin() + S;
+        auto leftAugmentedEnd   = rrefAugmented.entries[row].begin() + 2 * S;
+        auto inverseBegin = inverse.entries[row].begin();
+        std::copy(leftAugmentedBegin, leftAugmentedEnd, inverseBegin);
+    }
     return inverse;
 }
 
