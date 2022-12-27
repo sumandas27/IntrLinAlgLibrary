@@ -7,10 +7,21 @@ int main(int argc, char** argv) {
 
     using namespace ila;
 
-    std::vector<int> yo{};
-    yo.reserve(4);
-    yo.emplace_back(3);
-    std::cout << yo.size();
+    Matrix<3, 3> a
+    (
+        2, 0, 0,
+        1, 2, 1,
+        -1, 0, 1
+    );
+
+    auto [p, d] = diagonalize(a);
+    print(p);
+    std::cout << "\n";
+    print(d);
+    std::cout << "\n";
+    
+    Matrix test = p * d * inverse(p);
+    print(test);
 
     return 0;
 }

@@ -1526,21 +1526,24 @@ std::pair<bool, std::pair<Matrix<S, S>, Matrix<S, S>>> HELPER_diagonalize_info(c
     size_t dPos = 0;
 
     std::vector<Eigenvalue> eigenvalues = generate_eigenvalues(m);
+
     for (Eigenvalue& eigenvalue : eigenvalues) {
         std::vector<Vector<S>> eigenspaceBasis = get_eigenspace_basis(m, eigenvalue.eigenvalue);
 
         if (eigenvalue.multiplicity == 1) {
             eigenspaceBasesVectors.emplace_back(eigenspaceBasis.front());
+            d.entries[dPos][dPos] = eigenvalue.eigenvalue;
+            dPos++; /* will never go out of range */
             continue;
         }
 
         if (eigenspaceBasis.size() != eigenvalue.multiplicity)
             break;
 
-        std::copy(eigenspaceBasis.begin(), eigenspaceBasis.end(), eigenspaceBasesVectors.end());
+        eigenspaceBasesVectors.insert(eigenspaceBasesVectors.end(), eigenspaceBasis.begin(), eigenspaceBasis.end());    
         for (int i = 0; i < eigenvalue.multiplicity; i++) {
             d.entries[dPos][dPos] = eigenvalue.eigenvalue;
-            dPos++;
+            dPos++; /* will never go out of range */
         }
     }
 
