@@ -475,8 +475,8 @@ Matrix<R, C> operator+(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
         auto leftBegin  = lhs.entries[row].begin();
         auto leftEnd    = lhs.entries[row].end();
         auto rightBegin = rhs.entries[row].begin();
-        auto diffBegin  = diff.entries[row].begin();
-        std::transform(leftBegin, leftEnd, rightBegin, diffBegin, std::plus<double>());
+        auto sumBegin   = sum.entries[row].begin();
+        std::transform(leftBegin, leftEnd, rightBegin, sumBegin, std::plus<double>());
     }
     return sum;
 }
@@ -694,7 +694,7 @@ void ERO_row_sum(Matrix<R, C>& m, double scalar, size_t rowToScale, size_t outpu
 
     std::array<double, C> scaledRow{};
     auto rowToScaleBegin = m.entries[rowToScale - 1].begin();
-    auto rowToScaleEnd   = m.entries[rowToScale - 1].end()
+    auto rowToScaleEnd   = m.entries[rowToScale - 1].end();
     std::transform(rowToScaleBegin, rowToScaleEnd, scaledRow.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
 
     auto outputRowBegin = m.entries[outputRow  - 1].begin();
