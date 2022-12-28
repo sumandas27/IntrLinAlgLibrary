@@ -42,8 +42,10 @@ Creating a vector: ```ila::Vector<D> myVec(1, 2, 3, ...);```
 ila::Vector<4> myVec(1.0, 2.0, 3.0, 4.0);
 ```
 
-Vectors are traditionally one-indexed in linear algebra, and **NOT** zero-indexed like traditional . 
+Vectors are traditionally one-indexed in linear algebra, and **NOT** zero-indexed like traditional array.
 Access the **first** component by ```myVec[1]```, and ***NOT*** ```myVec[0] //Error```.
+
+* If you really prefer zero-indexing, type ```myVec.components[0]``` to access the first component. 
 
 A print overload is provided to you to print your vector to the standard output. ```ila::print(myVec)``` outputs:
 
@@ -79,6 +81,8 @@ ila::Matrix<3, 3> myMat
 
 Similar to vectors, matrices are also traditionally one-indexed in linear algebra.
 Access the (1,1)-entry (entry at the 1st row and 1st column of the matrix) by ```myMat[1][1]``` and ***NOT*** ```myMat[0][0] //Error```.
+
+* If you really prefer zero-indexing, type ```myMat.entries[0][0]``` to access the (1,1)-entry.
 
 There is also a print overload for matrices to the standard output. ```ila::print(myMat);``` outputs:
 
