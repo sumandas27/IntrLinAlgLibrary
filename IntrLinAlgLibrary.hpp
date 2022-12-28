@@ -19,8 +19,6 @@
  * Read the README.md for more details. *Please* leave feedback if you have any. I'm always looking to improve!
  * 
  * ------------------------------------------------------------------------------------------------------------------
- * Link to the Intro to Linear Algebra textbook my course uses:
- * https://cloudflare-ipfs.com/ipfs/bafykbzaced62pai3pki6og6a5jimvjis3qpwo3yvzinlvj6gvjqzzrcqyhkre?filename=Lawrence%20E.%20Spence%2C%20Arnold%20J.%20Insel%2C%20Stephen%20H.%20Friedberg%20-%20Elementary%20Linear%20Algebra%20%282nd%20Edition%29-Prentice%20Hall%20%282007%29.pdf
  *
  * Write 'using ila::Vector, ila::Matrix;' to type 'Vector' and 'Matrix' instead of 'ila::Vector' and 'ila::Matrix'.
  * Write 'using namespace ila;' to remove the prefix entirely. There may be potential naming conflicts with other libraries.
