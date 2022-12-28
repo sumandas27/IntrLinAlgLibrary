@@ -7,21 +7,14 @@ int main(int argc, char** argv) {
 
     using namespace ila;
 
-    Matrix<3, 3> a
+    ila::Matrix<3, 3> mySquareMat
     (
-        2, 0, 0,
-        1, 2, 1,
-        -1, 0, 1
+        5, -10, -5,
+        2, 14, 2,
+        -4, -8, 6
     );
-
-    auto [p, d] = diagonalize(a);
-    print(p);
-    std::cout << "\n";
-    print(d);
-    std::cout << "\n";
     
-    Matrix test = p * d * inverse(p);
-    print(test);
+    ila::print(ila::generate_eigenvalues(mySquareMat));
 
     return 0;
 }

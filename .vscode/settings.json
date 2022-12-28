@@ -67,6 +67,7 @@
         "functional": "cpp",
         "utility": "cpp",
         "numbers": "cpp",
-        "iomanip": "cpp"
+        "iomanip": "cpp",
+        "memory_resource": "cpp"
     }
 }

@@ -10,6 +10,15 @@
 
 /* README
  * ------------------------------------------------------------------------------------------------------------------
+ * 
+ * IntrLinAlgLibrary.hpp
+ * author: Sumanta Das (2022)
+ * license: MIT
+ * description: A single header library with functionality for all concepts covered in Intr Lin Alg 250 @ rutgers.
+ * 
+ * Read the README.md for more details. *Please* leave feedback if you have any. I'm always looking to improve!
+ * 
+ * ------------------------------------------------------------------------------------------------------------------
  * Link to the Intro to Linear Algebra textbook my course uses:
  * https://cloudflare-ipfs.com/ipfs/bafykbzaced62pai3pki6og6a5jimvjis3qpwo3yvzinlvj6gvjqzzrcqyhkre?filename=Lawrence%20E.%20Spence%2C%20Arnold%20J.%20Insel%2C%20Stephen%20H.%20Friedberg%20-%20Elementary%20Linear%20Algebra%20%282nd%20Edition%29-Prentice%20Hall%20%282007%29.pdf
  *
@@ -71,21 +80,21 @@ void set_precision(std::streamsize _precision) {
     precision = _precision;
 }
 
-/* The range of tolerance for double equality.
+/* [HELPER FUNCTION] The range of tolerance for double equality.
  */
-constexpr double epsilon() {
+constexpr double HELPER_epsilon() {
     return 0.00001;
 }
 
-/* Checks equality between two doubles if their difference lies within a tolerance range.
+/* [HELPER FUNCTION] Checks equality between two doubles if their difference lies within a tolerance range.
  */
-bool is_equal(double val1, double val2) {
-    return std::abs(val1 - val2) < epsilon();
+bool HELPER_is_equal(double val1, double val2) {
+    return std::abs(val1 - val2) < HELPER_epsilon();
 }
 
-/* Converts an angle from degrees to radians.
+/* [HELPER FUNCTION] Converts an angle from degrees to radians.
  */
-constexpr double deg_to_rad(double degrees) {
+constexpr double HELPER_deg_to_rad(double degrees) {
     return degrees * M_PI / 180;
 }
 
@@ -345,7 +354,7 @@ std::ostream& operator<<(std::ostream& os, const Vector<X>& v) {
     std::streamsize original = os.precision();
     os << std::setprecision(precision);
     for (double component : v.components)
-        os << "{\t" << (std::abs(component) < epsilon() ? 0 : component) << "\t}\n";
+        os << "{\t" << (std::abs(component) < HELPER_epsilon() ? 0 : component) << "\t}\n";
     os << "\n";
     os << std::setprecision(original);
     return os;
@@ -370,7 +379,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m) {
     for (size_t row = 0; row < X; row++) {
         os << "{\t";
         for (double entry : m.entries[row])
-            os << (std::abs(entry) < epsilon() ? 0 : entry) << "\t";
+            os << (std::abs(entry) < HELPER_epsilon() ? 0 : entry) << "\t";
         os << "}\n";
     }
     os << std::setprecision(original);
@@ -406,7 +415,7 @@ void print(const std::vector<Vector<D>>& set) {
         std::cout << "{\t";
         for (size_t col = 0; col < set.size(); col++) {
             double component = set.at(col).components[row];
-            std::cout << (std::abs(component) < epsilon() ? 0 : component) << "\t";
+            std::cout << (std::abs(component) < HELPER_epsilon() ? 0 : component) << "\t";
         }
         std::cout << "}\n";
     }
@@ -421,7 +430,7 @@ void print(const std::vector<Vector<D>>& set) {
  */
 template <size_t D>
 bool operator==(const Vector<D>& lhs, const Vector<D>& rhs) {
-    return std::equal(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), is_equal);
+    return std::equal(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), HELPER_is_equal);
 }
 
 /* Opposite of vector equality.
@@ -441,7 +450,7 @@ bool operator==(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
         auto leftEnd   = lhs.entries[row].end();
         auto rightBegin = rhs.entries[row].begin();
 
-        if (!std::equal(leftBegin, leftEnd, rightBegin, is_equal))
+        if (!std::equal(leftBegin, leftEnd, rightBegin, HELPER_is_equal))
             return false;
     }
         
@@ -635,9 +644,13 @@ Matrix<S, S> identity_matrix() {
  * @returns The 2x2 rotation matrix of the argument angle in degrees.
  */
 Matrix<2, 2> rotation_matrix(double degrees) {
-    return Matrix<2, 2>(
-        cos(deg_to_rad(degrees)), -sin(deg_to_rad(degrees)),
-        sin(deg_to_rad(degrees)),  cos(deg_to_rad(degrees))
+    double cosTheta = cos(HELPER_deg_to_rad(degrees));
+    double sinTheta = sin(HELPER_deg_to_rad(degrees));
+
+    return Matrix<2, 2>
+    (
+        cosTheta, -sinTheta,
+        sinTheta,  cosTheta
     );
 }
 
@@ -718,7 +731,7 @@ std::pair<unsigned int, unsigned int> HELPER_ref_by_reference(Matrix<R, C>& m) {
 
         double nonzeroFound = 0.0; /* 0.0 means a nonzero entry has not been found, else nonzero entry is set to this variable */
         for (size_t row = pivotRow; row < R; row++) {
-            if (is_equal(m.entries[row][col], 0.0))
+            if (HELPER_is_equal(m.entries[row][col], 0.0))
                 continue;
 
             if (nonzeroFound != 0.0) {
@@ -771,7 +784,7 @@ Matrix<R, C> rref(Matrix<R, C> m) {
         if (pivotRow > R - 1)
             break;
 
-        if (is_equal(m.entries[pivotRow][col], 0.0))
+        if (HELPER_is_equal(m.entries[pivotRow][col], 0.0))
             continue;
 
         if (m.entries[pivotRow][col] != 1.0) {
@@ -842,11 +855,25 @@ Matrix<R, C1 + C2> augment(const Matrix<R, C1>& lhs, const Matrix<R, C2>& rhs) {
     return augmentedMatrix;
 }
 
+/* Augmenting a set of vectors merges all of the vectors to produce a matrix.
+ * The nth column of the result augmented matrix corresponds to the nth vector in the set.
+ * @param set The argument vector set.
+ * @returns An augmented matrix of the set of vectors.
+ */
+template <size_t D, size_t S>
+Matrix<D, S> augment_vector_set(const std::array<Vector<D>, S>& set) {
+    Matrix<D, S> augmentedVectorSet{};
+    for (size_t col = 0; col < S; col++)
+    for (size_t row = 0; row < D; row++)
+        augmentedVectorSet.entries[row][col] = set.at(col).components[row];
+    return augmentedVectorSet;
+}
+
 /* Given a coefficient matrix A and a constant vector b, this solves Ax = b (where x is the solution vector).
  * The reduced row-echelon form of A augmented to b allows the general solution of x to be easily found.
  * 
- *                       x1 x2 x3 x4  x5 b
- * Given an rref row: [  0  1  0  2  -3  3  ]
+ *                       x1 x2 x3 x4  x5    b
+ * Given an rref row: [  0  1  0  2  -3  |  3  ]
  * The leading entry of the rref can be solved for: x2 + 2x4 - 3x5 = 3 --> x2 = 3 - 2x4 + 3x5
  * A solution variable whose corresponding column has no pivot spot is a free variable.
  * 
@@ -883,20 +910,6 @@ bool is_consistent(const Matrix<R, C>& coeffMat, const Vector<R>& constantVec) {
             return false;
     }
     return true;
-}
-
-/* Augmenting a set of vectors merges all of the vectors to produce a matrix.
- * The nth column of the result augmented matrix corresponds to the nth vector in the set.
- * @param set The argument vector set.
- * @returns An augmented matrix of the set of vectors.
- */
-template <size_t D, size_t S>
-Matrix<D, S> augment_vector_set(const std::array<Vector<D>, S>& set) {
-    Matrix<D, S> augmentedVectorSet{};
-    for (size_t col = 0; col < S; col++)
-    for (size_t row = 0; row < D; row++)
-        augmentedVectorSet.entries[row][col] = set.at(col).components[row];
-    return augmentedVectorSet;
 }
 
 /* A vector is in the span of a set of vectors if the vector can be written as a linear combination of the other vectors.
@@ -975,7 +988,7 @@ bool is_diagonal(const Matrix<R, C>& m) {
         if (row == col)
             continue;
 
-        if (!is_equal(m.entries[row][col], 0.0))
+        if (!HELPER_is_equal(m.entries[row][col], 0.0))
             return false;
     }
     return true;
@@ -1100,16 +1113,6 @@ double det(const Matrix<S, S>& m) {
 //------------------------------------------------------------------------------------------//
 //CHAPTER 4 - SUBSPACES AND THEIR PROPERTIES
 
-/* The dimension of a subspace is the number of vectors in its basis.
- * This function is only compatible with basis(), row(), col(), and null(), which already outputs its basis.
- * @param set The argument std::vector set.
- * @returns The size of the vector / dimension of given basis.
- */
-template <size_t D>
-unsigned int dim(const std::vector<Vector<D>>& set) {
-    return set.size();
-}
-
 /* The row space of a matrix A is the span of its row vectors and is denoted as Row A.
  * A basis is the minimal set that spans the same space.
  * @param m The argument matrix.
@@ -1144,7 +1147,7 @@ std::vector<Vector<R>> col(const Matrix<R, C>& m) {
         if (pivotRow >= R)
             break;
 
-        if (is_equal(refM.entries[pivotRow][col], 0.0))
+        if (HELPER_is_equal(refM.entries[pivotRow][col], 0.0))
             continue;
 
         columnBasis.emplace_back(m.column_vector(col + 1));
@@ -1165,7 +1168,7 @@ std::vector<Vector<C>> null(const Matrix<R, C>& m) {
 
     size_t pivotRow = 0;
     for (size_t col = 0; col < C; col++) {
-        if (is_equal(rrefM.entries[pivotRow][col], 1.0)) {
+        if (HELPER_is_equal(rrefM.entries[pivotRow][col], 1.0)) {
             pivotRow++;
             continue;
         }
@@ -1180,6 +1183,16 @@ std::vector<Vector<C>> null(const Matrix<R, C>& m) {
     if (nullBasis.empty())
         nullBasis.emplace_back(zero_vector<C>());
     return nullBasis;
+}
+
+/* The dimension of a subspace is the number of vectors in its basis.
+ * This function is only compatible with basis(), row(), col(), and null(), which already outputs its basis.
+ * @param set The argument std::vector set.
+ * @returns The size of the vector / dimension of given basis.
+ */
+template <size_t D>
+unsigned int dim(const std::vector<Vector<D>>& basis) {
+    return basis.size();
 }
 
 /* A basis is the minimal set that spans the same space.
@@ -1254,11 +1267,11 @@ double distance(const Vector<D>& v1, const Vector<D>& v2) {
  * Two vectors are orthogonal if their dot product is 0.
  * @param v1 The first argument vector.
  * @param v2 The second argument vector.
- * @returns True if the two argument vectors are perpendicular. False if otherwise.
+ * @returns True if the two argument vectors are orthogonal to each other. False if otherwise.
  */
 template <size_t D>
 bool is_orthogonal(const Vector<D>& v1, const Vector<D>& v2) {
-    return is_equal(dot(v1, v2), 0.0);
+    return HELPER_is_equal(dot(v1, v2), 0.0);
 }
 
 /* A set of vectors are orthogonal if every vector is orthogonal to every other vector in the set.
@@ -1282,11 +1295,12 @@ bool is_orthogonal(const std::array<Vector<D>, S>& set) {
  * The difference of a vector and its orthogonal projection is orthogonal to the line of the projection.
  * @param of The argument vector to find the orthogonal projection of.
  * @param onto The argument vector whose scalar multiple is the orthogonal projection.
+ * @returns The orthogonal projection of the first argument from the second argument.
  */
 template <size_t D>
-Vector<D> orthogonal_projection(const Vector<D>& of, const Vector<D>& from) {
-    double scalar = dot(of, from) / dot(from, from);
-    return scalar * from;
+Vector<D> orthogonal_projection(const Vector<D>& of, const Vector<D>& onto) {
+    double scalar = dot(of, onto) / dot(onto, onto);
+    return scalar * onto;
 }
 
 
@@ -1311,12 +1325,12 @@ std::array<Vector<D>, S> orthonormal_basis(const std::array<Vector<D>, S>& basis
     return orthonormalBasis;
 }
 
-/* [HELPER FUNCTION] Orthonormal basis overload for std::vector arguments.
+/* Orthonormal basis overload for std::vector arguments.
  * @param basis The argument basis as an std::vector (this must be a valid basis to work).
  * @returns An orthonormal basis that generates the same space (as an std::vector).
  */
 template <size_t D>
-std::vector<Vector<D>> HELPER_orthonormal_basis(const std::vector<Vector<D>>& basis) {
+std::vector<Vector<D>> orthonormal_basis(const std::vector<Vector<D>>& basis) {
     std::vector<Vector<D>> orthonormalBasis(basis.size());
     for (int k = 0; k < basis.size(); k++) {
         orthonormalBasis.at(k) = basis.at(k);
@@ -1333,7 +1347,7 @@ std::vector<Vector<D>> HELPER_orthonormal_basis(const std::vector<Vector<D>>& ba
  * matrix such that A = QR. A matrix is orthogonal if its column vectors form an orthogonal basis.
  *
  * To get Q, type: 'Matrix<R, C> q = qr_factorization(myMat).first;' (replace 'R' and 'C' with the number of rows and columns of 'myMat')
- * To get R, type: 'Matrix<C, C> r = qr_factorization(myMat).second;' (replace 'R' and 'C' with the number of rows and columns of 'myMat')
+ * To get R, type: 'Matrix<C, C> r = qr_factorization(myMat).second;' (replace 'C' with the number of columns of 'myMat')
  * To get both Q and R, type: 'auto [q, r] = qr_factorization(myMat);' (Variables 'q' and 'r' can be used as normal matrices)
  * NOTE: 'myMat' is a placeholder name; use the name of your argument matrix.
  * 
@@ -1344,7 +1358,7 @@ std::vector<Vector<D>> HELPER_orthonormal_basis(const std::vector<Vector<D>>& ba
 template <size_t R, size_t C>
 std::pair<Matrix<R, C>, Matrix<C, C>> qr_factorization(const Matrix<R, C>& m) {
     std::vector<Vector<R>> colBasis = col(m);
-    std::vector<Vector<R>> orthonormalBasis = HELPER_orthonormal_basis(colBasis);
+    std::vector<Vector<R>> orthonormalBasis = orthonormal_basis(colBasis);
     while (orthonormalBasis.size() < C) {
         Matrix<C, R> qTransposeTemp{};
         for (size_t row = 0; row < orthonormalBasis.size(); row++) {
@@ -1390,7 +1404,7 @@ template <size_t R, size_t C>
 bool is_lower_triangular(const Matrix<R, C>& m) {
     for (size_t row = 0; row < R; row++)
     for (size_t col = row + 1; col < R; col++)
-        if (!is_equal(m.entries[row][col], 0.0))
+        if (!HELPER_is_equal(m.entries[row][col], 0.0))
             return false;
 
     return true;
@@ -1404,7 +1418,7 @@ template <size_t R, size_t C>
 bool is_upper_triangular(const Matrix<R, C>& m) {
     for (size_t row = 0; row < R; row++)
     for (size_t col = 0; col < row; col++)
-        if (!is_equal(m.entries[row][col], 0.0))
+        if (!HELPER_is_equal(m.entries[row][col], 0.0))
             return false;
     
     return true;
@@ -1599,16 +1613,19 @@ std::pair<bool, std::pair<Matrix<S, S>, Matrix<S, S>>> HELPER_diagonalize_info(c
  * @param m The argument matrix.
  * @returns True if the argument matrix is diagonalizable. False if otherwise.
  */
-template <size_t S>
-bool is_diagonalizable(const Matrix<S, S>& m) {
+template <size_t R, size_t C>
+bool is_diagonalizable(const Matrix<R, C>& m) {
+    if (R != C)
+        return false;
+
     bool isDiagonalizable = HELPER_diagonalize_info(m).first;
     return isDiagonalizable;
 }
 
 /* Diagonalizing matrix A breaks it down to an invertible matrix P and a diagonal matrix D such that A = PDP^-1.
  *
- * To get P, type: 'Matrix<S, S> p = ila::diagonalize(myMat).first;' (replace 'S' with the size of 'myMat')
- * To get D, type: 'Matrix<S, S> d = ila::diagonalize(myMat).second;' (replace 'S' with the size of 'myMat')
+ * To get P, type: 'ila::Matrix<S, S> p = ila::diagonalize(myMat).first;' (replace 'S' with the size of 'myMat')
+ * To get D, type: 'ila::Matrix<S, S> d = ila::diagonalize(myMat).second;' (replace 'S' with the size of 'myMat')
  * To get both P and D, type 'auto [p, d] = ila::diagonalize(myMat);' (Variables 'p' and 'd' can be used as normal matrices)
  * NOTE: 'myMat' is a placeholder name; use the name of your argument matrix.
  *
