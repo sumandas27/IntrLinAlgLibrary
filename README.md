@@ -284,6 +284,6 @@ Like all other bases, write ```ila::dim(ila::get_eigenspace_basis(mySquareMat, e
 * ```ila::orthonormal_basis(myBasisAsStdArray)``` returns the orthonormal basis that generates the same space as ```myBasisAsStdArray```.
   * This function is overloaded for ```std::vector``` arguments: ```ila::orthonormal_basis(myBasisAsStdVector)```
 * ```ila::qr_factorization(myMat)``` returns an orthogonal/semiorthogonal matrix ```Q``` and an upper-triangular matrix ```R``` (such that ```myMat = QR```) as an ```std::pair```.
-  * To get matrix ```q```, write: ```ila::Matrix<R, C> q = qr_factorization(myMat).first;``` *(replace ```R``` and ```C``` with the number of rows and columns of ```myMat```)*
-  * To get matrix ```r```, write: ```ila::Matrix<C, C> r = qr_factorization(myMat).second;``` *(replace ```C``` with the number of columns of ```myMat```)*
+  * To get matrix ```q```, write: ```ila::Matrix<R, C> q = ila::qr_factorization(myMat).first;``` *(replace ```R``` and ```C``` with the number of rows and columns of ```myMat```)*
+  * To get matrix ```r```, write: ```ila::Matrix<C, C> r = ila::qr_factorization(myMat).second;``` *(replace ```C``` with the number of columns of ```myMat```)*
   * To get both ```q``` and ```r``` at once, write: ```auto [q, r] = ila::qr_factorization(myMat);```
