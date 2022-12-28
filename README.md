@@ -5,7 +5,7 @@ A single header library with functionality for all concepts covered in Intr Lin 
 * ```IntrLinAlgLibrary.hpp```
 * Author: Sumanta Das (2022)
 * Licence: MIT
-* Textbook used: Elementary Linear Algebra: A Matrix Approach by Lawrence E. Spence, Arnold J. Insel, Stephen H. Friedberg
+* Textbook used: **Elementary Linear Algebra: A Matrix Approach by Lawrence E. Spence, Arnold J. Insel, Stephen H. Friedberg**
 
 # Setup and Intro
 
