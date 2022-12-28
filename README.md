@@ -263,6 +263,8 @@ Eigenvalue: 10	Multiplicity: 2
 Eigenvalue: 5   Multiplicity: 1
 ```
 
+**IMPORTANT:** This library can only handle real eigenvalues. Complex eigenvalues are not supported.
+
 * ```ila::get_eigenvalue(mySquareMat, eigenvector)``` returns ```mySquareMat```'s corresponding eigenvalue of its ```eigenvector```.
 * ```ila::get_eigenspace_basis(mySquareMat, eigenvalue)``` returns ```mySquareMat```'s corresponsing eigenspace basis of its ```eigenvalue``` as an ```std::vector```.
 
