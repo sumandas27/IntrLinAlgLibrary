@@ -1,7 +1,7 @@
 # IntrLinAlgLibrary
 A single header library with functionality for all concepts covered in Intr Lin Alg 250 @ rutgers.
 
-* IntrLinAlgLibrary.hpp
+* ```IntrLinAlgLibrary.hpp```
 * Author: Sumanta Das (2022)
 
 ## Setup
@@ -25,7 +25,8 @@ Example: Creating the vector with 4 components: ```[ 1, 2, 3, 4 ]```
 ila::Vector<4> myVec(1, 2, 3, 4);
 ```
 
-Vectors are traditionally one-indexed in linear algebra, and **NOT** zero-indexed like traditional . Access the **first** element (component) by ```myVec[1]```, and ***NOT*** ```myVec[0] // Error```.
+Vectors are traditionally one-indexed in linear algebra, and **NOT** zero-indexed like traditional . 
+Access the **first** element (component) by ```myVec[1]```, and ***NOT*** ```myVec[0] //Error```.
 
 A print overload is provided to you to print your vector to the standard output. ```ila::print(myVec)``` outputs:
 
@@ -56,6 +57,9 @@ ila::Matrix<3, 3> myMat
   7, 8, 9
 );
 ```
+
+Similar to vectors, matrices are also traditionally one-indexed in linear algebra.
+Access the (1,1)-entry (element at the 1st row and 1st column of the matrix) by ```myMat[1][1]``` and ***NOT*** ```myMat[0][0] //Error```.
 
 There is also a print overload for matrices to the standard output. ```ila::print(myMat);``` outputs:
 
