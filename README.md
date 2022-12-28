@@ -13,7 +13,7 @@ To use, simply include the file: ```#include "IntrLinAlgLibrary.hpp"```
 
 This file uses ```namespace ila``` for "Intro Linear Algebra".
 
-**NOTE:** There may be naming conflicts with other libraries. For example, ```IntrLinAlgLibrary``` contains a ```print()``` method which may appear in other files.
+* **NOTE:** There may be naming conflicts with other libraries if you use ```using namespace ila;```. For example, ```IntrLinAlgLibrary``` contains a ```print()``` method which may appear in other files. Instead, consider limiting to certain data types or functions such as ```using namespace ila::Matrix, ila::Vector;``` and/or any other functions you would like.
 
 Vectors are arrays and matrices are arrays of arrays. Both contain ```double``` as their data type.
 
