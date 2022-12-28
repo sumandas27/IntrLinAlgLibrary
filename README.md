@@ -13,7 +13,7 @@ To use, simply include the file: ```#include "IntrLinAlgLibrary.hpp"```
 
 This file uses ```namespace ila``` for "Intro Linear Algebra".
 
-**NOTE:** There may be naming conflicts with other libraries. For example, ```IntrLinAlgLibrary``` contains a ```print()``` method which may appear in other files.
+* **NOTE:** There may be naming conflicts with other libraries if you use ```using namespace ila;```. For example, ```IntrLinAlgLibrary``` contains a ```print()``` method which may appear in other files. Instead, consider limiting to certain data types or functions such as ```using namespace ila::Matrix, ila::Vector;``` and/or any other functions you would like.
 
 Vectors are arrays and matrices are arrays of arrays. Both contain ```double``` as their data type.
 
@@ -42,8 +42,10 @@ Creating a vector: ```ila::Vector<D> myVec(1, 2, 3, ...);```
 ila::Vector<4> myVec(1.0, 2.0, 3.0, 4.0);
 ```
 
-Vectors are traditionally one-indexed in linear algebra, and **NOT** zero-indexed like traditional . 
+Vectors are traditionally one-indexed in linear algebra, and **NOT** zero-indexed like traditional array.
 Access the **first** component by ```myVec[1]```, and ***NOT*** ```myVec[0] //Error```.
+
+* If you really prefer zero-indexing, type ```myVec.components[0]``` to access the first component. 
 
 A print overload is provided to you to print your vector to the standard output. ```ila::print(myVec)``` outputs:
 
@@ -79,6 +81,8 @@ ila::Matrix<3, 3> myMat
 
 Similar to vectors, matrices are also traditionally one-indexed in linear algebra.
 Access the (1,1)-entry (entry at the 1st row and 1st column of the matrix) by ```myMat[1][1]``` and ***NOT*** ```myMat[0][0] //Error```.
+
+* If you really prefer zero-indexing, type ```myMat.entries[0][0]``` to access the (1,1)-entry.
 
 There is also a print overload for matrices to the standard output. ```ila::print(myMat);``` outputs:
 
@@ -259,6 +263,8 @@ Eigenvalue: 10	Multiplicity: 2
 Eigenvalue: 5   Multiplicity: 1
 ```
 
+**IMPORTANT:** This library can only handle real eigenvalues. Complex eigenvalues are not supported.
+
 * ```ila::get_eigenvalue(mySquareMat, eigenvector)``` returns ```mySquareMat```'s corresponding eigenvalue of its ```eigenvector```.
 * ```ila::get_eigenspace_basis(mySquareMat, eigenvalue)``` returns ```mySquareMat```'s corresponsing eigenspace basis of its ```eigenvalue``` as an ```std::vector```.
 
@@ -284,6 +290,6 @@ Like all other bases, write ```ila::dim(ila::get_eigenspace_basis(mySquareMat, e
 * ```ila::orthonormal_basis(myBasisAsStdArray)``` returns the orthonormal basis that generates the same space as ```myBasisAsStdArray```.
   * This function is overloaded for ```std::vector``` arguments: ```ila::orthonormal_basis(myBasisAsStdVector)```
 * ```ila::qr_factorization(myMat)``` returns an orthogonal/semiorthogonal matrix ```Q``` and an upper-triangular matrix ```R``` (such that ```myMat = QR```) as an ```std::pair```.
-  * To get matrix ```q```, write: ```ila::Matrix<R, C> q = qr_factorization(myMat).first;``` *(replace ```R``` and ```C``` with the number of rows and columns of ```myMat```)*
-  * To get matrix ```r```, write: ```ila::Matrix<C, C> r = qr_factorization(myMat).second;``` *(replace ```C``` with the number of columns of ```myMat```)*
+  * To get matrix ```q```, write: ```ila::Matrix<R, C> q = ila::qr_factorization(myMat).first;``` *(replace ```R``` and ```C``` with the number of rows and columns of ```myMat```)*
+  * To get matrix ```r```, write: ```ila::Matrix<C, C> r = ila::qr_factorization(myMat).second;``` *(replace ```C``` with the number of columns of ```myMat```)*
   * To get both ```q``` and ```r``` at once, write: ```auto [q, r] = ila::qr_factorization(myMat);```
