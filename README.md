@@ -1,4 +1,5 @@
 # IntrLinAlgLibrary
+
 A single header library with functionality for all concepts covered in Intr Lin Alg 250 @ rutgers.
 
 * ```IntrLinAlgLibrary.hpp```
@@ -6,12 +7,13 @@ A single header library with functionality for all concepts covered in Intr Lin 
 
 # Setup and Intro
 
-Simply include the file: ```#include "IntrLinAlgLibrary.hpp"```
+To use, simply include the file: ```#include "IntrLinAlgLibrary.hpp"```
 
 This file uses ```namespace ila``` for "Intro Linear Algebra".
-NOTE: There may be naming conflicts with other libraries. For example, ```IntrLinAlgLibrary``` contains a ```print()``` method which may appear in other files.
 
-Vectors and matrices both contain ```double``` as their data type.
+**NOTE:** There may be naming conflicts with other libraries. For example, ```IntrLinAlgLibrary``` contains a ```print()``` method which may appear in other files.
+
+Vectors are arrays and matrices are arrays of arrays. Both contain ```double``` as their data type.
 
 * Vector elements are called **components**. A vector with dimension ```D``` has ```D``` components.
 * Matrix elements are called **entries**. A ```R x C``` matrix has ```R``` rows and ```C``` columns, thus having ```R x C``` entries.
@@ -32,7 +34,7 @@ Creating a vector: ```ila::Vector<D> myVec(1, 2, 3, ...);```
 * ```D``` - the dimension/size of the vector.
 * Add ```D``` number of ```double``` parameters for the contents of the vector.
 
-Example: Creating the vector called ```myVec``` with 4 components: ```[ 1, 2, 3, 4 ]```
+**Example:** Creating the vector called ```myVec``` with 4 components: ```[ 1, 2, 3, 4 ]```
 
 ```cpp
 ila::Vector<4> myVec(1.0, 2.0, 3.0, 4.0);
@@ -60,7 +62,7 @@ Creating a matrix: ```ila::Matrix<R, C> myMat(1, 2, 3, ...);```
 * ```C``` - the number of columns of the matrix.
 * Add ```R``` times ```C``` number of ```double``` parameters for the contents of the matrix.
 
-Example: Creating a 3x3 (3 rows, 3 columns) matrix called ```myMat``` with entries: ```[[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]```
+**Example:** Creating a 3x3 (3 rows, 3 columns) matrix called ```myMat``` with entries: ```[[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]```
 
 ```cpp
 /* Line breaks are optional... included for readability */
@@ -99,7 +101,7 @@ std::array<ila::Vector<3>, 2> mySet =
 };
 ```
 
-* However, sizes of bases for row, column, and null spaces cannot be calculated at compile time and so are returned via an ```std::vector```. Manually hardcode the ```std::vector``` contents into new ```std::arrays``` and recompile to be compatible with this library's functions.
+* However, sizes of bases for row, column, and null spaces cannot be calculated at compile time and so are returned via an ```std::vector```. Manually hardcode the ```std::vector``` contents into new ```std::arrays``` and recompile to be compatible with this library's functions *(Read the Chapter 4 subsection for more details)*.
 
 * ```print()``` overloads for sets represented as ```std::array```s and ```std::vector```s are given.
 
@@ -139,7 +141,7 @@ All ```ila::print``` overloads:
 * Overload for ```ila::Vector<D>```
 * Overload for ```ila::Matrix<R, C>```
 * Overload for ```std::array<Vector<D>, S>``` and ```std::vector<Vector<D>>```
-* Overload for ```std::vector<ila::Eigenvalue>``` *(More information in 'Chapter 5 - Eigenvalues, Eigenvectors, and Diagonalization')*
+* Overload for ```std::vector<ila::Eigenvalue>``` *(Read the Chapter 5 subsection for more details)*
 
 # Library function details:
 
@@ -235,4 +237,51 @@ A solution variable whose corresponding column has no pivot spot is a free varia
 
 The ```ila::Eigenvalue``` struct contains two attributes: ```eigenvalue``` and ```multiplicity```.
 
-An ```ila::print``` is overloaded for ```std::vector<ila::Eigenvalue>```.
+An ```ila::print``` is overloaded for ```std::vector<ila::Eigenvalue>```. To print all the eigenvalues of ```mySquareMat```, write ```ila::print(ila::generate_eigenvalues(mySquareMat))```. Example:
+
+```cpp
+ila::Matrix<3, 3> mySquareMat
+(
+    5, -10, -5,
+    2, 14, 2,
+    -4, -8, 6
+);
+    
+ila::print(ila::generate_eigenvalues(mySquareMat));
+```
+
+This outputs:
+
+```
+Eigenvalue: 10	Multiplicity: 2
+Eigenvalue: 5	  Multiplicity: 1
+```
+
+* ```ila::get_eigenvalue(mySquareMat, eigenvector)``` returns ```mySquareMat```'s corresponding eigenvalue of its ```eigenvector```.
+* ```ila::get_eigenspace_basis(mySquareMat, eigenvalue)``` returns ```mySquareMat```'s corresponsing eigenspace basis of its ```eigenvalue``` as an ```std::vector```.
+
+Like all other bases, write ```ila::dim(ila::get_eigenspace_basis(mySquareMat, eigenvalue))``` to get the dimension of the eigenspace basis.
+
+* ```ila::is_diagonalizable(myMat)``` returns whether or not ```myMat``` is diagonalizable.
+* ```ila::diagonalize(mySquareMat)``` returns an invertible matrix ```P``` and a diagonal matrix ```D``` (such that ```mySquareMat = PDP^-1```) as an ```std::pair```.
+  * To get matrix ```p```, write: ```ila::Matrix<S, S> p = ila::diagonalize(mySquareMat).first;``` *(replace ```S``` with the size of ```mySquareMat```)*.
+  * To get matrix ```d```, write: ```ila::Matrix<S, S> d = ila::diagonalize(mySquareMat).second;``` *(replace ```S``` with the size of ```mySquareMat```)*.
+  * To get both ```p``` and ```d``` at once, write: ```auto [p, d] = ila::diagonalize(mySquareMat)```.
+
+## Chapter 6 - Orthogonality
+
+* ```ila::dot(myVec1, myVec2)``` returns the dot product of ```myVec1``` and ```myVec2```.
+  * ```myVec1 * myVec2``` is operator overloaded to return their dot product.
+* ```ila::norm(myVec)``` returns the norm or length of ```myVec```.
+* ```ila::length``` is the same function as ```ila::norm``` and can be used interchangeably.
+* ```ila::normalize(myVec)``` normalizes ```myVec``` into a norm/length of 1.
+* ```ila::distance(myVec1, myVec2)``` returns the distance between ```myVec1``` and ```myVec2```.
+* ```ila::is_orthogonal(myVec1, myVec2)``` returns whether or not ```myVec1``` and ```myVec2``` are orthogonal to each other.
+  * This function is overloaded for ```ila::is_orthogonal(mySetAsStdArray)``` which returns whether or not ```mySetAsStdArray``` is orthogonal.
+* ```ila::orthogonal_projection(myVec1, myVec2)``` returns the orthogonal projection of ```myVec1``` onto ```myVec2```.
+* ```ila::orthonormal_basis(myBasisAsStdArray)``` returns the orthonormal basis that generates the same space as ```myBasisAsStdArray```.
+  * This function is overloaded for ```std::vector``` arguments: ```ila::orthonormal_basis(myBasisAsStdVector)```
+* ```ila::qr_factorization(myMat)``` returns an orthogonal/semiorthogonal matrix ```Q``` and an upper-triangular matrix ```R``` (such that ```myMat = QR```) as an ```std::pair```.
+  * To get matrix ```q```, write: ```ila::Matrix<R, C> q = qr_factorization(myMat).first;``` *(replace ```R``` and ```C``` with the number of rows and columns of ```myMat```)*
+  * To get matrix ```r```, write: ```ila::Matrix<C, C> r = qr_factorization(myMat).second;``` *(replace ```C``` with the number of columns of ```myMat```)*
+  * To get both ```q``` and ```r``` at once, write: ```auto [q, r] = ila::qr_factorization(myMat);```
