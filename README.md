@@ -254,7 +254,7 @@ This outputs:
 
 ```
 Eigenvalue: 10	Multiplicity: 2
-Eigenvalue: 5	  Multiplicity: 1
+Eigenvalue: 5   Multiplicity: 1
 ```
 
 * ```ila::get_eigenvalue(mySquareMat, eigenvector)``` returns ```mySquareMat```'s corresponding eigenvalue of its ```eigenvector```.
