@@ -19,6 +19,8 @@
  * Read the README.md for more details. *Please* leave feedback if you have any. I'm always looking to improve!
  * 
  * ------------------------------------------------------------------------------------------------------------------
+ * 
+ * Textbook used: Elementary Linear Algebra: A Matrix Approach by Lawrence E. Spence, Arnold J. Insel, Stephen H. Friedberg
  *
  * Write 'using ila::Vector, ila::Matrix;' to type 'Vector' and 'Matrix' instead of 'ila::Vector' and 'ila::Matrix'.
  * Write 'using namespace ila;' to remove the prefix entirely. There may be potential naming conflicts with other libraries.
