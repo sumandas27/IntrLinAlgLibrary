@@ -4,13 +4,14 @@ A single header library with functionality for all concepts covered in Intr Lin 
 * ```IntrLinAlgLibrary.hpp```
 * Author: Sumanta Das (2022)
 
-## Setup
-Simply include the file: ```#include "IntrLinAlgLibrary.hpp```
+# Setup and Intro
 
-This file uses ```namespace ila``` for "Intro Linear Algebra". To disable this prefix, type: ```using namespace ila;```
+Simply include the file: ```#include "IntrLinAlgLibrary.hpp"```
+
+This file uses ```namespace ila``` for "Intro Linear Algebra".
 NOTE: There may be naming conflicts with other libraries. For example, ```IntrLinAlgLibrary``` contains a ```print()``` method which may appear in other files.
 
-Vectors are arrays while matrices are an array of arrays. They both contain ```double``` as their data type.
+Vectors and matrices both contain ```double``` as their data type.
 
 * Vector elements are called **components**. A vector with dimension ```D``` has ```D``` components.
 * Matrix elements are called **entries**. A ```R x C``` matrix has ```R``` rows and ```C``` columns, thus having ```R x C``` entries.
@@ -24,7 +25,7 @@ Intr Lin Alg 250 @ rutgers covers 6 chapters (some not in its entirety):
 * Chapter 5 - Eigenvalues, Eigenvectors, and Diagonalization
 * Chapter 6 - Orthogonality
 
-## Creating a vector and/or a matrix
+# Creating a vector and/or a matrix, and print overloads:
 
 Creating a vector: ```ila::Vector<D> myVec(1, 2, 3, ...);```
 
@@ -85,9 +86,69 @@ There is also a print overload for matrices to the standard output. ```ila::prin
 
 Alternatively, ```std::cout << myMat;``` can also be used.
 
-## Library function details:
+## Sets of vectors:
+
+* This library handles sets of vectors using ```std::arrays```, so use ```std::arrays``` for user-defined vector sets. Example of a user-defined set of vectors:
+
+```cpp
+/* A set of 2 vectors with dimension 3 */
+std::array<ila::Vector<3>, 2> mySet = 
+{
+    Vector<3>(1.0, 2.0, 3.0),
+    Vector<3>(4.0, 5.0, 6.0)
+};
+```
+
+* However, sizes of bases for row, column, and null spaces cannot be calculated at compile time and so are returned via an ```std::vector```. Manually hardcode the ```std::vector``` contents into new ```std::arrays``` and recompile to be compatible with this library's functions.
+
+* ```print()``` overloads for sets represented as ```std::array```s and ```std::vector```s are given.
+
+```cpp
+std::array<ila::Vector<3>, 4> mySetAsStdArray  = { /* ... */ };
+std::vector<ila::Vector<3>>   mySetAsStdVector = { /* ... */ };
+
+/* Both print statements work */
+ila::print(mySetAsStdArray);
+ila::print(mySetAsStdVector);
+```
+
+* Sets printed to the standard output are printed with their augmented matrix representation. For example:
+
+```cpp
+std::array<ila::Vector<3>, 2> mySet = 
+{
+    Vector<3>(1.0, 2.0, 3.0),
+    Vector<3>(4.0, 5.0, 6.0)
+};
+
+ila::print(mySet);
+
+/* Outputs:
+
+{    1    4    }
+{    2    5    }
+{    3    6    }
+
+*/
+```
+
+---
+
+All ```ila::print``` overloads:
+
+* Overload for ```ila::Vector<D>```
+* Overload for ```ila::Matrix<R, C>```
+* Overload for ```std::array<Vector<D>, S>``` and ```std::vector<Vector<D>>```
+* Overload for ```std::vector<ila::Eigenvalue>``` *(More information in 'Chapter 5 - Eigenvalues, Eigenvectors, and Diagonalization')*
+
+# Library function details:
 
 For all function descriptions, function and template arguments can be replaced with whatever you like. I am just providing examples.
+
+* ```myMat```, ```myMat1```, and ```myMat2``` are sample names for matrices. ```mySquareMat``` signifies that the matrix parameter must be a square matrix.
+* ```myVec```, ```myVec1```, and ```myVec2``` are sample names for vectors.
+* ```mySetAsStdArray``` is a sample name for a set of vectors as an ```std::array``` whose size is known at compile time.
+* ```mySetAsStdVector``` is a sample name for a set of vectors as an ```std::vector``` whose size is *not* known at compile time.
 
 ### Operator overloads exist for:
 
@@ -109,5 +170,69 @@ Matrices and vectors *must* be of valid dimensions when performing operations on
 ## Chapter 1 - Matrices, Vectors, and Systems of Linear Equations
 
 * ```ila::transpose(myMat)``` returns the transpose of ```myMat```.
-* ```ila::ERO_row_swap(myMat, 3, 4)``` performs the *row swap* elementary row operation on ```myMat```. It swaps the ```3```rd and ```4```th row of ```myMat```.
-* ```ila::ERO_scalar_multiplication(myMat, 3.44, 2)``` performs the *scalar multiplication* elementary row operation on ```myMat```. It multiplies the ```2```nd row of ```myMat``` by ```3.44```.
+* ```ila::ERO_row_swap(myMat, 3, 4)``` swaps the ```3```rd and ```4```th row of ```myMat```.
+* ```ila::ERO_scalar_multiplication(myMat, 3.44, 2)``` multiplies the ```2```nd row of ```myMat``` by ```3.44```.
+* ```ila::ERO_row_sum(myMat, 2.21, 2, 3)``` adds the ```2```nd row multiplied by ```2.21``` to the ```3```rd row of ```myMat``` (the ```2```nd row is left unchanged).
+* ```ila::ref(myMat)``` returns the row-echelon form of ```myMat```.
+* ```ila::rref(myMat)``` returns the reduced row-echelon form of ```myMat```.
+* ```ila::rank(myMat)``` returns the rank of ```myMat```.
+* ```ila::nullity(myMat)``` returns the nullity of ```myMat```.
+* ```ila::augment(myMat, myVec)``` returns a matrix that augments ```myVec``` to the end of ```myMat```.
+* ```ila::augment``` is overloaded to augment two matrices together as well.
+* ```ila::augment_vector_set(mySetAsStdArray)``` merges all the vectors in ```mySetAsStdArray``` into a matrix and returns it.
+* ```ila::solve(myMat, myVec)``` returns the reduced row-echelon form of ```myVec``` augmented to ```myMat```. rref is designed so that its solution to the system ```myMat * x = myVec``` is easy to extract:
+
+```
+                      x1 x2 x3 x4  x5    b
+Given an rref row: [  0  1  0  2  -3  |  3  ]
+The leading entry of the rref can be solved for: x2 + 2x4 - 3x5 = 3 --> x2 = 3 - 2x4 + 3x5
+A solution variable whose corresponding column has no pivot spot is a free variable.
+```
+
+* ```ila::is_consistent(myMat, myVec)``` returns whether or not a solution vector ```x``` exists for the system ```myMat * x = myVec```.
+* ```ila::is_in_span(myVec, mySetAsStdArray)``` returns whether or not ```myVec``` is in the span of ```mySetAsStdArray```.
+* ```ila::is_linearly_independent(mySetAsStdArray)``` returns whether or not ```mySetAsStdArray``` is linearly independent.
+* ```ila::is_linearly_dependent(mySetAsStdArray)``` is also provided.
+* ```ila::solve_homogenous_system(myMat)``` solves the *homogenous system* ```myMat * x = zeroVec```. Similar to ```ila::solve()```, it returns the reduced row-echelon form of the zero vector augmented to ```myMat```.
+
+## Chapter 2 - Matrices and Linear Transformations
+
+* ```ila::is_diagonal(myMat)``` returns whether or not ```myMat``` is diagonal.
+* ```ila::is_symmetric(myMat)``` returns whether or not ```myMat``` is symmetric.
+* ```ila::EM_row_swap<4>(2, 3)``` returns a ```4 x 4``` elementary matrix which swaps the ```2```nd and ```3```rd row of any matrix multiplied by this elementary matrix.
+* ```ila::EM_scalar_multiplication<5>(3.23, 2)``` returns a ```5 x 5``` elementary matrix which multiplies the ```2```nd row of any matrix multiplied by this elementary matrix by ```3.23```.
+* ```ila::EM_row_sum<3>(2.21, 1, 2)``` returns a ```3 x 3``` elementary matrix which adds the ```1```st row multiplied by ```2.21``` to the ```2```nd row of any matrix multiplied by this elementary matrix (the ```1```st row is left unchanged).
+* ```ila::is_invertible(myMat)``` returns whether or not ```myMat``` is invertible.
+* ```ila::inverse(mySquareMat)``` returns the inverse matrix of ```mySquareMat```.
+
+## Chapter 3 - Determinants
+
+* ```ila::det(mySquareMat)``` returns the determinant of ```mySquareMat```.
+
+## Chapter 4 - Subspaces and their Properties
+
+* ```ila::row(myMat)``` returns the basis of ```myMat```'s row space as an ```std::vector``` of vectors.
+* ```ila::col(myMat)``` returns the basis of ```myMat```'s column space as an ```std::vector``` of vectors.
+* ```ila::null(myMat)``` returns the basis of ```myMat```'s null space as an ```std::vector``` of vectors.
+
+**IMPORTANT:** ```std::vector```s are not supported as sets in this library. Print the ```std::vector```'s contents and rewrite them as ```std::array```s to use them for this library.
+
+### Getting the dimension of bases:
+
+* ```ila::dim(ila::row(myMat))``` to get the dimension of ```myMat```'s row space.
+* ```ila::dim(ila::col(myMat))``` to get the dimension of ```myMat```'s column space.
+* ```ila::dim(ila::null(myMat))``` to get the dimension of ```myMat```'s null space.
+
+**NOTE:** ```ila::dim``` simply returns the size of the ```std::vector```. This function *will not* produce the correct dimension for a user-defined set of vectors as an ```std::vector```.
+
+* ```ila::basis(mySetAsStdArray)``` returns the basis of ```mySetAsStdArray``` as an ```std::vector```.
+
+## Chapter 5 - Eigenvalues, Eigenvectors, and Diagonalization
+
+* ```ila::is_lower_triangular(myMat)``` returns whether or not ```myMat``` is lower-triangular.
+* ```ila::is_upper_triangular(myMat)``` returns whether or not ```myMat``` is upper-triangular.
+* ```ila::generate_eigenvalues(mySquareMat)``` returns all of ```mySquareMat```'s eigenvalues as an ```std::vector``` of ```ila::Eigenvalue``` structs.
+
+The ```ila::Eigenvalue``` struct contains two attributes: ```eigenvalue``` and ```multiplicity```.
+
+An ```ila::print``` is overloaded for ```std::vector<ila::Eigenvalue>```.
