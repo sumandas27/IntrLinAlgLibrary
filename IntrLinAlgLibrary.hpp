@@ -1331,8 +1331,8 @@ std::array<Vector<D>, S> orthonormal_basis(const std::array<Vector<D>, S>& basis
  */
 template <size_t D>
 std::vector<Vector<D>> orthonormal_basis(const std::vector<Vector<D>>& basis) {
-    std::vector<Vector<D>> orthonormalBasis(basis.size());
-    for (int k = 0; k < basis.size(); k++) {
+    std::vector<Vector<D>> orthonormalBasis(dim(basis));
+    for (int k = 0; k < dim(basis); k++) {
         orthonormalBasis.at(k) = basis.at(k);
         for (int i = 0; i < k; i++) {
             double scalar = dot(basis.at(k), orthonormalBasis.at(i));
@@ -1359,9 +1359,9 @@ template <size_t R, size_t C>
 std::pair<Matrix<R, C>, Matrix<C, C>> qr_factorization(const Matrix<R, C>& m) {
     std::vector<Vector<R>> colBasis = col(m);
     std::vector<Vector<R>> orthonormalBasis = orthonormal_basis(colBasis);
-    while (orthonormalBasis.size() < C) {
+    while (dim(orthonormalBasis) < C) {
         Matrix<C, R> qTransposeTemp{};
-        for (size_t row = 0; row < orthonormalBasis.size(); row++) {
+        for (size_t row = 0; row < dim(orthonormalBasis); row++) {
             auto obBegin = orthonormalBasis.at(row).components.begin();
             auto obEnd   = orthonormalBasis.at(row).components.end();
             auto qtBegin = qTransposeTemp.entries[row].begin();
@@ -1584,7 +1584,7 @@ std::pair<bool, std::pair<Matrix<S, S>, Matrix<S, S>>> HELPER_diagonalize_info(c
             continue;
         }
 
-        if (eigenspaceBasis.size() != eigenvalue.multiplicity)
+        if (dim(eigenspaceBasis) != eigenvalue.multiplicity)
             break;
 
         eigenspaceBasesVectors.insert(eigenspaceBasesVectors.end(), eigenspaceBasis.begin(), eigenspaceBasis.end());    
