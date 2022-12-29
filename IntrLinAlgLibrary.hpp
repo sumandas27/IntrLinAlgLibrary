@@ -1,13 +1,3 @@
-#pragma once
-#include <iostream>
-#include <iomanip>
-
-#include <numeric>
-#include <array>
-#include <vector>
-#include <algorithm>
-#include <functional>
-
 /* README
  * ------------------------------------------------------------------------------------------------------------------
  * 
@@ -61,6 +51,15 @@
  * 
  * This library can only handle real eigenvalues. Complex eigenvalues are not supported.
  */
+
+#include <iostream>
+#include <iomanip>
+
+#include <numeric>
+#include <array>
+#include <vector>
+#include <algorithm>
+#include <functional>
 
 namespace ila { // Intro Linear Algebra
 
