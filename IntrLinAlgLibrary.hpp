@@ -1325,6 +1325,15 @@ double length(const Vector<D>& v) {
     return norm(v);
 }
 
+/* The unit vector of a vector is a vector of norm/length 1 pointing to the same direction.
+ * @param The argument vector.
+ * @returns Its argument vector's unit vector.
+ */
+template <size_t D>
+Vector<D> unit_vector(const Vector<D>& v) {
+    return v / norm(v);
+}
+
 /* Normalizing a vector changes its norm/length to 1 (unit vector) while preserving its direction.
  * @param v The argument vector to be normalized.
  */
