@@ -297,6 +297,7 @@ Like all other bases, write ```ila::dim(ila::get_eigenspace_basis(mySquareMat, e
 
 * ```ila::dot(myVec1, myVec2)``` returns the dot product of ```myVec1``` and ```myVec2```.
   * ```myVec1 * myVec2``` is operator overloaded to return their dot product.
+* ```ila::unit_vector(myVec)``` returns the unit vector of ```myVec```.
 * ```ila::norm(myVec)``` returns the norm or length of ```myVec```.
 * ```ila::length``` is the same function as ```ila::norm``` and can be used interchangeably.
 * ```ila::normalize(myVec)``` normalizes ```myVec``` into a norm/length of 1.
