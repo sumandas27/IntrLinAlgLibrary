@@ -100,7 +100,7 @@ constexpr double HELPER_deg_to_rad(double degrees) {
 }
 
 //------------------------------------------------------------------------------------------//
-//VECTOR STRUCT AND METHODS:
+//VECTOR CLASS AND METHODS:
 
 /* A vector is an array of real numbers.
  * Vectors are represented as column vectors as row vectors are rarely used.
@@ -255,7 +255,7 @@ public:
 };
 
 //------------------------------------------------------------------------------------------//
-//MATRIX STRUCT AND METHODS:
+//MATRIX CLASS AND METHODS:
 
 /* A matrix is an array of arrays of real numbers.
  * @param R The number of rows in the matrix.
