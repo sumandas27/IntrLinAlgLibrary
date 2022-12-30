@@ -58,6 +58,23 @@ A print overload is provided to you to print your vector to the standard output.
 
 Alternatively, ```std::cout << myVec;``` can also be used.
 
+### Special Vectors
+
+If your vector has 2 components (of type ```ila::Vector<2>```), you can use:
+
+* ```myVec.x``` to access the first component and ```myVec.y``` to access the second component (use as a 2D point).
+* ```myVec.w``` to access the first component and ```myVec.h``` to access the second component (use as a rectangle).
+
+If your vector has 3 components (of type ```ila::Vector<3>```), you can use:
+
+* ```myVec.x``` for the first component, ```myVec.y``` for the second component, and ```myVec.z``` for the third component (use as a 3D point).
+* ```myVec.w``` for the first component, ```myVec.h``` for the second component, and ```myVec.d``` for the third component (use as a rectangular prism).
+* ```myVec.r``` for the first component, ```myVec.g``` for the second component, and ```myVec.b``` for the third component (use as a color).
+
+If your vector has 4 components (of type ```ila::Vector<4>```), you can use:
+
+* ```myVec.r``` for the first component, ```myVec.g``` for the second component, ```myVec.b``` for the third component, and ```myVec.a``` for the fourth component (use as a color).
+
 ---
 
 Creating a matrix: ```ila::Matrix<R, C> myMat(1, 2, 3, ...);```
