@@ -117,11 +117,6 @@ public:
     Vector();
 
     double& operator[](size_t index);
-
-    Vector<D>& operator+=(const Vector<D>& v);
-    Vector<D>& operator-=(const Vector<D>& v);
-    Vector<D>& operator*=(double scalar);
-    Vector<D>& operator/=(double scalar);
 };
 
 /* Constructs a vector with a list of arguments. Example Vector object creation: 
@@ -160,37 +155,104 @@ double& Vector<D>::operator[](size_t index) {
     return components[index - 1];
 }
 
-/* Vector<D> + Vector<D> operator overload is in Chapter 1.
- */
-template <size_t D>
-Vector<D>& Vector<D>::operator+=(const Vector<D>& v) {
-    *this = *this + v;
-    return *this;
-}
+//------------------------------------------------------------------------------------------//
+//SPECIALIZED ACCESSORS FOR R^2, R^3, and R^4 VECTORS:
 
-/* Vector<D> - Vector<D> operator overload is in Chapter 1.
+/* Allows accessing an R^2 vector as a 2D point (x, y) or a rectangle (w, h).
  */
-template <size_t D>
-Vector<D>& Vector<D>::operator-=(const Vector<D>& v) {
-    *this = *this - v;
-    return *this;
-}
+template <>
+class Vector<2> {
+public:
+    std::array<double, 2> components;
+    double& x, y;
+    double& w, h;
 
-/* double * Vector<D> operator overload is in Chapter 1.
- */
-template <size_t D>
-Vector<D>& Vector<D>::operator*=(double scalar) {
-    *this = scalar * *this;
-    return *this;
-}
+    Vector(double _x, double _y) : components{ _x, _y }, 
+        x(components[0]), y(components[1]),
+        w(components[0]), h(components[1]) { }
 
-/* Vector<D> / double operator overload is in Chapter 1.
+    Vector(std::array<double, 2> _components) : components(_components), 
+        x(components[0]), y(components[1]),
+        w(components[0]), h(components[1]) { }
+
+    Vector() : components{ 0, 0 }, 
+        x(components[0]), y(components[1]),
+        w(components[0]), h(components[1]) { }
+
+    Vector<2>& operator=(const Vector<2>& other) {
+        components = other.components;
+        return *this;
+    }
+
+    double& operator[](size_t index) {
+        assert (index >= 1 && index <= 2);
+        return components[index - 1];
+    }
+};
+
+/* Allows accessing an R^3 vector as a 3D point (x, y, z), a rectangular prism (w, h, d), or a color (r, g, b).
  */
-template <size_t D>
-Vector<D>& Vector<D>::operator/=(double scalar) {
-    *this = *this / scalar;
-    return *this;
-}
+template <>
+class Vector<3> {
+public:
+    std::array<double, 3> components;
+    double& x, y, z;
+    double& w, h, d;
+    double& r, g, b;
+
+    Vector(double _x, double _y, double _z) : components{ _x, _y, _z }, 
+        x(components[0]), y(components[1]), z(components[2]),
+        w(components[0]), h(components[1]), d(components[2]),
+        r(components[0]), g(components[1]), b(components[2]) { }
+
+    Vector(std::array<double, 3> _components) : components(_components), 
+        x(components[0]), y(components[1]), z(components[2]),
+        w(components[0]), h(components[1]), d(components[2]),
+        r(components[0]), g(components[1]), b(components[2]) { }
+
+    Vector() : components{ 0, 0, 0 }, 
+        x(components[0]), y(components[1]), z(components[2]),
+        w(components[0]), h(components[1]), d(components[2]),
+        r(components[0]), g(components[1]), b(components[2]) { }
+
+    Vector<3>& operator=(const Vector<3>& other) {
+        components = other.components;
+        return *this;
+    }
+
+    double& operator[](size_t index) {
+        assert (index >= 1 && index <= 3);
+        return components[index - 1];
+    }
+};
+
+/* Allows accessing an R^4 vector as a color (r, g, b, a).
+ */
+template <>
+class Vector<4> {
+public:
+    std::array<double, 4> components;
+    double& r, g, b, a;
+
+    Vector(double _r, double _g, double _b, double _a) : components{ _r, _g, _b, _a }, 
+        r(components[0]), g(components[1]), b(components[2]), a(components[3]) { }
+
+    Vector(std::array<double, 4> _components) : components(_components), 
+        r(components[0]), g(components[1]), b(components[2]), a(components[3]) { }
+
+    Vector() : components{ 0, 0, 0, 0 }, 
+        r(components[0]), g(components[1]), b(components[2]), a(components[3]) { }
+
+    Vector<4>& operator=(const Vector<4>& other) {
+        components = other.components;
+        return *this;
+    }
+
+    double& operator[](size_t index) {
+        assert (index >= 1 && index <= 4);
+        return components[index - 1];
+    }
+};
 
 //------------------------------------------------------------------------------------------//
 //MATRIX STRUCT AND METHODS:
@@ -222,11 +284,6 @@ public:
     };
 
     Proxy operator[](size_t row);
-
-    Matrix<R, C>& operator+=(const Matrix<R, C>& m);
-    Matrix<R, C>& operator-=(const Matrix<R, C>& m);
-    Matrix<R, C>& operator*=(double scalar);
-    Matrix<R, C>& operator/=(double scalar);
 };
 
 /* Constructs a matrix. Example Matrix object creation:
@@ -309,38 +366,6 @@ template <size_t R, size_t C>
 typename Matrix<R, C>::Proxy Matrix<R, C>::operator[](size_t row) {
     assert (row >= 1 && row <= R);
     return Proxy(entries[row - 1]);
-}
-
-/* Matrix<R, C> + Matrix<R, C> operator overload is in Chapter 1.
- */
-template <size_t R, size_t C>
-Matrix<R, C>& Matrix<R, C>::operator+=(const Matrix<R, C>& m) {
-    *this = *this + m;
-    return *this;
-}
-
-/* Matrix<R, C> - Matrix<R, C> operator overload is in Chapter 1.
- */
-template <size_t R, size_t C>
-Matrix<R, C>& Matrix<R, C>::operator-=(const Matrix<R, C>& m) {
-    *this = *this - m;
-    return *this;
-}
-
-/* double * Matrix<R, C> operator overload is in Chapter 1.
- */
-template <size_t R, size_t C>
-Matrix<R, C>& Matrix<R, C>::operator*=(double scalar) {
-    *this = scalar * *this;
-    return *this;
-}
-
-/* Matrix<R, C> / double operator overload is in Chapter 1.
- */
-template <size_t R, size_t C>
-Matrix<R, C>& Matrix<R, C>::operator/=(double scalar) {
-    *this = *this / scalar;
-    return *this;
 }
 
 //------------------------------------------------------------------------------------------//
@@ -475,6 +500,13 @@ Vector<D> operator+(const Vector<D>& lhs, const Vector<D> rhs) {
     return sum;
 }
 
+/* Alternate to operator+ above.
+ */
+template <size_t D>
+void operator+=(Vector<D>& v, const Vector<D>& other) {
+    v = v + other;
+}
+
 /* The sum of two matrices is a matrix of the same size with corresponding entries added.
  * @returns A matrix that is the sum of two argument matrices.
  */
@@ -491,6 +523,13 @@ Matrix<R, C> operator+(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
     return sum;
 }
 
+/* Alternate to operator+ above.
+ */
+template <size_t R, size_t C>
+void operator+=(Matrix<R, C>& m, const Matrix<R, C>& other) {
+    m = m + other;
+}
+
 /* The difference of two vectors is a vector of the same size with corresponding components subtracted.
  * @returns A vector that is the difference of two argument vectors.
  */
@@ -499,6 +538,13 @@ Vector<D> operator-(const Vector<D>& lhs, const Vector<D>& rhs) {
     Vector<D> diff{};
     std::transform(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), diff.components.begin(), std::minus<double>());
     return diff;
+}
+
+/* Alternate to operator- above.
+ */
+template <size_t D>
+void operator-=(Vector<D>& v, const Vector<D>& other) {
+    v = v - other;
 }
 
 //Vector operator-(const Vector& v1, const Vector& v2);
@@ -518,6 +564,13 @@ Matrix<R, C> operator-(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
     return diff;
 }
 
+/* Alternate to operator- above.
+ */
+template <size_t R, size_t C>
+void operator-=(Matrix<R, C>& m, const Matrix<R, C>& other) {
+    m = m - other;
+}
+
 /* The product of a scalar and a vector is a vector of the same size with all its components multiplied by the scalar.
  * @returns A vector that is the product of a scalar and a vector.
  */
@@ -526,23 +579,36 @@ Vector<D> operator*(double scalar, const Vector<D>& v) {
     Vector<D> product{};
     std::transform(v.components.begin(), v.components.end(), product.components.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
     return product;
-}   
+}
 
 /* Scalar-vector multiplication is commutative.
- * @returns A vector that is the product of a vector and a scalar.
  */
 template <size_t D>
 Vector<D> operator*(const Vector<D>& v, double scalar) {
     return scalar * v;
 }
 
+/* Alternate to operator* above.
+ */
+template <size_t D>
+void operator*=(Vector<D>& v, double scalar) {
+    v = scalar * v;
+}
+
 /* The quotient of a vector and a scalar is a vector of the same size with all its components divided by the scalar.
  * @returns A vector that is the quotient of a vector and a scalar.
  */
 template <size_t D>
-Vector<D> operator/(const Vector<D>& v, double scalar) {
-    double invScalar = 1 / scalar;
+Vector<D> operator/(const Vector<D>& v, double divisor) {
+    double invScalar = 1 / divisor;
     return invScalar * v;
+}
+
+/* Alternate to operator/ above.
+ */
+template <size_t D>
+void operator/=(Vector<D>& v, double divisor) {
+    v = v / divisor;
 }
 
 /* The product of a scalar and a matrix is a matrix of the same size with all its entries multiplied by the scalar.
@@ -561,20 +627,33 @@ Matrix<R, C> operator*(double scalar, const Matrix<R, C>& m) {
 }
 
 /* Scalar-matrix multiplication is commutative.
- * @returns A matrix that is the product of a scalar and a matrix.
  */
 template <size_t R, size_t C>
 Matrix<R, C> operator*(const Matrix<R, C>& m, double scalar) {
     return scalar * m;
 }
 
+/* Alternate to operator* above.
+ */
+template <size_t R, size_t C>
+void operator*=(Matrix<R, C>& m, double scalar) {
+    m = scalar * m;
+}
+
 /* The quotient of a matrix and a scalar is a matrix of the same size with all its entries divided by the scalar.
  * @returns A matrix that is the quotient of a matrix and a scalar.
  */
 template <size_t R, size_t C>
-Matrix<R, C> operator/(const Matrix<R, C>& m, double scalar) {
-    double invScalar = 1 / scalar;
+Matrix<R, C> operator/(const Matrix<R, C>& m, double divisor) {
+    double invScalar = 1 / divisor;
     return invScalar * m;
+}
+
+/* Alternate to operator/ above.
+ */
+template <size_t R, size_t C>
+void operator/=(Matrix<R, C>& m, double divisor) {
+    m = m / divisor;
 }
 
 /* A matrix-vector product is the linear combination of the vector's components and the matrix's column vectors.
