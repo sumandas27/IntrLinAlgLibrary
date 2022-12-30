@@ -164,8 +164,8 @@ template <>
 class Vector<2> {
 public:
     std::array<double, 2> components;
-    double& x, y;
-    double& w, h;
+    double &x, &y;
+    double &w, &h;
 
     Vector(double _x, double _y) : components{ _x, _y }, 
         x(components[0]), y(components[1]),
@@ -196,9 +196,9 @@ template <>
 class Vector<3> {
 public:
     std::array<double, 3> components;
-    double& x, y, z;
-    double& w, h, d;
-    double& r, g, b;
+    double &x, &y, &z;
+    double &w, &h, &d;
+    double &r, &g, &b;
 
     Vector(double _x, double _y, double _z) : components{ _x, _y, _z }, 
         x(components[0]), y(components[1]), z(components[2]),
@@ -232,7 +232,7 @@ template <>
 class Vector<4> {
 public:
     std::array<double, 4> components;
-    double& r, g, b, a;
+    double &r, &g, &b, &a;
 
     Vector(double _r, double _g, double _b, double _a) : components{ _r, _g, _b, _a }, 
         r(components[0]), g(components[1]), b(components[2]), a(components[3]) { }
