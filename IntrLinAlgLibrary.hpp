@@ -1,5 +1,6 @@
-/* README
- * ------------------------------------------------------------------------------------------------------------------
+/* ------------------------------------------------------------------------------------------------------------------
+ * 
+ * README:
  * 
  * IntrLinAlgLibrary.hpp
  * author: Sumanta Das (2022)
@@ -52,6 +53,7 @@
  * This library can only handle real eigenvalues. Complex eigenvalues are not supported.
  */
 
+#pragma once
 #include <iostream>
 #include <iomanip>
 
@@ -68,13 +70,13 @@ namespace ila { // Intro Linear Algebra
 
 /* Setting that prints the first 'x' digits of every vector component and matrix entry. Default set to 5.
  */
-std::streamsize precision = 4;
+inline std::streamsize precision = 4;
 
 /* Sets the precision of vector components and matrix entries when printed.
  * Maximum precision allowed is 6.
  * @param _precision Sets printing all components and entries to the first '_precision' digits.
  */
-void set_precision(std::streamsize _precision) {
+inline void set_precision(std::streamsize _precision) {
     assert (_precision >= 0 && _precision <= 6);
     precision = _precision;
 }
@@ -87,7 +89,7 @@ constexpr double HELPER_epsilon() {
 
 /* [HELPER FUNCTION] Checks equality between two doubles if their difference lies within a tolerance range.
  */
-bool HELPER_is_equal(double val1, double val2) {
+inline bool HELPER_is_equal(double val1, double val2) {
     return std::abs(val1 - val2) < HELPER_epsilon();
 }
 
@@ -642,7 +644,7 @@ Matrix<S, S> identity_matrix() {
  * @param degrees The angle (in degrees) of the rotation matrix.
  * @returns The 2x2 rotation matrix of the argument angle in degrees.
  */
-Matrix<2, 2> rotation_matrix(double degrees) {
+inline Matrix<2, 2> rotation_matrix(double degrees) {
     double cosTheta = cos(HELPER_deg_to_rad(degrees));
     double sinTheta = sin(HELPER_deg_to_rad(degrees));
 
@@ -1493,7 +1495,7 @@ std::vector<Eigenvalue> generate_eigenvalues(const Matrix<S, S>& m) {
  * ila::print(ila::generate_eigenvalues(myMat));
  * @param eigenvalues The set of Eigenvalue structs as an std::vector.
  */
-void print(const std::vector<Eigenvalue>& eigenvalues) {
+inline void print(const std::vector<Eigenvalue>& eigenvalues) {
     if (eigenvalues.empty()) {
         std::cout << "This matrix has no real eigenvalues.\n";
         return;
