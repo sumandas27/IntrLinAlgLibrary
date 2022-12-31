@@ -81,21 +81,21 @@ inline void set_precision(std::streamsize _precision) {
     precision = _precision;
 }
 
-/* [HELPER FUNCTION] The range of tolerance for double equality.
+/* [HELPER FUNCTION] The range of tolerance for float equality.
  */
-constexpr double HELPER_epsilon() {
+constexpr float HELPER_epsilon() {
     return 0.00001;
 }
 
-/* [HELPER FUNCTION] Checks equality between two doubles if their difference lies within a tolerance range.
+/* [HELPER FUNCTION] Checks equality between two floats if their difference lies within a tolerance range.
  */
-inline bool HELPER_is_equal(double val1, double val2) {
+inline bool HELPER_is_equal(float val1, float val2) {
     return std::abs(val1 - val2) < HELPER_epsilon();
 }
 
 /* [HELPER FUNCTION] Converts an angle from degrees to radians.
  */
-constexpr double HELPER_deg_to_rad(double degrees) {
+constexpr float HELPER_deg_to_rad(float degrees) {
     return degrees * M_PI / 180;
 }
 
@@ -109,14 +109,14 @@ constexpr double HELPER_deg_to_rad(double degrees) {
 template <size_t D>
 class Vector {
 public:
-    std::array<double, D> components;
+    std::array<float, D> components;
 
     template <typename... Ts>
     Vector(Ts... _components);
-    Vector(std::array<double, D> _components);
+    Vector(std::array<float, D> _components);
     Vector();
 
-    double& operator[](size_t index);
+    float& operator[](size_t index);
 };
 
 /* Constructs a vector with a list of arguments. Example Vector object creation: 
@@ -127,7 +127,7 @@ public:
 template <size_t D>
 template <typename... Ts>
 Vector<D>::Vector(Ts... _components) 
-    : components{ static_cast<double>(std::forward<Ts>(_components))... } 
+    : components{ static_cast<float>(std::forward<Ts>(_components))... } 
 {
     assert (D != 0);
     assert (sizeof...(_components) == D);
@@ -137,7 +137,7 @@ Vector<D>::Vector(Ts... _components)
  * @param _components The array holding the vector's components.
  */
 template <size_t D>
-Vector<D>::Vector(std::array<double, D> _components)
+Vector<D>::Vector(std::array<float, D> _components)
     : components(_components) { }
 
 /* Constructs a vector with zero-initialized components.
@@ -150,7 +150,7 @@ Vector<D>::Vector() : components{} { }
  * @returns The component at the argument index.
  */
 template <size_t D>
-double& Vector<D>::operator[](size_t index) {
+float& Vector<D>::operator[](size_t index) {
     assert (index >= 1 && index <= D);
     return components[index - 1];
 }
@@ -163,18 +163,18 @@ double& Vector<D>::operator[](size_t index) {
 template <>
 class Vector<2> {
 public:
-    std::array<double, 2> components;
+    std::array<float, 2> components;
     
-    double& x() { return components[0]; }
-    double& y() { return components[1]; }
-    const double& x() const { return components[0]; }
-    const double& y() const { return components[1]; }
+    float& x() { return components[0]; }
+    float& y() { return components[1]; }
+    const float& x() const { return components[0]; }
+    const float& y() const { return components[1]; }
 
-    Vector(double _x, double _y) : components{ _x, _y } { }
-    Vector(std::array<double, 2> _components) : components(_components) { }
+    Vector(float _x, float _y) : components{ _x, _y } { }
+    Vector(std::array<float, 2> _components) : components(_components) { }
     Vector() : components{ 0, 0 } { }
 
-    double& operator[](size_t index) {
+    float& operator[](size_t index) {
         assert (index >= 1 && index <= 2);
         return components[index - 1];
     }
@@ -185,27 +185,27 @@ public:
 template <>
 class Vector<3> {
 public:
-    std::array<double, 3> components;
+    std::array<float, 3> components;
 
-    double& x() { return components[0]; }
-    double& y() { return components[1]; }
-    double& z() { return components[2]; }
-    const double& x() const { return components[0]; }
-    const double& y() const { return components[1]; }
-    const double& z() const { return components[2]; }
+    float& x() { return components[0]; }
+    float& y() { return components[1]; }
+    float& z() { return components[2]; }
+    const float& x() const { return components[0]; }
+    const float& y() const { return components[1]; }
+    const float& z() const { return components[2]; }
 
-    double& r() { return components[0]; }
-    double& g() { return components[1]; }
-    double& b() { return components[2]; }
-    const double& r() const { return components[0]; }
-    const double& g() const { return components[1]; }
-    const double& b() const { return components[2]; }
+    float& r() { return components[0]; }
+    float& g() { return components[1]; }
+    float& b() { return components[2]; }
+    const float& r() const { return components[0]; }
+    const float& g() const { return components[1]; }
+    const float& b() const { return components[2]; }
 
-    Vector(double _x, double _y, double _z) : components{ _x, _y, _z } { }
-    Vector(std::array<double, 3> _components) : components(_components) { }
+    Vector(float _x, float _y, float _z) : components{ _x, _y, _z } { }
+    Vector(std::array<float, 3> _components) : components(_components) { }
     Vector() : components{ 0, 0, 0 } { }
 
-    double& operator[](size_t index) {
+    float& operator[](size_t index) {
         assert (index >= 1 && index <= 3);
         return components[index - 1];
     }
@@ -216,22 +216,22 @@ public:
 template <>
 class Vector<4> {
 public:
-    std::array<double, 4> components;
+    std::array<float, 4> components;
     
-    double& r() { return components[0]; }
-    double& g() { return components[1]; }
-    double& b() { return components[2]; }
-    double& a() { return components[3]; }
-    const double& r() const { return components[0]; }
-    const double& g() const { return components[1]; }
-    const double& b() const { return components[2]; }
-    const double& a() const { return components[3]; }
+    float& r() { return components[0]; }
+    float& g() { return components[1]; }
+    float& b() { return components[2]; }
+    float& a() { return components[3]; }
+    const float& r() const { return components[0]; }
+    const float& g() const { return components[1]; }
+    const float& b() const { return components[2]; }
+    const float& a() const { return components[3]; }
 
-    Vector(double _r, double _g, double _b, double _a) : components{ _r, _g, _b, _a } { }
-    Vector(std::array<double, 4> _components) : components(_components) { }
+    Vector(float _r, float _g, float _b, float _a) : components{ _r, _g, _b, _a } { }
+    Vector(std::array<float, 4> _components) : components(_components) { }
     Vector() : components{ 0, 0, 0, 0 } { }
 
-    double& operator[](size_t index) {
+    float& operator[](size_t index) {
         assert (index >= 1 && index <= 4);
         return components[index - 1];
     }
@@ -247,11 +247,11 @@ public:
 template <size_t R, size_t C>
 class Matrix {
 public:
-    std::array<std::array<double, C>, R> entries;
+    std::array<std::array<float, C>, R> entries;
 
     template <typename... Ts>
     Matrix(Ts... _entries);
-    Matrix(std::array<std::array<double, C>, R> _entries);
+    Matrix(std::array<std::array<float, C>, R> _entries);
     Matrix();
 
     Vector<C> row_vector(size_t row) const;
@@ -259,11 +259,11 @@ public:
 
     class Proxy {
     public:
-        Proxy(std::array<double, C> _row) : row(_row) { };
-        double& operator[](size_t col);
+        Proxy(std::array<float, C> _row) : row(_row) { };
+        float& operator[](size_t col);
 
     private:
-        std::array<double, C> row;
+        std::array<float, C> row;
     };
 
     Proxy operator[](size_t row);
@@ -286,7 +286,7 @@ Matrix<R, C>::Matrix(Ts... _entries)
     assert (R != 0 && C != 0);
     assert (sizeof...(_entries) == R * C);
 
-    std::array<double, R * C> temp{ static_cast<double>(std::forward<Ts>(_entries))... };
+    std::array<float, R * C> temp{ static_cast<float>(std::forward<Ts>(_entries))... };
     for (size_t row = 0; row < R; row++) {
         size_t beg = row * C;
         size_t end = row * C + C;
@@ -298,7 +298,7 @@ Matrix<R, C>::Matrix(Ts... _entries)
  * @param _entries The 2D array holding the matrix's entries.
  */
 template <size_t R, size_t C>
-Matrix<R, C>::Matrix(std::array<std::array<double, C>, R> _entries)
+Matrix<R, C>::Matrix(std::array<std::array<float, C>, R> _entries)
     : entries(_entries) { }
 
 /* Constructs a Matrix object with zero-intialized entries.
@@ -323,7 +323,7 @@ Vector<C> Matrix<R, C>::row_vector(size_t row) const {
 template <size_t R, size_t C>
 Vector<R> Matrix<R, C>::column_vector(size_t col) const {
     assert (col >= 1 && col <= C);
-    std::array<double, R> column{};
+    std::array<float, R> column{};
     for (size_t row = 0; row < R; row++)
         column[row] = entries[row][col - 1];
     return Vector<R>(column);
@@ -335,7 +335,7 @@ Vector<R> Matrix<R, C>::column_vector(size_t col) const {
  * @returns The entry at the argument column of the proxy row.
  */
 template <size_t R, size_t C>
-double& Matrix<R, C>::Proxy::operator[](size_t col) {
+float& Matrix<R, C>::Proxy::operator[](size_t col) {
     assert (col >= 1 && col <= C);
     return row[col - 1];
 }
@@ -362,7 +362,7 @@ template <size_t X>
 std::ostream& operator<<(std::ostream& os, const Vector<X>& v) {
     std::streamsize original = os.precision();
     os << std::setprecision(precision);
-    for (double component : v.components)
+    for (float component : v.components)
         os << "{\t" << (std::abs(component) < HELPER_epsilon() ? 0 : component) << "\t}\n";
     os << "\n";
     os << std::setprecision(original);
@@ -387,7 +387,7 @@ std::ostream& operator<<(std::ostream& os, const Matrix<X, Y>& m) {
     os << std::setprecision(precision);
     for (size_t row = 0; row < X; row++) {
         os << "{\t";
-        for (double entry : m.entries[row])
+        for (float entry : m.entries[row])
             os << (std::abs(entry) < HELPER_epsilon() ? 0 : entry) << "\t";
         os << "}\n";
     }
@@ -423,7 +423,7 @@ void print(const std::vector<Vector<D>>& set) {
     for (size_t row = 0; row < D; row++) {
         std::cout << "{\t";
         for (size_t col = 0; col < set.size(); col++) {
-            double component = set.at(col).components[row];
+            float component = set.at(col).components[row];
             std::cout << (std::abs(component) < HELPER_epsilon() ? 0 : component) << "\t";
         }
         std::cout << "}\n";
@@ -479,7 +479,7 @@ bool operator!=(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
 template <size_t D>
 Vector<D> operator+(const Vector<D>& lhs, const Vector<D> rhs) {
     Vector<D> sum{};
-    std::transform(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), sum.components.begin(), std::plus<double>());
+    std::transform(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), sum.components.begin(), std::plus<float>());
     return sum;
 }
 
@@ -501,7 +501,7 @@ Matrix<R, C> operator+(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
         auto leftEnd    = lhs.entries[row].end();
         auto rightBegin = rhs.entries[row].begin();
         auto sumBegin   = sum.entries[row].begin();
-        std::transform(leftBegin, leftEnd, rightBegin, sumBegin, std::plus<double>());
+        std::transform(leftBegin, leftEnd, rightBegin, sumBegin, std::plus<float>());
     }
     return sum;
 }
@@ -519,7 +519,7 @@ void operator+=(Matrix<R, C>& m, const Matrix<R, C>& other) {
 template <size_t D>
 Vector<D> operator-(const Vector<D>& lhs, const Vector<D>& rhs) {
     Vector<D> diff{};
-    std::transform(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), diff.components.begin(), std::minus<double>());
+    std::transform(lhs.components.begin(), lhs.components.end(), rhs.components.begin(), diff.components.begin(), std::minus<float>());
     return diff;
 }
 
@@ -542,7 +542,7 @@ Matrix<R, C> operator-(const Matrix<R, C>& lhs, const Matrix<R, C>& rhs) {
         auto leftEnd    = lhs.entries[row].end();
         auto rightBegin = rhs.entries[row].begin();
         auto diffBegin  = diff.entries[row].begin();
-        std::transform(leftBegin, leftEnd, rightBegin, diffBegin, std::minus<double>());
+        std::transform(leftBegin, leftEnd, rightBegin, diffBegin, std::minus<float>());
     }
     return diff;
 }
@@ -558,23 +558,23 @@ void operator-=(Matrix<R, C>& m, const Matrix<R, C>& other) {
  * @returns A vector that is the product of a scalar and a vector.
  */
 template <size_t D>
-Vector<D> operator*(double scalar, const Vector<D>& v) {
+Vector<D> operator*(float scalar, const Vector<D>& v) {
     Vector<D> product{};
-    std::transform(v.components.begin(), v.components.end(), product.components.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+    std::transform(v.components.begin(), v.components.end(), product.components.begin(), std::bind(std::multiplies<float>(), std::placeholders::_1, scalar));
     return product;
 }
 
 /* Scalar-vector multiplication is commutative.
  */
 template <size_t D>
-Vector<D> operator*(const Vector<D>& v, double scalar) {
+Vector<D> operator*(const Vector<D>& v, float scalar) {
     return scalar * v;
 }
 
 /* Alternate to operator* above.
  */
 template <size_t D>
-void operator*=(Vector<D>& v, double scalar) {
+void operator*=(Vector<D>& v, float scalar) {
     v = scalar * v;
 }
 
@@ -582,15 +582,15 @@ void operator*=(Vector<D>& v, double scalar) {
  * @returns A vector that is the quotient of a vector and a scalar.
  */
 template <size_t D>
-Vector<D> operator/(const Vector<D>& v, double divisor) {
-    double invScalar = 1 / divisor;
+Vector<D> operator/(const Vector<D>& v, float divisor) {
+    float invScalar = 1 / divisor;
     return invScalar * v;
 }
 
 /* Alternate to operator/ above.
  */
 template <size_t D>
-void operator/=(Vector<D>& v, double divisor) {
+void operator/=(Vector<D>& v, float divisor) {
     v = v / divisor;
 }
 
@@ -598,13 +598,13 @@ void operator/=(Vector<D>& v, double divisor) {
  * @returns A matrix that is the product of a scalar and a matrix.
  */
 template <size_t R, size_t C>
-Matrix<R, C> operator*(double scalar, const Matrix<R, C>& m) {
+Matrix<R, C> operator*(float scalar, const Matrix<R, C>& m) {
     Matrix<R, C> product{};
     for (size_t row = 0; row < R; row++) {
         auto matrixBegin = m.entries[row].begin();
         auto matrixEnd   = m.entries[row].end();
         auto productBegin = product.entries[row].begin();
-        std::transform(matrixBegin, matrixEnd, productBegin, std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+        std::transform(matrixBegin, matrixEnd, productBegin, std::bind(std::multiplies<float>(), std::placeholders::_1, scalar));
     }
     return product;
 }
@@ -612,14 +612,14 @@ Matrix<R, C> operator*(double scalar, const Matrix<R, C>& m) {
 /* Scalar-matrix multiplication is commutative.
  */
 template <size_t R, size_t C>
-Matrix<R, C> operator*(const Matrix<R, C>& m, double scalar) {
+Matrix<R, C> operator*(const Matrix<R, C>& m, float scalar) {
     return scalar * m;
 }
 
 /* Alternate to operator* above.
  */
 template <size_t R, size_t C>
-void operator*=(Matrix<R, C>& m, double scalar) {
+void operator*=(Matrix<R, C>& m, float scalar) {
     m = scalar * m;
 }
 
@@ -627,15 +627,15 @@ void operator*=(Matrix<R, C>& m, double scalar) {
  * @returns A matrix that is the quotient of a matrix and a scalar.
  */
 template <size_t R, size_t C>
-Matrix<R, C> operator/(const Matrix<R, C>& m, double divisor) {
-    double invScalar = 1 / divisor;
+Matrix<R, C> operator/(const Matrix<R, C>& m, float divisor) {
+    float invScalar = 1 / divisor;
     return invScalar * m;
 }
 
 /* Alternate to operator/ above.
  */
 template <size_t R, size_t C>
-void operator/=(Matrix<R, C>& m, double divisor) {
+void operator/=(Matrix<R, C>& m, float divisor) {
     m = m / divisor;
 }
 
@@ -646,7 +646,7 @@ template <size_t R, size_t C>
 Vector<R> operator*(const Matrix<R, C>& m, const Vector<C>& v) {
     Vector<R> product{};
     for (size_t i = 0; i < R; i++) {
-        double entry = 0.0;
+        float entry = 0.0;
         for (size_t j = 0; j < C; j++)
             entry += v.components[j] * m.entries[i][j];
         product.components[i] = entry;
@@ -706,9 +706,9 @@ Matrix<S, S> identity_matrix() {
  * @param degrees The angle (in degrees) of the rotation matrix.
  * @returns The 2x2 rotation matrix of the argument angle in degrees.
  */
-inline Matrix<2, 2> rotation_matrix(double degrees) {
-    double cosTheta = cos(HELPER_deg_to_rad(degrees));
-    double sinTheta = sin(HELPER_deg_to_rad(degrees));
+inline Matrix<2, 2> rotation_matrix(float degrees) {
+    float cosTheta = cos(HELPER_deg_to_rad(degrees));
+    float sinTheta = sin(HELPER_deg_to_rad(degrees));
 
     return Matrix<2, 2>
     (
@@ -749,12 +749,12 @@ void ERO_row_swap(Matrix<R, C>& m, size_t row1, size_t row2) {
  * @param row The row to be multiplied.
  */
 template <size_t R, size_t C>
-void ERO_scalar_multiplication(Matrix<R, C>& m, double scalar, size_t row) {
+void ERO_scalar_multiplication(Matrix<R, C>& m, float scalar, size_t row) {
     assert (row >= 1 && row <= R);
 
     auto rowBegin = m.entries[row - 1].begin();
     auto rowEnd   = m.entries[row - 1].end();
-    std::transform(rowBegin, rowEnd, rowBegin, std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+    std::transform(rowBegin, rowEnd, rowBegin, std::bind(std::multiplies<float>(), std::placeholders::_1, scalar));
 }
 
 /* An elementary row where a multiple of one row is added to another row in a matrix: scalar * scaledRow + outputRow --> outputRow
@@ -764,18 +764,18 @@ void ERO_scalar_multiplication(Matrix<R, C>& m, double scalar, size_t row) {
  * @param outputRow The output row to add and to copy the results into.
  */
 template <size_t R, size_t C>
-void ERO_row_sum(Matrix<R, C>& m, double scalar, size_t rowToScale, size_t outputRow) {
+void ERO_row_sum(Matrix<R, C>& m, float scalar, size_t rowToScale, size_t outputRow) {
     assert (rowToScale >= 1 && rowToScale <= R);
     assert (outputRow >= 1 && outputRow <= R);
 
-    std::array<double, C> scaledRow{};
+    std::array<float, C> scaledRow{};
     auto rowToScaleBegin = m.entries[rowToScale - 1].begin();
     auto rowToScaleEnd   = m.entries[rowToScale - 1].end();
-    std::transform(rowToScaleBegin, rowToScaleEnd, scaledRow.begin(), std::bind(std::multiplies<double>(), std::placeholders::_1, scalar));
+    std::transform(rowToScaleBegin, rowToScaleEnd, scaledRow.begin(), std::bind(std::multiplies<float>(), std::placeholders::_1, scalar));
 
     auto outputRowBegin = m.entries[outputRow  - 1].begin();
     auto outputRowEnd   = m.entries[outputRow  - 1].end();
-    std::transform(outputRowBegin,outputRowEnd, scaledRow.begin(), outputRowBegin, std::plus<double>());
+    std::transform(outputRowBegin,outputRowEnd, scaledRow.begin(), outputRowBegin, std::plus<float>());
 }
 
 /* [HELPER FUNCTION] This function transforms the matrix argument itself to reduced-row echelon form, avoiding an unnecessary copy.
@@ -792,13 +792,13 @@ std::pair<unsigned int, unsigned int> HELPER_ref_by_reference(Matrix<R, C>& m) {
         if (pivotRow > R - 1)
             break;
 
-        double nonzeroFound = 0.0; /* 0.0 means a nonzero entry has not been found, else nonzero entry is set to this variable */
+        float nonzeroFound = 0.0; /* 0.0 means a nonzero entry has not been found, else nonzero entry is set to this variable */
         for (size_t row = pivotRow; row < R; row++) {
             if (HELPER_is_equal(m.entries[row][col], 0.0))
                 continue;
 
             if (nonzeroFound != 0.0) {
-                double scalar = -m.entries[row][col] / nonzeroFound;
+                float scalar = -m.entries[row][col] / nonzeroFound;
                 ERO_row_sum(m, scalar, pivotRow, row + 1);
                 continue;
             }
@@ -851,13 +851,13 @@ Matrix<R, C> rref(Matrix<R, C> m) {
             continue;
 
         if (m.entries[pivotRow][col] != 1.0) {
-            double scalar = 1.0 / m.entries[pivotRow][col];
+            float scalar = 1.0 / m.entries[pivotRow][col];
             ERO_scalar_multiplication(m, scalar, pivotRow + 1);
         }
 
         for (int row = pivotRow - 1; row >= 0; row--)
             if (m.entries[row][col] != 0) {
-                double scalar = -m.entries[row][col];
+                float scalar = -m.entries[row][col];
                 ERO_row_sum(m, scalar, pivotRow + 1, row + 1);
             }
 
@@ -969,7 +969,7 @@ bool is_consistent(const Matrix<R, C>& coeffMat, const Vector<R>& constantVec) {
 
         auto coeffRowBegin = rrefAugment.entries[row].begin();
         auto coeffRowEnd   = rrefAugment.entries[row].end() - 1;
-        if (std::all_of(coeffRowBegin, coeffRowEnd, [](double entry){ return entry == 0.0; }))
+        if (std::all_of(coeffRowBegin, coeffRowEnd, [](float entry){ return entry == 0.0; }))
             return false;
     }
     return true;
@@ -1028,7 +1028,7 @@ Matrix<A, C> operator*(const Matrix<A, B>& lhs, const Matrix<B, C>& rhs) {
     Matrix<A, C> product{};
     for (size_t row = 0; row < A; row++)
     for (size_t col = 0; col < C; col++) {
-        double entry = 0.0;
+        float entry = 0.0;
         for (size_t dot = 0; dot < B; dot++)
             entry += lhs.entries[row][dot] * rhs.entries[dot][col];
         product.entries[row][col] = entry;
@@ -1098,7 +1098,7 @@ Matrix<S, S> EM_row_swap(size_t row1, size_t row2) {
  * @returns The corresponding elementary matrix.
  */
 template <size_t S>
-Matrix<S, S> EM_scalar_multiplication(double scalar, size_t row) {
+Matrix<S, S> EM_scalar_multiplication(float scalar, size_t row) {
     Matrix<S, S> elementaryMatrix = identity_matrix<S>();
     ERO_scalar_multiplication(elementaryMatrix, scalar, row);
     return elementaryMatrix;
@@ -1114,7 +1114,7 @@ Matrix<S, S> EM_scalar_multiplication(double scalar, size_t row) {
  * @returns The corresponding elementary matrix.
  */
 template <size_t S>
-Matrix<S, S> EM_row_sum(double scalar, size_t rowToScale, size_t outputRow) {
+Matrix<S, S> EM_row_sum(float scalar, size_t rowToScale, size_t outputRow) {
     Matrix<S, S> elementaryMatrix = identity_matrix<S>();
     ERO_row_sum(elementaryMatrix, scalar, rowToScale, outputRow);
     return elementaryMatrix;
@@ -1160,11 +1160,11 @@ Matrix<S, S> inverse(const Matrix<S, S>& m) {
  * @returns The determinant of the argument square matrix.
  */
 template <size_t S>
-double det(const Matrix<S, S>& m) {
+float det(const Matrix<S, S>& m) {
     Matrix<S, S> copy = m;
     unsigned int rowSwaps = HELPER_ref_by_reference(copy).second;
 
-    double determinant = 1;
+    float determinant = 1;
     for (int i = 0; i < S; i++)
         determinant *= copy.entries[i][i];
     if (rowSwaps % 2 == 1)
@@ -1280,15 +1280,15 @@ std::vector<Vector<D>> basis(const std::array<Vector<D>, S>& set) {
  * @returns The dot product of the two argument vectors.
  */
 template <size_t D>
-double dot(const Vector<D>& v1, const Vector<D>& v2) {
+float dot(const Vector<D>& v1, const Vector<D>& v2) {
     return std::inner_product(v1.components.begin(), v1.components.end(), v2.components.begin(), 0.0);
 }
 
 /* Optional operator overload for getting the dot product between two vectors.
- * Look at 'double dot(const Vector&, const Vector&)' for documentation.
+ * Look at 'float dot(const Vector&, const Vector&)' for documentation.
  */
 template <size_t D>
-double operator*(const Vector<D>& v1, const Vector<D>& v2) {
+float operator*(const Vector<D>& v1, const Vector<D>& v2) {
     return dot(v1, v2);
 }
 
@@ -1297,14 +1297,14 @@ double operator*(const Vector<D>& v1, const Vector<D>& v2) {
  * @returns The norm of the vector.
  */
 template <size_t D>
-double norm(const Vector<D>& v) {
+float norm(const Vector<D>& v) {
     return std::sqrt(dot(v, v));
 }
 
-/* A vector's length is its norm. Look at 'double norm(const Vector&)' for documentation.
+/* A vector's length is its norm. Look at 'float norm(const Vector&)' for documentation.
  */
 template <size_t D>
-double length(const Vector<D>& v) {
+float length(const Vector<D>& v) {
     return norm(v);
 }
 
@@ -1331,7 +1331,7 @@ void normalize(Vector<D>& v) {
  * @returns The distance between the two vectors.
  */
 template <size_t D>
-double distance(const Vector<D>& v1, const Vector<D>& v2) {
+float distance(const Vector<D>& v1, const Vector<D>& v2) {
     return norm(v1 - v2);
 }
 
@@ -1371,7 +1371,7 @@ bool is_orthogonal(const std::array<Vector<D>, S>& set) {
  */
 template <size_t D>
 Vector<D> orthogonal_projection(const Vector<D>& of, const Vector<D>& onto) {
-    double scalar = dot(of, onto) / dot(onto, onto);
+    float scalar = dot(of, onto) / dot(onto, onto);
     return scalar * onto;
 }
 
@@ -1389,7 +1389,7 @@ std::array<Vector<D>, S> orthonormal_basis(const std::array<Vector<D>, S>& basis
     for (int k = 0; k < S; k++) {
         orthonormalBasis[k] = basis[k];
         for (int i = 0; i < k; i++) {
-            double scalar = dot(basis[k], orthonormalBasis[i]);
+            float scalar = dot(basis[k], orthonormalBasis[i]);
             orthonormalBasis[k] -= scalar * orthonormalBasis[i];
         }        
         normalize(orthonormalBasis[k]);
@@ -1407,7 +1407,7 @@ std::vector<Vector<D>> orthonormal_basis(const std::vector<Vector<D>>& basis) {
     for (int k = 0; k < dim(basis); k++) {
         orthonormalBasis.at(k) = basis.at(k);
         for (int i = 0; i < k; i++) {
-            double scalar = dot(basis.at(k), orthonormalBasis.at(i));
+            float scalar = dot(basis.at(k), orthonormalBasis.at(i));
             orthonormalBasis.at(k) -= scalar * orthonormalBasis.at(i);
         }
         normalize(orthonormalBasis.at(k));
@@ -1464,7 +1464,7 @@ std::pair<Matrix<R, C>, Matrix<C, C>> qr_factorization(const Matrix<R, C>& m) {
  * An eigenvalue's multiplicity is the number of times it appears as a root of its characteristic polynomial.
  */
 struct Eigenvalue {
-    double eigenvalue;
+    float eigenvalue;
     unsigned int multiplicity;
 };
 
@@ -1522,7 +1522,7 @@ Matrix<S, S> HELPER_qr_algorithm(Matrix<S, S> m) {
  * @returns The second element of the returned pair is true if the argument eigenvalue is valid. False if otherwise.
  */
 template <size_t S>
-std::pair<std::vector<Vector<S>>, bool> HELPER_eigenspace_info(const Matrix<S, S>& m, double eigenvalue) {
+std::pair<std::vector<Vector<S>>, bool> HELPER_eigenspace_info(const Matrix<S, S>& m, float eigenvalue) {
     std::vector<Vector<S>> eigenspaceBasis = null(m - eigenvalue * identity_matrix<S>());
     bool valid = eigenspaceBasis.front() != zero_vector<S>(); /* eigenvectors cannot be the zero vector */
     return std::make_pair(eigenspaceBasis, valid); 
@@ -1544,8 +1544,8 @@ std::vector<Eigenvalue> generate_eigenvalues(const Matrix<S, S>& m) {
     std::vector<Eigenvalue> eigenvalues{};
     Matrix<S, S> qrAlgorithm = HELPER_qr_algorithm(m);
     for (size_t i = 0; i < S; i++) {
-        double raw = qrAlgorithm.entries[i][i];
-        double eigenvalue = std::floor(10000 * raw + 0.5) / 10000; /* rounded to the nearest ten thousandths */
+        float raw = qrAlgorithm.entries[i][i];
+        float eigenvalue = std::floor(10000 * raw + 0.5) / 10000; /* rounded to the nearest ten thousandths */
 
         bool isEigenvalueValid = HELPER_eigenspace_info(m, eigenvalue).second;
         if (!isEigenvalueValid)
@@ -1583,12 +1583,12 @@ inline void print(const std::vector<Eigenvalue>& eigenvalues) {
  * @returns The corresponding eigenvalue.
  */
 template <size_t S>
-double get_eigenvalue(const Matrix<S, S>& m, const Vector<S>& eigenvector) {
+float get_eigenvalue(const Matrix<S, S>& m, const Vector<S>& eigenvector) {
     assert (eigenvector != zero_vector<S>());
     Vector<S> product = m * eigenvector;
 
     bool isValid = true;
-    double eigenvalue = std::numeric_limits<double>::quiet_NaN(); /* 'not set' flag */
+    float eigenvalue = std::numeric_limits<float>::quiet_NaN(); /* 'not set' flag */
     for (size_t i = 0; i < S; i++) {
         if (eigenvector.components[i] == 0.0) {
             if (product.components[i] != 0.0) {
@@ -1598,7 +1598,7 @@ double get_eigenvalue(const Matrix<S, S>& m, const Vector<S>& eigenvector) {
             continue;
         }
         
-        double componentEigenvalue = product.components[i] / eigenvector.components[i];
+        float componentEigenvalue = product.components[i] / eigenvector.components[i];
         if (std::isnan(eigenvalue)) {
             eigenvalue = componentEigenvalue;
             continue;
@@ -1623,7 +1623,7 @@ double get_eigenvalue(const Matrix<S, S>& m, const Vector<S>& eigenvector) {
  * @returns The basis of the eigenvalue's corresponding eigenspace.
  */
 template <size_t S>
-std::vector<Vector<S>> get_eigenspace_basis(const Matrix<S, S>& m, double eigenvalue) {
+std::vector<Vector<S>> get_eigenspace_basis(const Matrix<S, S>& m, float eigenvalue) {
     auto [eigenspaceBasis, valid] = HELPER_eigenspace_info(m, eigenvalue);
     assert (valid);
     return eigenspaceBasis;
