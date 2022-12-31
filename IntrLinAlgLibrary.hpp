@@ -158,31 +158,21 @@ double& Vector<D>::operator[](size_t index) {
 //------------------------------------------------------------------------------------------//
 //SPECIALIZED ACCESSORS FOR R^2, R^3, and R^4 VECTORS:
 
-/* Allows accessing an R^2 vector as a 2D point (x, y) or a rectangle (w, h).
+/* Allows accessing an R^2 vector as a 2D point (x, y).
  */
 template <>
 class Vector<2> {
 public:
     std::array<double, 2> components;
-    double &x, &y;
-    double &w, &h;
+    
+    double& x() { return components[0]; }
+    double& y() { return components[1]; }
+    const double& x() const { return components[0]; }
+    const double& y() const { return components[1]; }
 
-    Vector(double _x, double _y) : components{ _x, _y }, 
-        x(components[0]), y(components[1]),
-        w(components[0]), h(components[1]) { }
-
-    Vector(std::array<double, 2> _components) : components(_components), 
-        x(components[0]), y(components[1]),
-        w(components[0]), h(components[1]) { }
-
-    Vector() : components{ 0, 0 }, 
-        x(components[0]), y(components[1]),
-        w(components[0]), h(components[1]) { }
-
-    Vector<2>& operator=(const Vector<2>& other) {
-        components = other.components;
-        return *this;
-    }
+    Vector(double _x, double _y) : components{ _x, _y } { }
+    Vector(std::array<double, 2> _components) : components(_components) { }
+    Vector() : components{ 0, 0 } { }
 
     double& operator[](size_t index) {
         assert (index >= 1 && index <= 2);
@@ -190,35 +180,30 @@ public:
     }
 };
 
-/* Allows accessing an R^3 vector as a 3D point (x, y, z), a rectangular prism (w, h, d), or a color (r, g, b).
+/* Allows accessing an R^3 vector as a 3D point (x, y, z) or a color (r, g, b).
  */
 template <>
 class Vector<3> {
 public:
     std::array<double, 3> components;
-    double &x, &y, &z;
-    double &w, &h, &d;
-    double &r, &g, &b;
 
-    Vector(double _x, double _y, double _z) : components{ _x, _y, _z }, 
-        x(components[0]), y(components[1]), z(components[2]),
-        w(components[0]), h(components[1]), d(components[2]),
-        r(components[0]), g(components[1]), b(components[2]) { }
+    double& x() { return components[0]; }
+    double& y() { return components[1]; }
+    double& z() { return components[2]; }
+    const double& x() const { return components[0]; }
+    const double& y() const { return components[1]; }
+    const double& z() const { return components[2]; }
 
-    Vector(std::array<double, 3> _components) : components(_components), 
-        x(components[0]), y(components[1]), z(components[2]),
-        w(components[0]), h(components[1]), d(components[2]),
-        r(components[0]), g(components[1]), b(components[2]) { }
+    double& r() { return components[0]; }
+    double& g() { return components[1]; }
+    double& b() { return components[2]; }
+    const double& r() const { return components[0]; }
+    const double& g() const { return components[1]; }
+    const double& b() const { return components[2]; }
 
-    Vector() : components{ 0, 0, 0 }, 
-        x(components[0]), y(components[1]), z(components[2]),
-        w(components[0]), h(components[1]), d(components[2]),
-        r(components[0]), g(components[1]), b(components[2]) { }
-
-    Vector<3>& operator=(const Vector<3>& other) {
-        components = other.components;
-        return *this;
-    }
+    Vector(double _x, double _y, double _z) : components{ _x, _y, _z } { }
+    Vector(std::array<double, 3> _components) : components(_components) { }
+    Vector() : components{ 0, 0, 0 } { }
 
     double& operator[](size_t index) {
         assert (index >= 1 && index <= 3);
@@ -232,21 +217,19 @@ template <>
 class Vector<4> {
 public:
     std::array<double, 4> components;
-    double &r, &g, &b, &a;
+    
+    double& r() { return components[0]; }
+    double& g() { return components[1]; }
+    double& b() { return components[2]; }
+    double& a() { return components[3]; }
+    const double& r() const { return components[0]; }
+    const double& g() const { return components[1]; }
+    const double& b() const { return components[2]; }
+    const double& a() const { return components[3]; }
 
-    Vector(double _r, double _g, double _b, double _a) : components{ _r, _g, _b, _a }, 
-        r(components[0]), g(components[1]), b(components[2]), a(components[3]) { }
-
-    Vector(std::array<double, 4> _components) : components(_components), 
-        r(components[0]), g(components[1]), b(components[2]), a(components[3]) { }
-
-    Vector() : components{ 0, 0, 0, 0 }, 
-        r(components[0]), g(components[1]), b(components[2]), a(components[3]) { }
-
-    Vector<4>& operator=(const Vector<4>& other) {
-        components = other.components;
-        return *this;
-    }
+    Vector(double _r, double _g, double _b, double _a) : components{ _r, _g, _b, _a } { }
+    Vector(std::array<double, 4> _components) : components(_components) { }
+    Vector() : components{ 0, 0, 0, 0 } { }
 
     double& operator[](size_t index) {
         assert (index >= 1 && index <= 4);
