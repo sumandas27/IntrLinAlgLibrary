@@ -1309,7 +1309,7 @@ float length(const Vector<D>& v) {
 }
 
 /* The unit vector of a vector is a vector of norm/length 1 pointing to the same direction.
- * @param The argument vector.
+ * @param v The argument vector.
  * @returns Its argument vector's unit vector.
  */
 template <size_t D>
