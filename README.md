@@ -15,7 +15,7 @@ This file uses ```namespace ila``` for "Intro Linear Algebra".
 
 * **NOTE:** There may be naming conflicts with other libraries if you use ```using namespace ila;```. For example, ```IntrLinAlgLibrary``` contains a ```print()``` method which may appear in other files. Instead, consider limiting to certain data types or functions such as ```using namespace ila::Matrix, ila::Vector;``` and/or any other functions you would like.
 
-Vectors are arrays and matrices are arrays of arrays. Both contain ```double``` as their data type.
+Vectors are arrays and matrices are arrays of arrays. Both contain ```float``` as their data type.
 
 * Vector elements are called **components**. A vector with dimension ```D``` has ```D``` components.
 * Matrix elements are called **entries**. A ```R x C``` matrix has ```R``` rows and ```C``` columns, thus having ```R x C``` entries.
@@ -34,7 +34,7 @@ Intr Lin Alg 250 @ rutgers covers 6 chapters (some not in its entirety):
 Creating a vector: ```ila::Vector<D> myVec(1, 2, 3, ...);```
 
 * ```D``` - the dimension/size of the vector.
-* Add ```D``` number of ```double``` parameters for the contents of the vector.
+* Add ```D``` number of ```float``` parameters for the contents of the vector.
 
 **Example:** Creating the vector called ```myVec``` with 4 components: ```[ 1, 2, 3, 4 ]```
 
@@ -79,7 +79,7 @@ Creating a matrix: ```ila::Matrix<R, C> myMat(1, 2, 3, ...);```
 
 * ```R``` - the number of rows of the matrix.
 * ```C``` - the number of columns of the matrix.
-* Add ```R``` times ```C``` number of ```double``` parameters for the contents of the matrix.
+* Add ```R``` times ```C``` number of ```float``` parameters for the contents of the matrix.
 
 **Example:** Creating a 3x3 (3 rows, 3 columns) matrix called ```myMat``` with entries: ```[[ 1, 2, 3 ], [4, 5, 6], [7, 8, 9]]```
 
