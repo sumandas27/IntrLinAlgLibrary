@@ -1722,7 +1722,7 @@ std::pair<Matrix<S, S>, Matrix<S, S>> diagonalize(const Matrix<S, S>& m) {
  * @param v2 The second argument vector.
  * @returns The cross product of the two argument vectors.
  */
-float cross(const Vector<2>& v1, const Vector<2>& v2) {
+inline float cross(const Vector<2>& v1, const Vector<2>& v2) {
     return v1.components[0] * v2.components[1] - v1.components[1] * v2.components[0];
 }
 
@@ -1732,7 +1732,7 @@ float cross(const Vector<2>& v1, const Vector<2>& v2) {
  * @param v2 The second argument vector.
  * @returns The cross product of the two argument vectors.
  */
-Vector<3> cross(const Vector<3>& v1, const Vector<3>& v2) {
+inline Vector<3> cross(const Vector<3>& v1, const Vector<3>& v2) {
     float xComponent = v1.components[1] * v2.components[2] - v1.components[2] * v2.components[1];
     float yComponent = v1.components[2] * v2.components[0] - v1.components[0] * v2.components[2];
     float zComponent = v1.components[0] * v2.components[1] - v1.components[1] * v2.components[0];
