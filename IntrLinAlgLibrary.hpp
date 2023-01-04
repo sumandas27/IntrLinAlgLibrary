@@ -56,7 +56,9 @@
 #pragma once
 #include <iostream>
 #include <iomanip>
+#include <cassert>
 
+#include <cmath>
 #include <numeric>
 #include <array>
 #include <vector>
@@ -1710,6 +1712,31 @@ std::pair<Matrix<S, S>, Matrix<S, S>> diagonalize(const Matrix<S, S>& m) {
     auto [isDiagonalizable, pd] = HELPER_diagonalize_info(m);
     assert (isDiagonalizable);
     return pd;
+}
+
+//------------------------------------------------------------------------------------------//
+//ADDITIONAL FUNCTIONS:
+
+/* The cross product between two vectors in R2 returns the area of the parallelogram that the two vectors enclose.
+ * @param v1 The first argument vector.
+ * @param v2 The second argument vector.
+ * @returns The cross product of the two argument vectors.
+ */
+float cross(const Vector<2>& v1, const Vector<2>& v2) {
+    return v1.components[0] * v2.components[1] - v1.components[1] * v2.components[0];
+}
+
+/* The cross product between two vectors in R3 returns a vector that is orthogonal to both the vectors, with a length of
+ * the area of the parallelogram that the two vectors enclose and whose direction obeys the right-hand rule.
+ * @param v1 The first argument vector.
+ * @param v2 The second argument vector.
+ * @returns The cross product of the two argument vectors.
+ */
+Vector<3> cross(const Vector<3>& v1, const Vector<3>& v2) {
+    float xComponent = v1.components[1] * v2.components[2] - v1.components[2] * v2.components[1];
+    float yComponent = v1.components[2] * v2.components[0] - v1.components[0] * v2.components[2];
+    float zComponent = v1.components[0] * v2.components[1] - v1.components[1] * v2.components[0];
+    return Vector<3>(xComponent, yComponent, zComponent);
 }
 
 } // namespace ila
