@@ -314,4 +314,4 @@ Like all other bases, write ```ila::dim(ila::get_eigenspace_basis(mySquareMat, e
 
 * ```ila::cross(myVec1, myVec2)``` returns the cross product of ```myVec1``` and ```myVec2```. **NOTE:** This function only works for vectors in R2 and R3:
   * For two vectors in R2, this function returns the scalar of the area of its enclosed parallelogram as a ```float```.
-  * For two vectors in R3, this function returns the vector (as an ```ila::Vector<3>``` of appropriate magnitude that is orthogonal to both the argument vectors.
+  * For two vectors in R3, this function returns the vector (as an ```ila::Vector<3>```) of appropriate magnitude that is orthogonal to both the argument vectors.
